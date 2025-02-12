@@ -21,6 +21,11 @@ All the requirement is on requirement.txt, execute this to install all the requi
 pip install -r requirement.txt
 
 ===================================================================================
+Create env :
+
+python -m venv env
+
+===================================================================================
 Create SuperAdmin or SuperUser
 
 python manufacture/manage.py createsuperuser
