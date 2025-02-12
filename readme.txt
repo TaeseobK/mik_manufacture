@@ -16,7 +16,9 @@ python manufacture/manage.py migrate sessions --database=default
 python manufacture/manage.py migrate
 
 ===================================================================================
-All the requirement is on requirement.txt
+All the requirement is on requirement.txt, execute this to install all the requirements :
+
+pip install -r requirement.txt
 
 ===================================================================================
 Create SuperAdmin or SuperUser
