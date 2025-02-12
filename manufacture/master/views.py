@@ -719,8 +719,27 @@ def detail_employee(request, e_id) :
     type_employment = EmploymentTypes.objects.using('master').all()
     position = JobPosition.objects.using('master').all()
     skills = Skills.objects.using('master').all()
-    entity = Entity.objects.using('master').all()
+    entity = CompanyProfile.objects.using('master').all()
     department = Department.objects.using('master').all()
+    user_p = User.objects.using('default').filter(is_superuser=0)
+
+    distance = [
+        'km', 'hm', 'dkm', 'm',
+        'dm', 'cm', 'mm', 'in',
+        'ft', 'yd', 'mi'
+    ]
+
+    gender = [
+        'Male', 'Female'
+    ]
+
+    education = [
+        'Graduate', 'Bachelor', 'Master', 'Doctor', 'Others'
+    ]
+
+    marital = [
+        'Single', 'Married', 'Legal Cohabitant', 'Widower', 'Divorced'
+    ]
 
     data.append({
         'employee' : employee,
@@ -731,11 +750,13 @@ def detail_employee(request, e_id) :
         'skills' : skills,
         'entity' : entity,
         'department' : department,
-        'profile' : profile
+        'profile' : profile,
+        'user_p' : user_p,
+        'distance' : distance,
+        'gender' : gender,
+        'education' : education,
+        'marital' : marital
     })
-
-    for d in data :
-        print(d['profile'])
 
     return render(request, 'detail_master/detail_employee.html', {
         'title_1' : 'Employees',

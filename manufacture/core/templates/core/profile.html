@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.3/flowbite.min.js"></script>
+    <style>
+        /* Custom scrollbar untuk elemen */
+        .thin-scrollbar::-webkit-scrollbar {
+            width: 6px; /* Lebar scrollbar yang tipis dan cantik */
+        }
+
+        .thin-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(100, 100, 100, 0.4); /* Warna default scrollbar */
+            border-radius: 20px; /* Ujung scrollbar yang melengkung */
+            border: 1px solid rgba(0, 0, 0, 0.1); /* Memberikan efek border halus */
+            transition: background-color 0.3s ease; /* Transisi halus saat di-hover */
+        }
+
+        .thin-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(100, 100, 100, 0.7); /* Ubah warna saat di-hover */
+        }
+
+        .thin-scrollbar::-webkit-scrollbar-track {
+            background-color: transparent; /* Warna track yang halus */
+            border-radius: 10px; /* Ujung track yang melengkung */
+        }
+    </style>
+    <link rel="website icon" type="image/png" href="{% static 'web_icon.png' %}">
+    <title>{% block title %}{{ title }}{% endblock %} | MIK</title>
+</head>
+<body class="bg-gray-400 dark:bg-gray-800 px-20 py-20 thin-scrollbar">
+    <form action="." method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="flex gap-20 bg-transparent">
+            <div class=" w-1/4 bg-transparent">
+                <p class="text-gray-400 font-semibold text-lg">Profile</p>
+                <p class="text-gray-400 text-sm">This information will be displayed publicly so be careful what you share.</p>
+            </div>
+            <div class=" w-3/4 bg-gray-400 rounded-md border-2 border-blue-400">
+                <div class="mt-5 px-5">
+                    <p class="dark:text-gray-900 font-medium text-md">Photo</p>
+                    <div class="flex items-center space-x-5 mt-3">
+                        <img id="profilepic-id" src="{% static 'web_icon.png' %}" alt="" class="w-12 h-12 rounded-full border-2 border-gray-500">
+                        <label for="image-profile-id" class="rounded-md text-gray-900 bg-gray-500 cursor-pointer px-3 py-1 text-sm font-semibold border-2 border-gray-900">Change</label>
+                        <input type="file" id="image-profile-id" name="image-profile" class="hidden" onchange="previewImage(event)">
+                    </div>
+                </div>
+                <div class="mt-7 px-5">
+                    <label for="username-id" class="dark:text-gray-900 font-medium text-md">Username</label>
+                    <input type="text" value="{{ request.user.username }}" name="username" id="username-id" class="block bg-gray-400 border-2 border-gray-600 rounded-md mt-2 w-1/2 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
+                </div>
+                <div class="my-7 px-5">
+                    <p class="dark:text-gray-900 font-medium text-md">About</p>
+                    <textarea name="" id="" class="thin-scrollbar bg-gray-400 border-2 border-gray-600 rounded-md mt-2 w-4/5 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-2 text-sm text-gray-800 font-medium"></textarea>
+                    <p class="text-gray-800 text-sm">Write a few Sentences about yourself.</p>
+                </div>
+            </div>
+        </div>
+        <hr class="my-10 px-20 border border-gray-700">
+        <div class="flex gap-20 bg-transparent">
+            <div class=" w-1/4 bg-transparent">
+                <p class="text-gray-400 font-semibold text-lg">Personal Information</p>
+                <p class="text-gray-400 text-sm">Use your correct information so we can chit chat on whatsapp :)</p>
+            </div>
+            <div class=" w-3/4 bg-gray-400 rounded-md border-2 border-blue-400">
+                <div class="flex gap-10 mt-5 px-5">
+                    <div class="w-1/2">
+                        <label for="first-name-id" class="dark:text-gray-900 font-medium text-md">First Name</label>
+                        <input type="text" value="{{ request.user.first_name }}" name="first-name" id="first-name-id" class="block bg-gray-400 border-2 border-gray-600 rounded-md mt-2 w-4/5 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
+                    </div>
+                    <div class="w-1/2">
+                        <label for="last-name-id" class="dark:text-gray-900 font-medium text-md">Last Name</label>
+                        <input type="text" value="{{ request.user.last_name }}" name="last-name" id="last-name-id" class="block bg-gray-400 border-2 border-gray-600 rounded-md mt-2 w-4/5 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
+                    </div>
+                </div>
+                <div class="mt-7 px-5">
+                    <label for="email-id" class="dark:text-gray-900 font-medium text-md">Email</label>
+                    <input type="text" value="{{ request.user.email }}" name="email" id="email-id" class="block bg-gray-400 border-2 border-gray-600 rounded-md mt-2 w-1/2 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
+                </div>
+                <div class="mt-7 px-5">
+                    <label for="country-id" class="dark:text-gray-900 font-medium text-md">Country</label>
+                    <input type="text" name="country" id="country-id" class="block bg-gray-400 border-2 border-gray-600 rounded-md mt-2 w-2/5 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
+                </div>
+                <div class="flex gap-10 my-7 px-5">
+                    <div class="w-1/3">
+                        <label for="city-id" class="dark:text-gray-900 font-medium text-md">City</label>
+                        <input type="text" name="city" id="city-id" class="block bg-gray-400 border-2 border-gray-600 rounded-md mt-2 w-full focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
+                    </div>
+                    <div class="w-1/3">
+                        <label for="state-id" class="dark:text-gray-900 font-medium text-md">State / Province</label>
+                        <input type="text" name="state" id="state-id" class="block bg-gray-400 border-2 border-gray-600 rounded-md mt-2 w-full focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
+                    </div>
+                    <div class="w-1/3">
+                        <label for="zip-id" class="dark:text-gray-900 font-medium text-md">Zip / Postal Code</label>
+                        <input type="text" name="zip" id="zip-id" class="block bg-gray-400 border-2 border-gray-600 rounded-md mt-2 w-full focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+<script>
+    function previewImage(event) {
+        const output = document.getElementById('profilepic-id');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+            URL.revokeObjectURL(output.src)
+        }
+    }
+</script>

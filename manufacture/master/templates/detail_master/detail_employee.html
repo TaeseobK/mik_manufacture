@@ -22,7 +22,7 @@
         </div>
     </div>
 </div>
-<form id="bom_new" class="w-4/5 bg-gray-800 py-10 px-8 rounded-md shadow-xl text-gray-900 mx-5 my-1 border-1/2 border-gray-200 resize-y" action="." method="post">
+<form id="bom_new" class="w-4/5 bg-gray-800 py-5 px-8 rounded-md shadow-xl text-gray-900 mx-5 my-1 border-1/2 border-gray-200 resize-y" action="." method="post" enctype="multipart/form-data">
     {% csrf_token %}
 
     <input type="hidden" value="post" name="metode">
@@ -34,12 +34,110 @@
         <div class="relative z-0 w-4/5 mb-5 group">
             <input type="text" name="job-title" id="job-title-id" class="block my-5 w-full text-md font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600 placeholder:text-gray-600" placeholder="Job Title">
         </div>
-        <div class="relative z-0 w-1/5 mb-5 group">
+        <div class="flex justify-center items-center relative z-0 w-1/5 mb-5 group">
             <img src="{% static 'web_icon.png' %}" alt="image" class="w-24 h-24">
         </div>
     </div>
-    <div class="rounded-lg rounded-md border-blue-500">
-        <h2 class="text-gray-200 text-md font-semibold font-normal select-none">This BOM applies to the manufacturing of a single unit of product.</h2>
+    <div class="flex rounded-sm mx-1 px-1 w-full bg-transparent shadow-lg border border-gray-600 gap-5">
+        <div class="flex bg-transparent w-full gap-3 my-1 mx-1">
+            <div class="bg-transparent w-1/5 my-2">
+                <ul class="space-y-3">
+                    <li>
+                        <p class="bg-transparent flex items-center justify-start text-gray-400 font-semibold mt-1">Work Email</p>
+                    </li>
+                    <li>
+                        <p class="bg-transparent flex items-center justify-start text-gray-400 font-semibold mt-1">Work Phone</p>
+                    </li>
+                    <li>
+                        <p class="bg-transparent flex items-center justify-start text-gray-400 font-semibold mt-1">Work Mobile</p>
+                    </li>
+                    <li>
+                        <p class="bg-transparent flex items-center justify-start text-gray-400 font-semibold mt-1">Tags</p>
+                    </li>
+                    <li>
+                        <p class="bg-transparent flex items-center justify-start text-gray-400 font-semibold mt-1">Company</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="bg-transparent w-4/5 my-2">
+                <ul class="space-y-3">
+                    <li>
+                        <p class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold w-full">{{ data.0.user.email }}</p>
+                    </li>
+                    <li>
+                        <input type="text" name="phone-number" id="phone-number-id" placeholder="{{ data.0.profile.phone }}" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
+                    </li>
+                    <li>
+                        <input type="text" name="mobile-number" id="mobile-number-id" placeholder="e.g 089214" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
+                    </li>
+                    <li>
+                        <input type="text" name="tags" id="tags-id" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
+                    </li>
+                    <li>
+                        <select name="" id="" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
+                            <option value="" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white" selected>Company</option>
+                            {% for d in data.0.entity %}
+                                <option value="{{ d.entity.pk }}" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.entity }}</option>
+                            {% endfor %}
+                        </select>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="w-full flex bg-transparent gap-3 my-1 mx-1">
+            <div class="w-1/5 my-2 bg-transparent">
+                <ul class="space-y-3">
+                    <li>
+                        <p class="bg-transparent flex items-center justify-start text-gray-400 font-semibold mt-1">Department</p>
+                    </li>
+                    <li>
+                        <p class="bg-transparent flex items-center justify-start text-gray-400 font-semibold mt-1">Job Position</p>
+                    </li>
+                    <li>
+                        <p class="bg-transparent flex items-center justify-start text-gray-400 font-semibold mt-1">Manager</p>
+                    </li>
+                    <li>
+                        <p class="bg-transparent flex items-center justify-start text-gray-400 font-semibold mt-1">Coach</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="w-4/5 my-2 bg-transparent">
+                <ul class="space-y-3">
+                    <li>
+                        <select name="department" id="department-id" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
+                            <option value="" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white" selected>Department</option>
+                            {% for d in data.0.department %}
+                                <option value="{{ d.pk }}" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.department }}</option>
+                            {% endfor %}
+                        </select>
+                    </li>
+                    <li>
+                        <select name="position" id="position-id" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
+                            <option value="" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white" selected>Position</option>
+                            {% for d in data.0.position %}
+                                <option value="{{ d.pk }}" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </li>
+                    <li>
+                        <select name="position" id="position-id" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
+                            <option value="" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white" selected>Manager</option>
+                            {% for d in data.0.user_p %}
+                                <option value="{{ d.pk }}" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </li>
+                    <li>
+                        <select name="position" id="position-id" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
+                            <option value="" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white" selected>Coach</option>
+                            {% for d in data.0.user_p %}
+                                <option value="{{ d.pk }}" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.username }}</option>
+                            {% endfor %}
+                        </select>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
     <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
         <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
@@ -59,12 +157,359 @@
     </div>
     <div id="default-tab-content">
         <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="resume" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="flex gap-10 bg-transparent w-full">
+                <div class="w-3/5">
+                    <p class="border-b border-gray-400 w-full text-gray-400 font-semibold text-sm uppercase">Resume</p>
+                    <p class="text-gray-300 w-full mt-5 text-sm font-normal">There's no resume in line. Try to add new one?</p>
+                    <button type="button" id="new-resume" class="px-1 bg-gray-700 border-2 border-gray-400 rounded-sm hover:bg-gray-400 hover:text-gray-800 hover:border-blue-600 text-gray-400 font-bold mt-5 ml-2">Create New Entry</button>
+                </div>
+                <div class="w-2/5">
+                    <p class="border-b border-gray-400 w-full text-gray-400 font-semibold text-sm uppercase">Skills</p>
+                    <p class="text-gray-300 w-full mt-5 text-sm font-normal">
+                        You can add skills from our library to the employee profile.
+                        If skills are missing, they can be created by an HR officer.
+                    </p>
+                    <div class="flex justify-center items-center">
+                        <button type="button" id="pick-skill" class="px-1 items-center justify-center bg-gray-700 border-2 border-gray-400 rounded-sm hover:bg-gray-400 hover:text-gray-800 hover:border-blue-600 text-gray-400 font-bold mt-5">Pick skill from the list</button>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="information" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="flex">
+                <div class="w-3/5 bg-transparent ml-2 border-r border-gray-400">
+                    <p class="border-b border-gray-400 text-gray-400 text-sm font-bold w-full uppercase mt-5">Location</p>
+                    <div class="flex gap-3 mt-3">
+                        <div class="w-1/5">
+                            <ul class="space-y-3">
+                                <li class="text-gray-400 font-bold text-sm">
+                                    Work Address
+                                </li>
+                                <li class="text-gray-400 font-bold text-sm">
+                                    Work Location
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="w-4/5">
+                            <ul class="space-y-3">
+                                <li>
+                                    <select name="" id="" class="border-b border-gray-400 text-gray-400 font-semibold text-sm focus:outline-none hover:border-red-600 focus:border-blue-600 bg-transparent w-full">
+                                        <option value="" selected class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white"></option>
+                                        {% for d in data.0.entity %}
+                                            <option value="{{ d.pk }}" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.entity.entity }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div id="company-address" class="company-address">
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="flex gap-3">
+                                        <button type="button" class="bg-gray-400 border-2 text-gray-800 border-gray-900 rounded-sm px-1 text-xs font-bold uppercase hover:text-gray-400 hover:bg-gray-800 hover:border-blue-600">Input Text</button>
+                                        <button type="button" class="bg-gray-400 border-2 text-gray-800 border-gray-900 rounded-sm px-1 text-xs font-bold uppercase hover:text-gray-400 hover:bg-gray-800 hover:border-blue-600">Take from our list</button>
+                                        <p class="block bg-transparent text-gray-400 font-semibold text-sm"></p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-2/5 bg-transparent">
+                    <p class="border-b border-gray-400 text-gray-400 text-sm font-bold w-full uppercase mx-5 mt-5">Organization Chart</p>
+                </div>
+            </div>
         </div>
         <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="private-information" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="flex gap-5">
+                <div class="bg-transparent w-full">
+                    <p class="w-full border-b border-gray-400 text-gray-400 font-bold uppercase text-xs">Private Contact</p>
+                    <div class="flex gap-3 mt-5">
+                        <div class="w-4/12">
+                            <ul class="space-y-3">
+                                <li>
+                                    <p class="text-gray-400 font-semibold text-sm">Private Address</p>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="w-8/12">
+                            <ul class="space-y-3">
+                                <li>
+                                    <input type="text" autocomplete="off" name="street1" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="Street...">
+                                </li>
+                                <li>
+                                    <input type="text" autocomplete="off" name="street2" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="Street 2...">
+                                </li>
+                                <li>
+                                    <div class="flex gap-5">
+                                        <input type="text" autocomplete="off" name="city" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="City">
+                                        <input type="text" autocomplete="off" name="state" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="State">
+                                        <input type="text" autocomplete="off" name="zip" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="Zip">
+                                    </div>
+                                </li>
+                                <li>
+                                    <input type="text" autocomplete="off" name="country" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="Country">
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 mt-3">
+                        <div class="w-4/12">
+                            <ul class="space-y-3">
+                                <li class="mt-2">
+                                    <label for="private-email-id" class="text-gray-400 font-semibold text-sm">Private Email</label>
+                                </li>
+                                <li class="mt-2">
+                                    <label for="private-phone-id" class="text-gray-400 font-semibold text-sm">Private Phone</label>
+                                </li>
+                                <li class="mt-2">
+                                    <label for="bank-account-id" class="text-gray-400 font-semibold text-sm">Bank Account</label>
+                                </li>
+                                <li class="mt-1">
+                                    <label for="home-distance-id" class="text-gray-400 font-semibold text-sm">Home-Work Distance</label>
+                                </li>
+                                <li class="mt-1">
+                                    <label for="car-plate-id" class="text-gray-400 font-semibold text-sm">Private Car Plate</label>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="w-8/12">
+                            <ul class="space-y-3">
+                                <li class="mt-2">
+                                    <input name="private-email" autocomplete="off" id="private-email-id" type="text" value="{{ data.0.user.email }}" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none">
+                                </li>
+                                <li class="mt-2">
+                                    <input name="private-phone" autocomplete="off" id="private-phone-id" type="text" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none">
+                                </li>
+                                <li class="mt-2">
+                                    <div class="flex gap-5" id="bank-account-id">
+                                        <input name="bank-number" autocomplete="off" id="bank-number-id" type="text" class="w-4/5 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none placeholder:text-gray-600" placeholder="Account Number e.g 1234567890">
+                                        <input name="bank-name" autocomplete="off" id="bank-name-id" type="text" class="w-1/5 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none placeholder:text-gray-600" placeholder="eg. BCA">
+                                    </div>
+                                </li>
+                                <li class="mt-2">
+                                    <div class="flex gap-5" id="home-distance-id">
+                                        <input name="home-distance" value="0" autocomplete="off" id="bank-number-id" type="text" class="w-4/5 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                        <select name="distance" id="distance-id" class="w-1/5 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none placeholder:text-gray-600">
+                                            {% for d in data.0.distance %}
+                                                <option value="{{ d }}" class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white" {% if d == 'km' %} selected {% endif %} >{{ d }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </li>
+                                <li class="mt-2">
+                                    <input type="text" name="car-plate" autocomplete="off" id="car-plate-id" class="w-full border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-transparent w-full">
+                    <p class="w-full border-b border-gray-400 text-gray-400 font-bold uppercase text-xs">Citizenship</p>
+                    <ul class="space-y-3 mt-5">
+                        <li class="mt-2">
+                            <div class="flex gap-3 mt-4">
+                                <label for="nationality-id" class="text-gray-400 font-semibold text-sm w-4/12">Nationality (Country)</label>
+                                <input type="text" name="nationality" id="nationality-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                            </div>
+                        </li>
+                        <li class="mt-2">
+                            <div class="flex gap-3 mt-4">
+                                <label for="identification-id" class="text-gray-400 font-semibold text-sm w-4/12">Identification No</label>
+                                <input type="text" name="identification" id="identification-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                            </div>
+                        </li>
+                        <li class="mt-2">
+                            <div class="flex gap-3 mt-4">
+                                <label for="ssn-id" class="text-gray-400 font-semibold text-sm w-4/12">SSN No</label>
+                                <input type="text" name="ssn" id="ssn-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                            </div>
+                        </li>
+                        <li class="mt-2">
+                            <div class="flex gap-3 mt-4">
+                                <label for="passport-id" class="text-gray-400 font-semibold text-sm w-4/12">Passport No</label>
+                                <input type="text" name="passport" id="passport-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                            </div>
+                        </li>
+                        <li class="mt-2">
+                            <div class="flex gap-3 mt-4">
+                                <label for="gender-id" class="text-gray-400 font-semibold text-sm w-4/12">Gender</label>
+                                <select name="gender" id="gender-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                    <option value="" class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white" selected></option>
+                                    {% for d in data.0.gender %}
+                                    <option value="{{ d }}" class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white">{{ d }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </li>
+                        <li class="mt-2">
+                            <div class="flex gap-3 mt-4">
+                                <label for="birthdate-id" class="text-gray-400 font-semibold text-sm w-4/12">Date of Birth</label>
+                                <input type="text" datepicker datepicker-autohide datepicker-buttons datepicker-autoselect-today name="birthdate" id="birthdate-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                            </div>
+                        </li>
+                        <li class="mt-2">
+                            <div class="flex gap-3 mt-4">
+                                <label for="birthplace-id" class="text-gray-400 font-semibold text-sm w-4/12">Place of Birth</label>
+                                <input type="text" name="birthplace" id="birthplace-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                            </div>
+                        </li>
+                        <li class="mt-2">
+                            <div class="flex gap-3 mt-4">
+                                <label for="birthcountry-id" class="text-gray-400 font-semibold text-sm w-4/12">Country of Birth</label>
+                                <input type="text" name="birthcountry" id="birthcountry-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="flex gap-5 mt-5">
+                <div class="bg-transparent w-full">
+                    <p class="w-full border-b border-gray-400 text-gray-400 font-bold uppercase text-xs">Emergency</p>
+                    <div class="flex gap-5 mt-5 items-center">
+                        <div class="w-4/12">
+                            <ul class="space-y-3 items-center">
+                                <li class="mt-2">
+                                    <label for="contact-emergency-id" class="text-gray-400 font-semibold text-sm">Contact Name</label>
+                                </li>
+                                <li class="mt-2">
+                                    <label for="phone-emergency-id" class="text-gray-400 font-semibold text-sm">Contact Name</label>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="w-8/12">
+                            <ul class="space-y-3 items-center">
+                                <li class="mt-2">
+                                    <input type="text" id="contact-emergency-id" name="contact-emergency" autocomplete="off" class="w-full border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                </li>
+                                <li class="mt-2">
+                                    <input type="text" id="phone-emergency-id" name="phone-emergency" autocomplete="off" class="w-full border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-transparent w-full">
+                    <p class="w-full border-b border-gray-400 text-gray-400 font-bold uppercase text-xs">Education</p>
+                    <div class="flex gap-5 mt-5 items-center">
+                        <div class="w-4/12">
+                            <ul class="space-y-3 items-center">
+                                <li class="mt-2">
+                                    <label for="contact-emergency-id" class="text-gray-400 font-semibold text-sm">Certification Level</label>
+                                </li>
+                                <li class="mt-2">
+                                    <label for="field-study-id" class="text-gray-400 font-semibold text-sm">Field of Study</label>
+                                </li>
+                                <li class="mt-2">
+                                    <label for="school-id" class="text-gray-400 font-semibold text-sm">School</label>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="w-8/12">
+                            <ul class="space-y-3 items-center">
+                                <li class="mt-2">
+                                    <select name="certification" id="cerfication-id" class="w-full border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                        <option value="" class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white" selected></option>
+                                        {% for d in data.0.education %}
+                                            <option value="{{ d }}" class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white">{{ d }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </li>
+                                <li class="mt-2">
+                                    <input type="text" id="field-study-id" name="field-study" autocomplete="off" class="w-full border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                </li>
+                                <li class="mt-2">
+                                    <input type="text" id="school-id" name="school" autocomplete="off" class="w-full border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-5 mt-5">
+                <div class="bg-transparent w-full">
+                    <p class="w-full border-b border-gray-400 text-gray-400 font-bold uppercase text-xs">Family Status</p>
+                    <ul class="space-y-3 mt-5">
+                        <li class="mt-2">
+                            <div class="flex gap-3 mt-4">
+                                <label for="marital-id" class="text-gray-400 font-semibold text-sm w-4/12">Marital Status</label>
+                                <select name="marital" id="marital-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                    {% for d in data.0.marital %}
+                                        <option value="{{ d }}" class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white" {% if d == 'Single' %} selected {% endif %}>{{ d }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </li>
+                        <li class="mt-2">
+                            <div class="flex gap-3 mt-4">
+                                <label for="dependent-children-id" class="text-gray-400 font-semibold text-sm w-4/12">Number of Dependent Children</label>
+                                <input type="text" name="dependent-children" id="dependent-children-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-transparent w-full">
+                    <p class="w-full border-b border-gray-400 text-gray-400 font-bold uppercase text-xs">Work Permit</p>
+                    <ul class="space-y-3 mt-5">
+                        <li class="mt-2">
+                            <div class="flex gap-3 mt-4">
+                                <label for="visa-id" class="text-gray-400 font-semibold text-sm w-4/12">Visa No</label>
+                                <input type="text" id="visa-id" name="visa" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                            </div>
+                        </li>
+                        <li class="mt-2">
+                            <div class="flex gap-3 mt-4">
+                                <label for="work-permit-id" class="text-gray-400 font-semibold text-sm w-4/12">Work Permit No</label>
+                                <input type="text" name="work-permit" id="work-permit-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                            </div>
+                        </li>
+                        <li class="mt-2">
+                            <div class="flex gap-3 mt-4">
+                                <label for="visa-expired-id" class="text-gray-400 font-semibold text-sm w-4/12">Visa Expiration Date</label>
+                                <input type="text" datepicker datepicker-buttons datepicker-autoselect-today datepicker-autohide name="visa-expired" id="visa-expired-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                            </div>
+                        </li>
+                        <li class="mt-2">
+                            <div class="flex gap-3 mt-4">
+                                <label for="work-permit-expiry-id" class="text-gray-400 font-semibold text-sm w-4/12">Work Permit Expiration Date</label>
+                                <input type="text" datepicker datepicker-buttons datepicker-autoselect-today datepicker-autohide name="work-permit-expiry" id="work-permit-expiry-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                            </div>
+                        </li>
+                        <li class="mt-2">
+                            <div class="flex gap-3 mt-4">
+                                <label for="work-permit-file-id" class="text-gray-400 font-semibold text-sm w-4/12 mt-1">Work Permit Expiration Date</label>
+                                <input type="file" accept="*" name="work-permit-file" id="work-permit-file-id" class="w-8/12 file:bg-transparent file:text-gray-400 file:border-gray-400 file:border-none text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
         <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="settings" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="bg-transparent w-2/5">
+                <div class="bg-transparent w-full">
+                    <p class="w-full border-b border-gray-400 text-gray-400 font-bold uppercase text-xs">Status</p>
+                    <ul class="space-y-3 mt-5">
+                        <li class="mt-3">
+                            <div class="flex gap-5">
+                                <label for="employee-status-id" class="text-gray-400 font-semibold text-sm w-3/12">Employee Type</label>
+                                <select name="employee-status" id="employee-status-id" class="w-9/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                    <option value="" class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white" selected></option>
+                                    {% for d in data.0.position %}
+                                    <option value="{{ d }}" class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white">{{ d }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </li>
+                    </ul>
+                    <p class="w-full border-b border-gray-400 text-gray-400 font-bold uppercase text-xs mt-10">Application Settings</p>
+                    <div class="flex gap-5 mt-8">
+                        <label for="pay-rate-id" class="text-gray-400 font-semibold text-sm w-3/12">Monthly Rate</label>
+                        <div class="flex w-9/12">
+                            <span class="text-gray-400 font-semibold text-sm">Rp</span>
+                            <input type="text" name="pay-rate" id="pay-rate-id" class="ml-2 w-1/4 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 focus:outline-none text-gray-400 text-sm font-semibold bg-transparent">
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </form>

@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from user_profile.models import Profile
 from django.template import RequestContext
 from django.conf import settings
 from .models import UserActivity
+
 
 def home(request) :
     return render(request, 'core/home.html', {
@@ -105,3 +107,15 @@ def log_activity(self, user, path, method, timestamp, ip_address) :
         timestamp=timestamp,
         ip_address=ip_address
     ).save()
+
+@login_required(login_url='/login/')
+def profile(request, id_user) :
+
+    user = request.user
+
+    profile = Profile.objects.using('profile').get(user=int(id_user))
+
+    return render(request, 'core/profile.html', {
+        'title' : 'User Profile',
+        'profile' : profile
+    })
