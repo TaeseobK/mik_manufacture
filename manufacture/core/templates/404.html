@@ -1,0 +1,22 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block content %}
+<body>
+    <section class="select-none bg-center bg-no-repeat bg-fixed parallax-bg bg-[url('{% static 'bg404.svg' %}')] bg-gray-700 bg-blend-multiply">
+        <div class="px-4 mx-auto max-w-screen-xl text-center py-24 lg:py-56">
+            <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-white md:text-5xl lg:text-4xl">
+                404 - Kami Tidak Dapat Menemukan Halaman Ini
+            </h1>
+            <p class="mb-8 text-lg font-normal text-gray-300 lg:text-xl sm:px-16 lg:px-48">
+                Mungkin Anda salah ketik alamat atau halaman ini telah berpindah. Jangan khawatir, mari kita kembali ke halaman utama dan mulai lagi.
+            </p>
+            <div class="flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-y-0">
+                <a href="{% url 'core:home' %}" class="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-xl bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900">
+                    To Home
+                </a>
+            </div>
+        </div>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+</body>
+{% endblock %}

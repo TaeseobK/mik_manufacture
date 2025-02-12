@@ -1,0 +1,41 @@
+{% extends 'base_app/inventory.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<div class="max-h-screen flex flex-wrap w-screen">
+    <div class="w-3/5 flex bg-transparent">
+        <div class="w-1/3 justify-start">
+            <nav class="flex gap-1 border-gray-200 bg-transparent ml-5 my-1">
+                <div class=" flex justify-start items-center gap-3">
+                    <button type="submit" onclick="document.getElementById('formcategory').submit()" class="float-start gap-1 bg-gray-700 px-3 rounded-sm py-1 hover:bg-gray-600 focus:ring-1 cursor-pointer text-white">
+                        Confirm                                         
+                    </button>
+                    <form action="." method="post">
+                        {% csrf_token %}
+                        <input name="metode" type="hidden" value="delete">
+                        <button type="submit" class="float-start gap-1 bg-gray-700 px-3 rounded-sm py-1 hover:bg-gray-600 focus:ring-1 cursor-pointer text-white">
+                            Delete                                        
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+<form id="formcategory" class="w-3/5 bg-gray-800 py-10 px-8 rounded-md shadow-xl text-gray-900 mx-5 my-1 border-1/2 border-gray-200 resize-y" action="." method="post">
+    {% csrf_token %}
+    <input name="metode" type="hidden" value="post">
+    <div class="bg-transparent">
+        <div class="relative z-0 w-4/5 mb-5 group">
+            <input type="text" name="category_name" value="{{ category.product_type }}" id="product_name" class="block py-2.5 px-0 my-1 w-full text-md text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+            <label for="product_name" class="peer-focus:font-semibold absolute text-xl text-white dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Category Name</label>
+        </div>
+    </div>
+    <div>
+        <p class="mt-10 text-white font-semibold text-md border-b w-3/4 border-1 border-gray-600">
+            Internal Notes
+        </p>
+        <textarea name="internalnotes" id="internalnotes" class="bg-transparent my-3 text-sm rounded-sm w-4/5 h-auto border-b border-gray-500 focus:outline-none focus:border-b-2 focus:border-blue-600 text-gray-300">{{ category.description }}</textarea>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'base_app/employee.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<div class="max-h-screen flex flex-wrap w-screen">
+    <div class="w-3/5 flex bg-transparent">
+        <div class="w-1/3 justify-start">
+            <nav class="flex gap-1 border-gray-200 bg-transparent ml-5 my-1">
+                <div class=" flex justify-start items-center gap-3">
+                    <button id="confirmBttn" type="button" onclick="document.getElementById('bom_new').submit()" class="float-start gap-1 bg-gray-700 px-3 rounded-sm py-1 hover:bg-gray-600 focus:ring-1 cursor-pointer text-white">
+                        Confirm                                         
+                    </button>
+                    <form method="post" action=".">
+                        {% csrf_token %}
+                        <input type="hidden" value="delete" name="metode">
+                        <button class="float-start gap-1 bg-gray-700 px-3 rounded-sm py-1 hover:bg-gray-600 focus:ring-1 cursor-pointer text-white">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+<form id="bom_new" class="w-4/5 bg-gray-800 py-10 px-8 rounded-md shadow-xl text-gray-900 mx-5 my-1 border-1/2 border-gray-200 resize-y" action="." method="post">
+    {% csrf_token %}
+
+    <input type="hidden" value="post" name="metode">
+
+    <div class="bg-transparent">
+        <label for="manufacturing_orders" class="text-white text-2xl">{{ data.0.user.username }}</label>
+    </div>
+    <div class="flex justify-start gap-10">
+        <div class="relative z-0 w-4/5 mb-5 group">
+            <input type="text" name="job-title" id="job-title-id" class="block my-5 w-full text-md font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600 placeholder:text-gray-600" placeholder="Job Title">
+        </div>
+        <div class="relative z-0 w-1/5 mb-5 group">
+            <img src="{% static 'web_icon.png' %}" alt="image" class="w-24 h-24">
+        </div>
+    </div>
+    <div class="rounded-lg rounded-md border-blue-500">
+        <h2 class="text-gray-200 text-md font-semibold font-normal select-none">This BOM applies to the manufacturing of a single unit of product.</h2>
+    </div>
+    <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
+            <li class="me-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 rounded-t-lg" id="profile-tab" data-tabs-target="#resume" type="button" role="tab" aria-controls="profile" aria-selected="false">Resume</button>
+            </li>
+            <li class="me-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 rounded-t-lg" id="profile-tab" data-tabs-target="#information" type="button" role="tab" aria-controls="profile" aria-selected="false">Work Informations</button>
+            </li>
+            <li class="me-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 rounded-t-lg" id="profile-tab" data-tabs-target="#private-information" type="button" role="tab" aria-controls="profile" aria-selected="false">Private Informations</button>
+            </li>
+            <li class="me-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 rounded-t-lg" id="profile-tab" data-tabs-target="#settings" type="button" role="tab" aria-controls="profile" aria-selected="false">Settings</button>
+            </li>
+        </ul>
+    </div>
+    <div id="default-tab-content">
+        <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="resume" role="tabpanel" aria-labelledby="profile-tab">
+        </div>
+        <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="information" role="tabpanel" aria-labelledby="profile-tab">
+        </div>
+        <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="private-information" role="tabpanel" aria-labelledby="profile-tab">
+        </div>
+        <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="settings" role="tabpanel" aria-labelledby="profile-tab">
+        </div>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base_app/employee.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<section class="flex bg-transparent">
+    <div class="mx-5 py-5 flex grid grid-cols-3 gap-3 w-full" id="department-list">
+        {% for d in page_obj %}
+        <div>
+            <a href="{% url 'master:detail_d' d.department.pk %}">
+                <div class="bg-transparent dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm p-4 hover:bg-gray-900">
+                    <h6 class="text-gray-300 text-lg font-semibold border-b-2 border-gray-600">{{ d.department }}</h6>
+                    <div class="mt-3">
+                        <p for="type-product-id" class="text-lg text-white dark:text-gray-300 font-medium">{{ d.department.company.entity }}</p>
+                        <div class="bg-gray-700 border border-gray-400 rounded-sm p-1 mt-2 w-1/5">
+                            <p class="text-md font-semibold text-sm text-gray-300">Employee</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+<script>
+    $(document).ready(function() {
+        $('#search').on('keyup', function() {
+            var searchQuery = $(this).val();
+
+            $.ajax({
+                url: window.location.href,
+                data:{
+                    'search' : searchQuery
+                },
+                dataType: 'html',
+                success: function(response) {
+                    $('#department-list').html($(response).find('#department-list').html());
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

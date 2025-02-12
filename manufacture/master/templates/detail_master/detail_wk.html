@@ -1,0 +1,44 @@
+{% extends 'base_app/employee.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<div class="max-h-screen flex flex-wrap w-screen">
+    <div class="w-3/5 flex bg-transparent">
+        <div class="w-1/3 justify-start">
+            <nav class="border-gray-200 bg-transparent ml-5 my-1">
+                <div class=" flex justify-start items-center">
+                    <button type="button" onclick="document.getElementById('form-company').submit()" class="float-start gap-1 bg-gray-700 px-3 rounded-sm py-1 hover:bg-gray-600 focus:ring-1 cursor-pointer text-white">
+                        Confirm                                         
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+<form id="form-company" class="flex gap-5 w-3/5 bg-gray-800 py-10 px-8 rounded-md shadow-xl text-gray-900 mx-5 my-1 border-1/2 border-gray-200 resize-y" action="." method="post">
+    {% csrf_token %}
+    <div class="flex gap-5 w-1/2 bg-transparent">
+        <div class="bg-transparent w-1/3">
+            <p class="text-gray-400 text-md font-semibold mt-3">Work Location</p>
+            <p class="text-gray-400 text-md font-semibold mt-5">Work Address</p>
+        </div>
+        <div class="bg-transparent w-2/3">
+            <input type="text" name="work-location" value="{{ data.locations }}" class="w-full border-b-2 border-gray-500 text-md font-semibold mt-2 hover:border-red-600 focus:border-blue-600 bg-transparent focus:outline-none text-gray-400">
+            <input type="text" name="work-address" value="{{ data.address }}" class="w-full border-b-2 border-gray-500 text-md font-semibold mt-4 hover:border-red-600 focus:border-blue-600 bg-transparent focus:outline-none text-gray-400">
+        </div>
+    </div>
+    <div class="flex gap-3 w-1/2 bg-transparent">
+        <div class="bg-transparent w-1/3">
+            <p class="text-gray-400 font-semibold text-md my-4">Company</p>
+        </div>
+        <div class="bg-transparent w-2/3">
+            <select name="company" id="company-id" class="w-full border-b-2 border-gray-500 text-md font-semibold mt-4 hover:border-red-600 focus:border-blue-600 bg-transparent focus:outline-none text-gray-400">
+                <option value="" class="bg-gray-800 text-gray-400 hover:text-white font-medium">Choose Company</option>
+                {% for data in company %}
+                <option value="{{ data.pk }}" class="bg-gray-800 text-gray-400 hover:text-white font-medium" {% if data.company.pk == company.pk %} selected {% endif %} >{{ data.entity }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</form>
+{% endblock %}

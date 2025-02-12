@@ -1,0 +1,133 @@
+{% extends 'base_app/master.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<div class="max-h-screen flex flex-wrap w-screen">
+    <div class="w-3/5 flex bg-transparent">
+        <div class="w-1/3 justify-start">
+            <nav class="border-gray-200 bg-transparent ml-5 my-1">
+                <div class=" flex justify-start items-center">
+                    <button type="button" onclick="document.getElementById('form-company').submit()" class="float-start gap-1 bg-gray-700 px-3 rounded-sm py-1 hover:bg-gray-600 focus:ring-1 cursor-pointer text-white">
+                        Confirm                                         
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+<form id="form-company" class="w-3/5 bg-gray-800 py-10 px-8 rounded-md shadow-xl text-gray-900 mx-5 my-1 border-1/2 border-gray-200 resize-y" action="." method="post">
+    {% csrf_token %}
+    <div class="bg-transparent">
+        <p class="mb-2 text-gray-400 font-semibold text-md">Company Name</p>
+        <input type="text" name="name-company" id="company-name-id" autocomplete="off" class="block my-5 w-full text-lg text-gray-700 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600 placeholder:text-gray-600" placeholder="eg. My Company">
+    </div>
+    <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
+            <li class="me-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 rounded-t-lg" id="profile-tab" data-tabs-target="#general-information" type="button" role="tab" aria-controls="profile" aria-selected="false">General Information</button>
+            </li>
+            <li class="me-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="branches-tab" data-tabs-target="#branches" type="button" role="tab" aria-controls="dashboard" aria-selected="false">Branches</button>
+            </li>
+        </ul>
+    </div>
+    <div id="default-tab-content">
+        <div class="flex hidden gap-10 p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="general-information" role="tabpanel" aria-labelledby="dashboard-tab">
+            <div class="w-1/2 flex">
+                <div class="w-1/5">
+                    <p class="text-gray-400 text-md font-semibold">Adress</p>
+                </div>
+                <div class="w-4/5">
+                    <input type="text" name="street-1" id="street-1-id" autocomplete="off" class="mb-3 w-full block text-md text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-gray-400 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 placeholder:text-gray-700" placeholder="Street..."/>
+                    <input type="text" name="street-2" id="street-2-id" autocomplete="off" class="my-3 w-full block text-md text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-gray-400 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 placeholder:text-gray-700" placeholder="Street 2..."/>
+                    <div class="flex gap-5">
+                        <input type="text" name="city" id="city-id" autocomplete="off" class="my-3 w-full block text-md text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-gray-400 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 placeholder:text-gray-700" placeholder="City" required/>
+                        <input type="text" name="state" id="state-id" autocomplete="off" class="my-3 w-full block text-md text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-gray-400 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 placeholder:text-gray-700" placeholder="State" required/>
+                        <input type="text" name="zip" id="zip-id" autocomplete="off" class="my-3 w-full block text-md text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-gray-400 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 placeholder:text-gray-700" placeholder="Zip" required/>
+                    </div>
+                    <input type="text" name="country" id="country-id" autocomplete="off" class="my-3 w-full block text-md text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-gray-400 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 placeholder:text-gray-700" placeholder="Country" required/>
+                    <div class="flex gap-5">
+                        <p class="text-gray-400 text-sm mt-2 font-semibold">NPWP</p>
+                        <input type="text" name="npwp" id="npwp-id" class="w-full block text-md text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-gray-400 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 placeholder:text-gray-700" placeholder="" required/>
+                    </div>
+                </div>
+            </div>
+            <div class="w-1/2 flex">
+                <div class="w-1/5">
+                    <p class="text-gray-400 text-md font-semibold mb-5 mt-1">Phone</p>
+                    <p class="text-gray-400 text-md font-semibold my-5">Mobile</p>
+                    <p class="text-gray-400 text-md font-semibold my-5">Email</p>
+                    <p class="text-gray-400 text-md font-semibold my-5">Website</p>
+                </div>
+                <div class="w-4/5">
+                    <input type="text" name="phone" autocomplete="off" id="phone-id" class="mb-5 w-full block w-full text-md text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-gray-400 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 placeholder:text-gray-700" placeholder="e.g. +62 21 1234567" required/>
+                    <input type="text" name="mobile" autocomplete="off" id="mobile-id" class="my-5 w-full block w-full text-md text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-gray-400 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 placeholder:text-gray-700" placeholder="e.g. +62 12345678901" required/>
+                    <input type="email" name="email" autocomplete="off" id="email-id" class="my-5 w-full block w-full text-md text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-gray-400 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 placeholder:text-gray-700" placeholder="e.g. company@example.com" required/>
+                    <input type="url" name="website" autocomplete="off" id="website-id" class="my-5 w-full block w-full text-md text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-gray-400 dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 placeholder:text-gray-700" placeholder="e.g. example.co.id" required/>
+                </div>
+            </div>
+        </div>
+        <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="branches" role="tabpanel" aria-labelledby="branches-tab">
+            <table id="branches-table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr class="gap-2">
+                        <th scope="col" class="text-gray-400 text-md font-semibold px-2 py-1">
+                            Branches
+                        </th>
+                        <th scope="col" class="text-gray-400 text-md font-semibold px-2 py-1">
+                            Phone Number
+                        </th>
+                        <th scope="col" class="text-gray-400 text-md font-semibold px-2 py-1">
+                            Address
+                        </th>
+                        <th scope="col" class="text-gray-400 text-md font-semibold px-2 py-1">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Insert Here -->
+                </tbody>
+            </table>
+            <div class="flex gap-5 mt-5">
+                <button id="add-line-branches" class="text-sm px-1 font-semibold text-gray-400 hover:underline hover:text-blue-700">Add Line</button>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    let rowCount = document.querySelectorAll('#branches-table tbody tr').length;
+
+    document.getElementById("add-line-branches").addEventListener("click", function(e){
+        e.preventDefault();
+        let tableBody = document.querySelector("#branches-table tbody");
+        rowCount++;
+        let newRow = document.createElement("tr");
+        newRow.classList.add("gap-2");
+        newRow.innerHTML = `
+        <th scope="row" class="px-2 py-2 text-gray-400 border-b border-gray-600">
+            <input type="text" id="branch-name-id" name="branch-name[]" class="mx-2 bg-transparent w-4/5 block border-b-2 border-gray-600 focus:outline-none font-semibold placeholder:font-normal placeholder:text-gray-500 focus:border-blue-600" placeholder="e.g Kalimantan Timur"/>
+        </th>
+        <td class="py-2 text-gray-400 border-b border-gray-600">
+            <input type="tel" id="branch-phone-id" name="branch-phone[]" class="mx-2 bg-transparent w-4/5 block border-b-2 border-gray-600 focus:outline-none font-semibold placeholder:font-normal placeholder:text-gray-500 focus:border-blue-600" placeholder="e.g +62 12345678901"/>
+        </td>
+        <td class="py-2 text-gray-400 border-b border-gray-600">
+            <input type="text" id="branch-address-id" name="branch-address[]" class="mx-2 bg-transparent w-4/5 block border-b-2 border-gray-600 focus:outline-none font-semibold placeholder:font-normal placeholder:text-gray-500 focus:border-blue-600" placeholder="e.g Jakarta Jl. A. Yani No. 1"/>
+        </td>
+        <td class="py-2 text-gray-400 border-b border-gray-600">
+            <button class="remove-row-btn px-4 py-2 text-gray-400 hover:text-blue-500 hover:underline justify-end font-semibold">Remove</button>
+        </td>
+        `;
+
+        console.log(newRow);
+        tableBody.append(newRow);
+
+        newRow.querySelector(".remove-row-btn").addEventListener("click", function(e){
+            e.preventDefault();
+            var new_row = $(this).parent().parent();
+            console.log(new_row);
+            new_row.remove();
+        });
+    });
+</script>
+{% endblock %}

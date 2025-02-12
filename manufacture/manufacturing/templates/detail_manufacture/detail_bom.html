@@ -1,0 +1,174 @@
+{% extends 'base_app/manufacture.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<div class="max-h-screen flex flex-wrap w-screen">
+    <div class="w-3/5 flex bg-transparent">
+        <div class="w-1/3 justify-start">
+            <nav class="flex gap-1 border-gray-200 bg-transparent ml-5 my-1">
+                <div class=" flex justify-start items-center gap-3">
+                    <button id="confirmBttn" type="button" onclick="document.getElementById('bom_new').submit()" class="float-start gap-1 bg-gray-700 px-3 rounded-sm py-1 hover:bg-gray-600 focus:ring-1 cursor-pointer text-white">
+                        Confirm                                         
+                    </button>
+                    <form method="post" action=".">
+                        {% csrf_token %}
+                        <input type="hidden" value="delete" name="metode">
+                        <button class="float-start gap-1 bg-gray-700 px-3 rounded-sm py-1 hover:bg-gray-600 focus:ring-1 cursor-pointer text-white">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+<form id="bom_new" class="w-3/5 bg-gray-800 py-10 px-8 rounded-md shadow-xl text-gray-900 mx-5 my-1 border-1/2 border-gray-200 resize-y" action="." method="post">
+    {% csrf_token %}
+
+    <input type="hidden" value="post" name="metode">
+
+    <div class="bg-transparent">
+        <label for="manufacturing_orders" class="text-white text-2xl">{{ bom.bom }}</label>
+    </div>
+    <div class="flex justify-start gap-10 mt-5">
+        <div class="relative z-0 w-full mb-5 group">
+        <select id="product" name="products" class="block my-5 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600">
+            {% for product in products %}
+                <option value="{{ product.pk }}" class="dark:bg-gray-600 dark:text-gray-300" {% if bom.product_id == product.pk %} selected {% endif %}>{{ product.name }}</option>
+            {% endfor %}
+        </select>
+        </div>
+        <div class="relative z-0 w-full mb-5 group flex">
+            <div class="my-center">
+                <h1 class="text-gray-300 font-normal font-semibold text-m my-5">BOM TYPE</h1>
+            </div>
+            <div class="my-3">
+                <div class="ml-10">
+                    <input type="radio" id="type_bom_1" {% if bom.bom_type == 'Kit' %} checked {% endif %} value="Kit" name="bom_type" class="w-4 h-4 text-white bg-blue cursor-pointer">
+                    <label for="type_bom_1" class="ms-2 text-sm font-medium text-gray-500 dark:text-gray-300">Kit</label>
+                </div>
+                <div class="ml-10">
+                    <input type="radio" id="type_bom_1" {% if bom.bom_type == 'Manufacture This Product' %} checked {% endif %} value="Manufacture This Product" name="bom_type" class="w-4 h-4 text-white bg-blue cursor-pointer">
+                    <label for="type_bom_1" class="ms-2 text-sm font-medium text-gray-500 dark:text-gray-300">Manufacture This Product</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="rounded-lg rounded-md border-blue-500">
+        <h2 class="text-gray-200 text-md font-semibold font-normal select-none">This BOM applies to the manufacturing of a single unit of product.</h2>
+    </div>
+    <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
+            <li class="me-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 rounded-t-lg" id="profile-tab" data-tabs-target="#components" type="button" role="tab" aria-controls="profile" aria-selected="false">Components</button>
+            </li>
+        </ul>
+    </div>
+    <div id="default-tab-content">
+        <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="components" role="tabpanel" aria-labelledby="profile-tab">
+            <table id="dynamicTable" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 ">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 w-5/10">
+                            Product
+                        </th>
+                        <th scope="col" class="px-6 py-3 w-3/10">
+                            Warehouse
+                        </th>
+                        <th scope="col" class="px-6 py-3 w-1/10">
+                            Quantity
+                        </th>
+                        <th scope="col" class="px-6 py-3 w-1/10">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer">
+                        {% for component in bom_components %}
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer">
+                            <td class="px-6 py-2 w-1/2">
+                                <select id="components" name="components[]" class="block w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600">
+                                    <option selected class="dark:bg-gray-600 dark:text-gray-300">Choose Product</option>
+                                    {% for product in products %}
+                                        <option value="{{ product.pk }}" class="dark:bg-gray-600 dark:text-gray-300" {% if component.product.pk == product.pk %} selected {% endif %}>{{ product.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td class="px-6 py-2 w-1/2">
+                                <select name="components_warehouse[]" id="components_warehouse" class="block w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600" placeholder=" " >
+                                    <option value="" class="bg-gray-700 text-gray-400 hover:text-white">Choose Warehouse</option>
+                                    {% for warehouse in warehouses %}
+                                        <option value="{{ warehouse.pk }}" class="bg-gray-700 text-gray-400 hover:text-white" {% if component.product.warehouses == warehouse.pk %} selected {% endif %}>{{ warehouse.code }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td class="px-6 py-2 w-1/5">
+                                <input type="" autocomplete="off" name="components_quantity[]" id="components_quantity" value="{{ component.quantity }}" class="block w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600" placeholder=" " required />
+                            </td>
+                            <td class="px-6 py-2 w-3/10">
+                                <button type="button" class="removeRowBttn px-4 py-2 text-gray-400 hover:text-blue-500 hover:underline justify-end text-semibold">Remove</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                
+                        <!-- For Form -->
+                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            <span id="addline" class="text-gray-400 text-sm hover:text-blue-500 hover:underline cursor-pointer">Add Line</span>
+                        </th>
+                    </tr>
+                </tbody>                
+            </table>
+        </div>
+    </div>
+</form>
+<script>
+    let rowCount = document.querySelectorAll("#dynamicTable tbody tr").length - 1;
+    console.log(rowCount);
+
+    document.getElementById("addline").addEventListener("click", function() {
+        let tableBody = document.querySelector("#dynamicTable tbody");
+        rowCount++;
+        console.log(rowCount);
+        let newRow = document.createElement("tr");
+        newRow.classList.add("bg-white", "border-b", "dark:bg-gray-800", "dark:border-gray-700", "cursor-pointer");
+        newRow.innerHTML = `
+            <td class="px-6 py-2 w-1/2">
+                <select id="components" name="components[]" class="block w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600">
+                    <option selected class="dark:bg-gray-600 dark:text-gray-300">Choose Product</option>
+                    {% for product in products %}
+                        <option value="{{ product.pk }}" class="dark:bg-gray-600 dark:text-gray-300">{{ product.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td class="px-6 py-2 w-1/2">
+                <select name="components_warehouse[]" id="components_warehouse" class="block w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600" placeholder=" " >
+                    {% for warehouse in warehouses %}
+                        <option value="{{ warehouse.pk }}" class="bg-gray-700 text-gray-400 hover:text-white">{{ warehouse.code }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td class="px-6 py-2 w-1/5">
+                <input type="" autocomplete="off" name="components_quantity[]" id="components_quantity" class="block w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600" placeholder=" " required />
+            </td>
+            <td class="px-6 py-2 w-3/10">
+                <button type="button" class="removeRowBttn px-4 py-2 text-gray-400 hover:text-blue-500 hover:underline justify-end text-semibold">Remove</button>
+            </td>
+        `;
+
+        let rows = tableBody.querySelectorAll("tr");
+        let lastRow = rows[rows.length - 1];
+
+        if (lastRow) {
+            tableBody.insertBefore(newRow, lastRow);
+        } else {
+            tableBody.append(newRow);
+        }
+    });
+
+    $(document).on("click", ".removeRowBttn", function() {
+        $(this).parent().parent().remove();
+        rowCount--;
+    });
+</script>
+{% endblock %}

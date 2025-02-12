@@ -1,0 +1,140 @@
+{% extends 'base_app/inventory.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<div class="max-h-screen flex flex-wrap w-screen">
+    <div class="w-3/5 flex bg-transparent">
+        <div class="w-1/3 justify-start">
+            <nav class="flex gap-1 border-gray-200 bg-transparent ml-5 my-1">
+                <div class=" flex justify-start items-center">
+                    <button type="button" onclick="document.getElementById('new_product').submit()" class="float-start gap-1 bg-gray-700 px-3 rounded-sm py-1 hover:bg-gray-600 focus:ring-1 cursor-pointer text-white">
+                        Confirm                                         
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+<form class="w-3/5 bg-gray-800 py-10 px-8 rounded-md shadow-xl text-gray-900 mx-5 my-1 border-1/2 border-gray-200 resize-y" id="new_product" action="." method="post">
+    {% csrf_token %}
+    <div class="bg-transparent">
+        <div class="relative z-0 w-full mb-5 group">
+            <input type="text" name="product_name" id="product_name" autocomplete="off" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+            <label for="product_name" class="peer-focus:font-medium absolute text-sm text-white dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Product</label>
+        </div>
+    </div>
+    <div class="flex">
+        <div class="flex items-center me-4">
+            <input id="inline-checkbox" type="checkbox" value="Can Sell" class="w-4 h-4 text-blue-600 bg-gray-800 border-gray-500 rounded focus:ring-white dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 cursor-pointer">
+            <label for="inline-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Sales</label>
+        </div>
+        <div class="flex items-center me-4">
+            <input id="inline-checkbox" type="checkbox" value="Can Purchase" class="w-4 h-4 text-blue-600 bg-gray-800 border-gray-500 rounded focus:ring-white dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 cursor-pointer">
+            <label for="inline-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Purchase</label>
+        </div>
+    </div>    
+    <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
+            <li class="me-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 rounded-t-lg" id="profile-tab" data-tabs-target="#components" type="button" role="tab" aria-controls="profile" aria-selected="false">General Information</button>
+            </li>
+            <li class="me-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="dashboard-tab" data-tabs-target="#dashboard" type="button" role="tab" aria-controls="dashboard" aria-selected="false">Inventory</button>
+            </li>
+        </ul>
+    </div>
+    <div id="default-tab-content">
+        <div class="hidden rounded-lg bg-gray-50 dark:bg-gray-800 flex" id="components" role="tabpanel" aria-labelledby="profile-tab">   
+            <div class="flex justify-start gap-10 mt-5 w-full">
+                <div class="justify-start flex">
+                    <h1 class="font-semibold mx-4 text-white flex">Product Type</h1>
+                </div>
+                <div class="justify-start items-center group">
+                    <div class="flex mt-1 items-center me-4">
+                        <input id="inline-checkbox" name="producttype" type="radio" value="Raw Material" class="w-4 h-4 bg-gray-800 border-gray-500 cursor-pointer">
+                        <label for="inline-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Raw Material</label>
+                    </div>
+                    <div class="flex mt-1 items-center me-4">
+                        <input id="inline-checkbox" name="producttype" type="radio" value="Finish Goods" class="w-4 h-4 bg-gray-800 border-gray-500 cursor-pointer">
+                        <label for="inline-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Finish Good</label>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-2 w-full mb-5">
+                <div class="justify-start my-3">
+                    <p for="price" class="text-sm text-white font-medium my-3">SalesPrice</p>
+                    <p for="cost" class="text-sm text-white font-medium my-3">Cost</p>
+                    <p for="category" class="text-sm text-white font-medium my-5">Category</p>
+                    <p for="reference" class="text-sm text-white font-medium my-5">Reference</p>
+                    <p for="company" class="text-sm text-white font-medium my-5">Company</p>
+                </div>
+                <div class="justify-start items-center my-3">
+                    <p for="price" class="text-sm text-gray-400 font-normal my-3 mx-1">Rp
+                        <input type="" pattern="[0-9]" name="price" autocomplete="off" class="ml-5 px-0 w-2/3 bg-transparent text-gray-400 border-1 border-b-2 border-gray-600 appearance-none focus:appearance-none focus:bg-gray-800 focus:outline-none focus:ring-0 focus:border-blue-600">
+                    </p>
+                    <p for="cost" class="text-sm text-gray-400 font-normal my-3 mx-1">Rp
+                        <input type="" pattern="[0-9]" name="cost" autocomplete="off" class="ml-5 px-0 w-2/3 bg-transparent text-gray-400 border-1 border-b-2 border-gray-600 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600">
+                    </p>
+                    <select id="category" name="category" class="ml-2 block my-5 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600">
+                        <option selected class="dark:bg-gray-600 dark:text-gray-300">Choose Category</option>
+                        {% for category in categories %}
+                            <option value="{{ category.pk }}" class="dark:bg-gray-600 dark:text-gray-300">{{ category.product_type }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="reference" name="reference" class="ml-2 block my-5 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600">
+                        <option selected value="" class="dark:bg-gray-600 dark:text-gray-300">Reference</option>
+                        {% for reference in references %}
+                            <option value="{{ reference.pk }}" class="dark:bg-gray-600 dark:text-gray-300">{{ reference.bom }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="companyname" name="companyname" class="ml-2 block my-5 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600 peer">
+                        <option selected value="" class="dark:bg-gray-600">Choose Company</option>
+                        {% for entity in entities %}
+                            <option value="{{ entity.pk }}" class="dark:bg-gray-600">{{ entity.entity }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
+            <div class="flex justify-start gap-10 mt-5">
+                <div class="relative z-0 w-full mb-5 group">
+                    <input type="tel" pattern="[0-9]{9}" name="product" id="floating_phone" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:bg-transparent dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                    <label for="floating_phone" class="peer-focus:font-bold absolute text-sm text-white dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Operation Type</label>
+                </div>
+                <div class="relative z-0 w-full mb-5 group">
+                    <input type="tel" pattern="[0-9]{9}" name="scheduled_date" id="floating_phone" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none focus:bg-transparent dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                    <label for="floating_phone" class="peer-focus:font-bold absolute text-sm text-white dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Source</label>
+                </div>
+            </div>
+            <div class="flex justify-start gap-10">
+                <div class="relative z-0 w-full mb-5 group">
+                    <input type="tel" pattern="[0-9]{9}" name="quantity" id="floating_phone" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                    <label for="floating_phone" class="peer-focus:font-bold absolute text-sm text-white dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Components Location</label>
+                </div>
+                <div class="relative z-0 w-full mb-5 group">
+                    <input type="tel" pattern="[0-9]{9}" name="responsible" id="floating_phone" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                    <label for="floating_phone" class="peer-focus:font-bold absolute text-sm text-white dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Company</label>
+                </div>
+            </div>
+            <div class="flex justify-start gap-10">
+                <div class="relative z-0 w-full mb-5 group">
+                    <input type="tel" pattern="[0-9]{9}" name="quantity" id="floating_phone" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                    <label for="floating_phone" class="peer-focus:font-bold absolute text-sm text-white dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Finished Product Location</label>
+                </div>
+                <div class="relative z-0 w-full mb-5 group">
+                    <!-- <input type="tel" pattern="[0-9]{9}" name="responsible" id="floating_phone" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required /> -->
+                    <textarea name="" id="" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer overflow-hiden" rows="3"></textarea>
+                    <label for="floating_phone" class="peer-focus:font-bold absolute text-sm text-white dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Notes</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <p class="text-white font-semibold text-md border-b border-1 border-gray-600">
+            Internal Notes
+        </p>
+        <textarea name="internalnotes" id="internal_notes" class="bg-transparent overflow-y-auto thin-scrollbar my-3 rounded-sm w-full h-auto border-b border-gray-500 focus:outline-none focus:border-b-2 focus:border-blue-600 text-gray-300" placeholder="Lorem Ipsum Dolor Sit Amet"></textarea>
+    </div>
+</form>
+{% endblock %}

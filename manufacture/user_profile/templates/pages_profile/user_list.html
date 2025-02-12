@@ -1,0 +1,55 @@
+{% extends 'base_app/master.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<section class="flex content-center bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800">
+    <div class="relative overflow-hiden">
+        <table class="fixed w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        Name
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Login
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Latest Authentication
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Company
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Status
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in data %}
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-gray-900 hover:text-white">
+                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            <a href="{% url 'user_profile:user_detail' d.employee.pk %}" class="cursor-pointer hover:text-blue-600 hover:underline">
+                                {{ d.user.username }}
+                            </a>
+                        </th>
+                        <td class="px-6 py-4">
+                            {{ d.user.email }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ d.user.last_login }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if d.employee.entity == 0 %} <(0:>:0)> {% else %} {{ d.employee.entity }} {% endif %}
+                        </td>
+                        <td class="px-6 py-4 flex">
+                            <div class="{% if d.status == 'Not Active' %} bg-red-800 text-gray-200 {% else %} bg-gray-400 text-gray-800 {% endif %} rounded-sm p-1 text-xs font-bold border-2 border-gray-400">
+                                {{ d.status }}
+                            </div>
+                        </td>
+                    </td>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

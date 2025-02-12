@@ -1,0 +1,139 @@
+{% extends 'base_app/employee.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<div class="max-h-screen flex flex-wrap w-screen">
+    <div class="w-3/5 flex bg-transparent">
+        <div class="w-1/3 justify-start">
+            <nav class="border-gray-200 bg-transparent ml-5 my-1">
+                <div class=" flex justify-start items-center">
+                    <button type="button" onclick="document.getElementById('form-company').submit()" class="float-start gap-1 bg-gray-700 px-3 rounded-sm py-1 hover:bg-gray-600 focus:ring-1 cursor-pointer text-white">
+                        Confirm                                         
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+<form id="form-company" class="w-3/5 bg-gray-800 py-10 px-8 rounded-md shadow-xl text-gray-900 mx-5 my-1 border-1/2 border-gray-200 resize-y" action="." method="post">
+    {% csrf_token %}
+    <p class="text-gray-400 font-semibold text-sm ml-1 bg-transparent">Skill Type</p>
+    <input id="job-id" name="type-name" autocomplete="off" type="text" class="w-4/5 bg-transparent border-b-2 border-gray-400 text-gray-400 font-semibold focus:outline-none text-lg hover:border-red-400 focus:border-blue-600">
+    <p class="text-gray-400 font-bold uppercase text-sm ml-1 bg-transparent border-b border-gray-500 w-full mt-10 mb-2">Skills</p>
+    <table id="skills-table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mt-3">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+                <th scope="col" class="px-6 py-3 min-w-4/5">
+                    Name
+                </th>
+                <td scope="col" class="px-6 py-3 min-w-1/5">
+                    Action
+                </td>
+            </tr>
+        </thead>
+        <tbody id="skills-table-body">
+            <tr>
+                <th>
+                    <button type="button" id="add-line-button-1" class="font-semibold text-gray-400 hover:text-blue-600 px-6 py-3 min-w-1/3 hover:underline">Add Line</button>
+                </th>
+            </tr>
+        </tbody>
+    </table>
+    <p class="text-gray-400 font-bold uppercase text-sm ml-1 bg-transparent border-b border-gray-500 w-full mt-10 mb-2">Levels</p>
+    <table id="levels-table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mt-3">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+                <th scope="col" class="px-6 py-3 min-w-2/5">
+                    Name
+                </th>
+                <th scope="col" class="px-6 py-3 min-w-2/5">
+                    Progress
+                </th>
+                <td scope="col" class="px-6 py-3 min-w-1/5">
+                    Action
+                </td>
+            </tr>
+        </thead>
+        <tbody id="levels-table-body">
+            <tr>
+                <th>
+                    <button type="button" id="add-line-button-2" class="font-semibold text-gray-400 hover:text-blue-600 px-6 py-3 min-w-1/3 hover:underline">Add Line</button>
+                </th>
+            </tr>
+        </tbody>
+    </table>
+</form>
+<script>
+    let rowCount = document.querySelectorAll('#skills-table tbody tr').length - 1;
+    console.log(rowCount);
+
+    document.getElementById("add-line-button-1").addEventListener("click", function() {
+        let tableBody = document.querySelector('#skills-table tbody');
+        rowCount ++;
+        console.log(rowCount);
+        let newRow = document.createElement("tr");
+        newRow.classList.add("bg-white", "border-b", "dark:bg-gray-800", "border-gray-700", "cursor-pointer");
+        newRow.innerHTML = `
+            <td class="px-6 py-1 w-4/5">
+                <input type="text" name="skills[]" autocomplete="off" class="block w-full text-md font-semibold text-gray-800 dark:text-gray-400 bg-transparent border-b border-gray-400 focus:outline-none focus:ring-0 focus:border-blue-600" required />
+            </td>
+            <td class="px-6 py-1 w-1/5">
+                <button type="button" class="removeRowBttn-1 px-4 py-2 w-full text-gray-400 hover:text-blue-600 hover:underline justify-start items-center text-semibold">Remove</button>
+            </td>
+        `;
+
+        let rows = tableBody.querySelectorAll("tr");
+        let lastRow = rows[rows.length - 1];
+
+        if (lastRow) {
+            tableBody.insertBefore(newRow, lastRow);
+        } else {
+            tableBody.append(newRow);
+        }
+    });
+
+    $(document).on("click", ".removeRowBttn-1", function() {
+        $(this).parent().parent().remove();
+        rowCount--;
+    });
+
+    let rowCount_2 = document.querySelectorAll('#levels-table tbody tr').length - 1;
+    console.log(rowCount_2);
+
+    document.getElementById('add-line-button-2').addEventListener("click", function() {
+        let tableBody_2 = document.querySelector('#levels-table tbody');
+        rowCount_2 ++;
+        console.log(rowCount_2);
+        let newRow_2 = document.createElement("tr");
+        newRow_2.classList.add("bg-white", "border-b", "dark:bg-gray-800", "border-gray-700", "cursor-pointer");
+        newRow_2.innerHTML = `
+            <td class="px-6 py-1 w-2/5">
+                <input type="text" name="levels[]" autocomplete="off" class="block w-full text-md font-semibold text-gray-800 dark:text-gray-400 bg-transparent border-b border-gray-400 focus:outline-none focus:ring-0 focus:border-blue-600" required />
+            </td>
+            <td class="px-6 py-1 w-1/3">
+                <div class="flex">
+                    <input type="text" name="progress[]" autocomplete="off" class="block w-1/3 text-md font-semibold text-gray-800 dark:text-gray-400 bg-transparent border-b border-gray-400 focus:outline-none focus:ring-0 focus:border-blue-600" required />
+                    <p class="text-md text-gray-400 font-bold"> %</p>
+                </div>
+            </td>
+            <td class="px-6 py-1 w-1/5">
+                <button type="button" class="removeRowBttn-2 px-4 py-2 w-full text-gray-400 hover:text-blue-600 hover:underline justify-start items-center text-semibold">Remove</button>
+            </td>
+        `;
+
+        let rows_2 = tableBody_2.querySelectorAll("tr");
+        let lastRow_2 = rows_2[rows_2.length - 1];
+
+        if (lastRow_2) {
+            tableBody_2.insertBefore(newRow_2, lastRow_2);
+        } else {
+            tableBody_2.append(newRow_2);
+        }
+    });
+
+    $(document).on("click", ".removeRowBttn-2", function() {
+        $(this).parent().parent().remove();
+        rowCount_2--;
+    });
+</script>
+{% endblock %}

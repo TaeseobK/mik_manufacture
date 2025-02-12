@@ -1,0 +1,51 @@
+{% extends 'base_app/inventory.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<section class="flex content-center bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800">
+    <div class="relative overflow-hiden">
+        <table class="fixed w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-3">Storage Category</th>
+                    <th scope="col" class="px-6 py-3">Max Weight</th>
+                    <th scope="col" class="px-6 py-3">Allow New Product</th>
+                    <th scope="col" class="px-6 py-3">Company</th>
+                </tr>
+            </thead>
+            <tbody id="storage-category-list">
+                {% for storage_category in page_obj %}
+                    <tr onclick="" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-gray-900 hover:text-white">
+                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            <a href="{% url 'inventory:detail_storage_category' storage_category.storage_category.pk %}" class="hover:text-blue-600 hover:underline"> 
+                                {{ storage_category.storage_category.name }}
+                            </a>
+                        </th>
+                        <td class="px-6 py-4">{{ storage_category.storage_category.max_weight }} Kg</td>
+                        <td class="px-6 py-4 font-semibold">{{ storage_category.storage_category.allow_new_product }}</td>
+                        <td class="px-6 py-4">{{ storage_category.company.entity }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+<script>
+    $(document).ready(function() {
+        $('#search').on('keyup', function() {
+            var searchQuery = $(this).val();
+
+            $.ajax({
+                url: window.location.href,
+                data:{
+                    'search' : searchQuery
+                },
+                dataType: 'html',
+                success: function(response) {
+                    $('#storage-category-list').html($(response).find('#storage-category-list').html());
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

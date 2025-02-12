@@ -1,0 +1,154 @@
+{% extends 'base_app/inventory.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<div class="max-h-screen flex flex-wrap w-screen">
+    <div class="w-3/5 flex bg-transparent">
+        <div class="w-1/3 justify-start">
+            <nav class="flex gap-1 border-gray-200 bg-transparent ml-5 my-1">
+                <div class=" flex justify-start items-center">
+                    <button type="button" onclick="document.getElementById('new_receipt').submit()" class="float-start gap-1 bg-gray-700 px-3 rounded-sm py-1 hover:bg-gray-600 focus:ring-1 cursor-pointer text-white">
+                        Confirm                                         
+                    </button>
+                    <form action="." method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="metode" value="delete">
+                        <button type="submit" class="float-start gap-1 bg-gray-700 px-3 rounded-sm py-1 hover:bg-gray-600 focus:ring-1 cursor-pointer text-white ml-3">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+<form class="w-3/5 bg-gray-800 py-10 px-8 rounded-md shadow-xl text-gray-900 mx-5 my-1 border-1/2 border-gray-200 resize-y" id="new_receipt" action="." method="post">
+    {% csrf_token %}
+    <input type="hidden" name="metode" value="post">
+    <div class="flex bg-transparent gap-">
+        <div class="bg-transparent w-2/4">
+            <div class="flex gap-2">
+                <label for="source-warehouse-id" class="text-gray-400 font-semibold w-1/2 my-2">Storage Category</label>
+                <input type="text" name="source" autocomplete="off" id="source-id" value="{{ storage_category.name }}" class="my-2 mr-10 w-3/4 justify-end bg-transparent focus:outline-none border-b-2 border-gray-600 focus:border-blue-600 text-gray-400 placeholder:text-gray-600" placeholder="">
+            </div>
+            <div class="flex gap-2">
+                <p for="allow-new-product-id" class="text-gray-400 font-semibold w-1/2 my-2">Allow New Product</p>
+                <select name="allow-new-product" id="allow-new-product-id" class="my-2 mr-10 w-3/4 justify-end bg-transparent focus:outline-none border-b-2 border-gray-600 focus:border-blue-600 text-gray-400">
+                    <option value="if the location is empty" {% if storage_category.allow_new_product == "if the location is empty" %} selected {% endif %} class="bg-gray-800 text-gray-400">If The location is empty</option>
+                    <option value="if all product are same" {% if storage_category.allow_new_product == "if all product are same" %} selected {% endif %} class="bg-gray-800 text-gray-400">If all product are same</option>
+                    <option value="allow mixed products" {% if storage_category.allow_new_product == "allow mixed products" %} selected {% endif %} class="bg-gray-800 text-gray-400">Allow mixed products</option>
+                </select>
+            </div>
+        </div>
+        <div class="bg-transparent w-2/4">
+            <div class="flex gap-5">
+                <label for="max-weight-id" class="text-gray-400 font-semibold w-1/3 my-2">Max Weight</label>
+                <input name="max-weight" id="max-weight-id" value="{{ storage_category.max_weight }}" class="my-2 w-1/3 border-b-2 border-gray-600 focus:border-blue-600 focus:outline-none bg-transparent text-gray-400 font-normal">
+                <label for="max-weight-id" class="text-gray-400 font-semibold justify-end mt-3">Kg</label>
+            </div>
+            <div class="flex gap-5">
+                <label for="company-id" class="text-gray-400 font-semibold w-1/3 my-2">Company</label>
+                <select name="company" id="company-id" class="my-2 w-1/2 border-b-2 border-gray-600 focus:border-blue-600 focus:outline-none bg-transparent text-gray-400 font-normal">
+                    <option value="" selected class="bg-gray-800 text-gray-400">Choose Company</option>
+                    {% for company in companies %}
+                        <option value="{{ company.pk }}" {% if storage_category.company_id == company.pk %} selected {% endif %} class="bg-gray-800 text-gray-400">{{ company.entity }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>  
+    <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="receipt-tab" data-tabs-toggle="#receipt-tab-content" role="tablist">
+            <li class="me-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 rounded-t-lg" id="operations-tab" data-tabs-target="#operations-id" type="button" role="tab" aria-controls="operations" aria-selected="false">Capacity by Product</button>
+            </li>
+        </ul>
+    </div>
+    <div id="receipt-tab-content">
+        <div class="hidden rounded-lg bg-gray-50 dark:bg-gray-800 flex" id="operations-id" role="tabpanel" aria-labelledby="operations-tab">
+            <table id="productTable" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 ">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 w-1/2">
+                            Product
+                        </th>
+                        <th scope="col" class="px-6 py-3 w-1/5">
+                            Quantity
+                        </th>
+                        <th scope="col" class="px-6 py-3 w-1/5">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for storage_product in storage_data %}
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer">
+                            <td class="px-6 py-2 w-1/2">
+                                <select id="products-id" name="products[]" class="block w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600">
+                                    <option selected class="dark:bg-gray-600 dark:text-gray-300">Choose Product</option>
+                                    {% for product in products %}
+                                        <option value="{{ product.pk }}" {% if storage_product.product.pk == product.pk  %} selected {% endif %} class="dark:bg-gray-600 dark:text-gray-300">{{ product.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td class="px-6 py-2 w-1/5">
+                                <input type="" name="product-quantities[]" value="{{ storage_product.quantity }}" id="product-quantity-id" class="block w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600" placeholder=" " required />
+                            </td>
+                            <td class="px-3 py-2 w-3/10">
+                                <button type="button" class="removeRowBttn px-4 py-2 text-gray-400 hover:text-blue-500 hover:underline justify-end text-semibold">Remove</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer">
+                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            <span id="addline" class="text-gray-400 hover:text-blue-500 hover:underline">Add Line</span>
+                        </th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</form>
+<script>
+    let rowCount = document.querySelectorAll("#productTable tbody tr").length - 1;
+    console.log(rowCount);
+    
+    document.getElementById("addline").addEventListener("click", function() {
+        let tableBody = document.querySelector("#productTable tbody");
+        rowCount++;
+        console.log(rowCount);
+        let newRow = document.createElement("tr");
+        newRow.classList.add("bg-white", "border-b", "dark:bg-gray-800", "dark:border-gray-700", "cursor-pointer");
+        newRow.innerHTML = `
+            <td class="px-6 py-2 w-1/2">
+                <select id="products-id" name="products[]" class="block w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600">
+                    <option selected class="dark:bg-gray-600 dark:text-gray-300">Choose Product</option>
+                    {% for product in products %}
+                        <option value="{{ product.pk }}" class="dark:bg-gray-600 dark:text-gray-300">{{ product.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td class="px-6 py-2 w-1/5">
+                <input type="" name="product-quantities[]" id="product-quantity-id" class="block w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600" placeholder=" " required />
+            </td>
+            <td class="px-3 py-2 w-3/10">
+                <button type="button" class="removeRowBttn px-4 py-2 text-gray-400 hover:text-blue-500 hover:underline justify-end text-semibold">Remove</button>
+            </td>
+        `;
+
+        let rows = tableBody.querySelectorAll("tr");
+        let lastRow = rows[rows.length - 1];
+
+        if (lastRow) {
+            tableBody.insertBefore(newRow, lastRow);
+        } else {
+            tableBody.append(newRow);
+        }
+    });
+    
+    $(document).on("click", ".removeRowBttn", function(){
+        $(this).parent().parent().remove();
+        rowCount--;
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base_app/employee.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<div class="max-h-screen flex flex-wrap w-screen">
+    <div class="w-3/5 flex bg-transparent">
+        <div class="w-1/3 justify-start">
+            <nav class="border-gray-200 bg-transparent ml-5 my-1">
+                <div class=" flex justify-start items-center">
+                    <button type="button" onclick="document.getElementById('form-company').submit()" class="float-start gap-1 bg-gray-700 px-3 rounded-sm py-1 hover:bg-gray-600 focus:ring-1 cursor-pointer text-white">
+                        Update                                    
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+<form id="form-company" class="w-3/5 bg-gray-800 py-10 px-8 rounded-md shadow-xl text-gray-900 mx-5 my-1 border-1/2 border-gray-200 resize-y" action="." method="post">
+    {% csrf_token %}
+    <p class="text-gray-400 font-semibold text-sm ml-1 bg-transparent">Job Position</p>
+    <input id="job-id" name="job-name" type="text" value="{{ job_position.name }}" class="bg-transparent border-b-2 border-gray-400 w-full text-gray-400 font-semibold focus:outline-none text-lg hover:border-red-400 focus:border-blue-600">
+</form>
+{% endblock %}

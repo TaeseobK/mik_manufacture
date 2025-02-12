@@ -1,0 +1,55 @@
+{% extends 'base_app/inventory.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<section class="flex content-center bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800">
+    <div class="relative overflow-hiden">
+        <table class="fixed w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-3">Reference</th>
+                    <th scope="col" class="px-6 py-3">From</th>
+                    <th scope="col" class="px-6 py-3">To</th>
+                    <th scope="col" class="px-6 py-3">Contact</th>
+                    <th scope="col" class="px-6 py-3">Schedule Date</th>
+                    <th scope="col" class="px-6 py-3">Source Document</th>
+                    <th scope="col" class="px-6 py-3">Company</th>
+                    <th scope="col" class="px-6 py-3">Status</th>
+                </tr>
+            </thead>
+            <tbody id="location-list">
+                <tr onclick="" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-gray-900 hover:text-white">
+                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        Apple MacBook Pro 17"
+                    </th>
+                    <td class="px-6 py-4">Silver</td>
+                    <td class="px-6 py-4">Laptop</td>
+                    <td class="px-6 py-4">$2999</td>
+                    <td class="px-6 py-4">$2999</td>
+                    <td class="px-6 py-4">$2999</td>
+                    <td class="px-6 py-4">$2999</td>
+                    <td class="px-6 py-4">$2999</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+<script>
+    $(document).ready(function() {
+        $('#search').on('keyup', function() {
+            var searchQuery = $(this).val();
+
+            $.ajax({
+                url: window.location.href,
+                data:{
+                    'search' : searchQuery
+                },
+                dataType: 'html',
+                success: function(response) {
+                    $('#location-list').html($(response).find('#location-list').html());
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

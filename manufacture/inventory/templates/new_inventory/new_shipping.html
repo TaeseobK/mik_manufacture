@@ -1,0 +1,58 @@
+{% extends 'base_app/inventory.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<div class="max-h-screen flex flex-wrap w-screen">
+    <div class="w-3/5 flex bg-transparent">
+        <div class="w-1/3 justify-start">
+            <nav class="flex gap-1 border-gray-200 bg-transparent ml-5 my-1">
+                <div class=" flex justify-start items-center">
+                    <button type="button" onclick="document.getElementById('formcategory').submit()" class="float-start gap-1 bg-gray-700 px-3 rounded-sm py-1 hover:bg-gray-600 focus:ring-1 cursor-pointer text-white">
+                        Confirm                                         
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+<form id="formcategory" class="w-3/5 bg-gray-800 py-10 px-8 rounded-md shadow-xl text-gray-900 mx-5 my-1 border-1/2 border-gray-200 resize-y" action="." method="post">
+    {% csrf_token %}
+    <div class="bg-transparent flex gap-10">
+        <div class="w-1/2">
+            <div class="flex gap-5 bg-transparent w-full my-5">
+                <label for="service-name-id" class="text-gray-400 font-semibold text-md w-1/4">Name</label>
+                <input name="service-name" id="service-name-id" type="text" class="w-3/4 text-gray-400 text-md bg-transparent focus:outline-none border-b-2 border-gray-500 focus:border-blue-600">
+            </div>
+            <div class="flex gap-5 bg-transparent w-full my-5">
+                <div class="bg-transparent w-1/4">
+                    <p class="text-gray-400 font-semibold text-md">Category</p>
+                </div>
+                <div class="bg-transparent w-3/4">
+                    <div class="flex gap-5 bg-transparent my-1">
+                        <input name="category" id="category-id-1" type="radio" class="focus:outline-none bg-transparent rounded-xl" value="internal">
+                        <label for="category-id-1" class="text-md text-gray-400 font-semibold">Internal</label>
+                    </div>
+                    <div class="flex gap-5 bg-transparent my-1">
+                        <input name="category" id="category-id-2" type="radio" class="focus:outline-none bg-transparent rounded-xl" value="external">
+                        <label for="category-id-2" class="text-md text-gray-400 font-semibold">External</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="w-1/2">
+            <div class="flex gap-5 bg-transparent w-full my-5">
+                <label for="website-id" class="text-gray-400 font-semibold text-md w-1/4">Website</label>
+                <input name="website" id="website-id" type="url" class="w-3/4 bg-transparent border-b-2 border-gray-500 text-gray-400 focus:border-blue-500 focus:outline-none">
+            </div>
+            <div class="flex gap-5 bg-transparent w-full my-5">
+                <label for="contact-admin-id" class="text-gray-400 font-semibold text-md w-1/4">Contact</label>
+                <input name="contact-admin" id="contact-admin-id" type="text" class="w-3/4 text-gray-400 text-md bg-transparent focus:outline-none border-b-2 border-gray-500 focus:border-blue-600">
+            </div>
+        </div>
+    </div>
+    <div class="bg-transparent">
+        <p class="text-gray-400 font-bold border-b border-gray-500 mt-5">Description</p>
+        <textarea name="desc" id="desc-id" class="thin-scrollbar border-b-2 border-gray-600 focus:border-blue-600 text-gray-400 bg-transparent w-full mt-3 focus:outline-none" placeholder="Lorem Ipsum Dolor Sit Amet"></textarea>
+    </div>
+</form>
+{% endblock %}

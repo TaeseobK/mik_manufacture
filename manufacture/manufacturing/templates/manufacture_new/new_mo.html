@@ -1,0 +1,203 @@
+{% extends 'base_app/manufacture.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<div class="max-h-screen flex flex-wrap w-screen">
+    <div class="w-3/5 flex bg-transparent">
+        <div class="w-1/3 justify-start">
+            <nav class="border-gray-200 bg-transparent ml-5 my-1">
+                <div class=" flex justify-start items-center">
+                    <button id="button-submit" type="button" onclick="document.getElementById('form-mo').submit()" class="float-start gap-1 bg-gray-700 px-3 rounded-sm py-1 hover:bg-gray-600 focus:ring-1 cursor-pointer text-white">
+                        Confirm                                         
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+<form id="form-mo" class="w-3/5 bg-gray-800 py-10 px-8 rounded-md shadow-xl text-gray-900 mx-5 my-1 border-1/2 border-gray-200 resize-y" action="." method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="bg-transparent">
+        <label for="manufacturing_orders" class="text-white text-2xl">MIKW/DIV/0001</label>
+    </div>
+    <div class="flex justify-start gap-10 mt-5">
+        <select id="product" name="products" class="block my-5 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600">
+            <option selected class="dark:bg-gray-600 dark:text-gray-300">Select Product</option>
+            {% for product in products %}
+                <option value="{{ product.pk }}" class="dark:bg-gray-600 dark:text-gray-300">{{ product.name }}</option>
+            {% endfor %}
+        </select>
+        <div class="relative z-0 w-full mb-5 group">
+            <input datepicker datepicker-buttons datepicker-autohide datepicker-autoselect-today datepicker-format="yyyy-mm-dd" autocomplete="off" name="scheduled-date" id="scheduled-date-id" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer cursor-pointer" placeholder=" " required />
+            <label for="start-id" class="peer-focus:font-medium absolute text-sm text-white dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Scheduled Date</label>
+        </div>
+    </div>
+    <div class="flex justify-between gap-10">
+        <div class="flex relative z-0 w-full mb-5 group gap-10">
+            <div class="justify-start w-full">
+                <input type="number" autocomplete="off" name="quantity-bom" id="quantity-bom-id" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder="" required />
+                <label for="floating_phone" class="peer-focus:font-medium absolute text-sm text-white dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Quantity</label>
+            </div>
+            <div class="flex justify-end float-end gap-2 w-full mt-3">
+                <label for="button-1" class="text-gray-400 font-semibold p-1 text-sm mt-1">To Produce</label>
+                <button id="button-1" class="bg-gray-700 w-10 h-8 py-1 px-2 rounded md hover:bg-gray-600 focus:ring-1 cursor-pointer text-white">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15v4m6-6v6m6-4v4m6-6v6M3 11l6-5 6 5 5.5-5.5"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="relative z-0 w-full mb-5 group">
+            <input type="text" name="responsible" id="responsible-id" autocomplete="off" class="block py-2.5 px-0 w-full text-sm text-white bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+            <label for="responsible-id" class="peer-focus:font-medium absolute text-sm text-white dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Responsible</label>
+        </div>
+    </div>
+    <div class="flex justify-start gap-10">
+        <select id="bom-select" name="bom" class="block my-5 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600">
+            <option selected value="" class="dark:bg-gray-600 dark:text-gray-300">Bill of Materials</option>
+            {% for bom in boms %}
+                <option value="{{ bom.bom.pk }}" class="dark:bg-gray-600 dark:text-gray-300">{{ bom.product_id.name }}</option>
+            {% endfor %}
+        </select>
+        <div class="w-full"></div>
+    </div>
+    <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#profile-tab-content" role="tablist">
+            <li class="me-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 rounded-t-lg" id="component-tab" data-tabs-target="#components" type="button" role="tab" aria-controls="profile" aria-selected="false">Components</button>
+            </li>
+            <li class="me-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 rounded-t-lg" id="profile-tab" data-tabs-target="#miscellaneous" type="button" role="tab" aria-controls="profile" aria-selected="false">Miscellaneous</button>
+            </li>
+        </ul>
+    </div>
+    <div id="component-tab-content">
+        <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="components" role="tabpanel" aria-labelledby="profile-tab">
+            <table id="ocmponents-table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 min-w-1/3">
+                            Product
+                        </th>
+                        <th scope="col" class="px-6 py-3 min-w-1/4">
+                            Price
+                        </th>
+                        <th scope="col" class="px-6 py-3 min-w-1/4">
+                            Cost
+                        </th>
+                        <th scope="col" class="px-6 py-3 min-w-1/4">
+                            Warehouse
+                        </th>
+                        <th scope="col" class="px-6 py-3 min-w-1/4">
+                            To Consume
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="components-table">
+                    <!-- Isi tabel dengan data dari API -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="miscellaneous" class="w-full bg-transparent gap-10">
+        <div class="bg-transparent flex gap-10 w-full">
+            <div class="bg-transparent w-1/2">
+                <div class="bg-transparent flex gap-5 my-5">
+                    <p class="text-white text-sm text-gray-400 font-medium w-2/5">Operation Type</p>
+                    <p type="text" class="w-3/5 text-md text-gray-400 font-medium bg-transparent">Manufacture</p>
+                </div>
+                <div class="bg-transparent flex gap-5 my-5">
+                    <p class="text-white text-sm text-gray-400 font-medium w-2/5">Components Location</p>
+                    <select name="component-location" id="component-location-id" class="w-3/5 border-b-2 border-gray-600 focus:border-blue-600 text-sm text-gray-400 font-medium bg-transparent focus:outline-none">
+                        <option value="" class="bg-gray-800 text-gray-400" selected></option>
+                        {% for warehouse in warehouses %}
+                            <option value="{{ warehouse.pk }}" class="bg-gray-800 text-gray-400">{{ warehouse.code }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="bg-transparent flex gap-5 my-5">
+                    <p class="text-white text-sm text-gray-400 font-medium w-2/5">Finished Products Location</p>
+                    <select name="finish-product" id="finish-product-id" class="w-3/5 border-b-2 border-gray-600 focus:border-blue-600 text-sm text-gray-400 font-medium bg-transparent focus:outline-none">
+                        <option value="" class="bg-gray-800 text-gray-400" selected></option>
+                        {% for warehouse in warehouses %}
+                            <option value="{{ warehouse.pk }}" class="bg-gray-800 text-gray-400">{{ warehouse.code }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="bg-transparent w-1/2">
+                <div class="bg-transparent flex gap-5 my-5">
+                    <p class="text-white text-sm text-gray-400 font-medium w-1/5">Source</p>
+                    <input multiple type="file" name="source-document" class="w-4/5 file:bg-gray-500 file:border-none file:text-gray-400 file:font-semibold border-b-2 border-gray-600 focus:border-blue-600 text-sm text-gray-400 font-medium bg-transparent focus:outline-none">
+                </div>
+                <div class="bg-transparent flex gap-5 my-5">
+                    <p class="text-white text-sm text-gray-400 font-medium w-1/5">Company</p>
+                    <select name="company" id="company-id" class="w-4/5 border-b-2 border-gray-600 focus:border-blue-600 text-sm text-gray-400 font-medium bg-transparent focus:outline-none">
+                        <option value="" class="bg-gray-800 text-gray-400" selected></option>
+                        {% for company in companies %}
+                            <option value="{{ company.pk }}" class="bg-gray-800 text-gray-400">{{ company.entity }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="bg-transparent flex gap-5 my-5">
+                    <p class="text-white text-sm text-gray-400 font-medium w-1/5">Notes</p>
+                    <textarea name="notes" id="notes-id" class="w-4/5 border-b-2 border-gray-600 focus:border-blue-600 text-sm text-gray-400 font-medium bg-transparent focus:outline-none placeholder:text-gray-600 thin-scrollbar" placeholder="Lorem Ipsum Dolor Sit Amet"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    $(document).ready(function() {
+       $('#bom-select').on('change', function() {
+           var bomId = $(this).val();
+           var quantity = $('#quantity-bom-id').val();
+           if (quantity == '' || quantity == "" || quantity == null) {
+               quantity = 1;
+           } else {
+               quantity = $('#quantity-bom-id').val();
+           }
+            get_data(bomId, quantity);
+       });
+
+        $('#quantity-bom-id').on('input', function() {
+            var quantity = $(this).val();
+            var bomId = $('#bom-select').val();
+            get_data(bomId, quantity);
+        });
+
+       function get_data(bomId, quantity) {
+        if(bomId != ''){  
+               $.ajax({
+                url: '/manufacture/manufacture/bom/' + bomId + '/',
+                success:function(ress){
+                    $('#components-table').empty();
+                    var bom = ress.bom_components;
+                    bom.forEach(element => {
+                        var product_price = element.product.price * parseInt(quantity);
+                        var product_cost = element.product.cost * parseInt(quantity);
+                        var product_quantity = element.quantity * parseInt(quantity);
+                        $('#components-table').append(
+                            `<tr class="text-gray-700 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+                                <input value="${element.product.id}" class="hidden" />
+                                <td class="px-6 py-3 min-w-1/3">${element.product.name}</td>
+                                <td class="px-6 py-3 min-w-1/4">${Intl.NumberFormat("en-IN", {style : "currency", currency : "IDR"}).format(product_price)}</td>
+                                <td class="px-6 py-3 min-w-1/4">${Intl.NumberFormat("en-IN", {style : "currency", currency : "IDR"}).format(product_cost)}</td>
+                                <td class="px-6 py-3 min-w-1/4">${element.warehouses}</td>
+                                <td class="px-6 py-3 min-w-1/4">${Intl.NumberFormat("en-IN", {maximumFractionDigits : 3}).format(product_quantity)}</td>
+                            </tr>`);
+                    });
+                }
+               })
+           } else {
+                $('#components-table').empty();
+                $('#components-table').append(
+                    `<tr class="text-gray-700 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+                        <td class="px-6 py-3 min-w-1/3" colspan="3">Select BOM First</td>
+                    </tr>`
+                );
+           }
+       }
+    });
+</script> 
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'base_app/master.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<section class="flex content-center bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800">
+    <div class="relative overflow-hiden">
+        <table class="fixed w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        Company Name
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Email
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Website
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Branches
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entity in entities %}
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-gray-900 hover:text-white">
+                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            <a href="{% url 'master:detail_company' entity.entity.id %}" class="cursor-pointer hover:text-blue-600 hover:underline">
+                                {{ entity.entity }}
+                            </a>
+                        </th>
+                        <td class="px-6 py-4">
+                            {{ entity.profile.email }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ entity.profile.website }}
+                        </td>
+                        <td class="px-6 py-4 flex gap-1">
+                            {% for branch in entity.branches %}
+                                <div class="rounded-sm border-2 border-gray-400 bg-gray-500 text-gray-900 font-bold px-2 text-md">
+                                    {{ branch.branch_name }}
+                                </div>
+                            {% empty %}
+                                <div class="rounded-sm border-2 border-gray-400 bg-gray-500 text-gray-900 font-bold px-2 text-md">
+                                    No Branch Found
+                                </div>
+                            {% endfor %}
+                        </td>
+                    </td>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base_app/inventory.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<section class="flex content-center bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800">
+    <div class="relative overflow-hidden">
+        <table class="fixed w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+            <thead class="text-xs w-full text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-3 w-4/5">Name</th>
+                    <th scope="col" class="px-6 py-3 w-4/5">Service Type</th>
+                    <th scope="col" class="px-6 py-3 w-4/5">Contact</th>
+                </tr>
+            </thead>
+            <tbody id="category-list">
+
+                {% for data in page_obj %}
+                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-gray-900 hover:text-white">
+                    <th scope="row" class="px-6 py-4 font-semibold text-l text-gray-900 whitespace-nowrap dark:text-gray-400">
+                        <a href="#" class="hover:underline hover:text-blue-400 hover:font-semibold">
+                            {{ data.name }}
+                        </a>
+                    </th>
+                    <td class="px-6 py-4 font-semibold text-l text-gray-900 whitespace-nowrap dark:text-gray-400">{{ data.service_type }}</td>
+                    <td class="px-6 py-4 font-semibold text-l text-gray-900 whitespace-nowrap dark:text-gray-400">{{ data.contact_admin }}</td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</section>
+<script>
+    $(document).ready(function() {
+        $('#search').on('keyup', function() {
+            var searchQuery = $(this).val();
+
+            $.ajax({
+                url: window.location.href,
+                data:{
+                    'search' : searchQuery
+                },
+                dataType: 'html',
+                success: function(response) {
+                    $('#category-list').html($(response).find('#category-list').html());
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
+
+

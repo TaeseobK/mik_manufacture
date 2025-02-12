@@ -1,0 +1,59 @@
+{% extends 'base_app/inventory.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<section class="content-center bg-gradient-to-br from-gray-800 via-gray-900 to-gray-800">
+    <div class="relative">
+        <table class="fixed w-full h-24 text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 thin-scrollbar">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-3">Reference</th>
+                    <th scope="col" class="px-6 py-3">From</th>
+                    <th scope="col" class="px-6 py-3">To</th>
+                    <th scope="col" class="px-6 py-3">Contact</th>
+                    <th scope="col" class="px-6 py-3">Schedule Date</th>
+                    <th scope="col" class="px-6 py-3">Source Document</th>
+                    <th scope="col" class="px-6 py-3">Company</th>
+                    <th scope="col" class="px-6 py-3">Status</th>
+                </tr>
+            </thead>
+            <tbody class="thin-scrollbar" id="receipt-list">
+                {% for data in page_obj %}
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-gray-900 hover:text-white">
+                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            <a href="{% url 'inventory:detail_receipt' data.stock_move.pk %}" class="hover:text-blue-600 hover:underline">
+                                {{ data.stock_move.code }}
+                            </a>
+                        </th>
+                        <td class="px-6 py-4">{{ data.stock_move.source }}</td>
+                        <td class="px-6 py-4">{{ data.warehouse.code }}</td>
+                        <td class="px-6 py-4">{{ data.stock_move.responsible }}</td>
+                        <td class="px-6 py-4">{{ data.stock_move.scheduled_date }}</td>
+                        <td class="px-6 py-4">{{ data.stock_move.files }}</td>
+                        <td class="px-6 py-4">{{ data.company.entity }}</td>
+                        <td class="px-6 py-4 font-bold uppercase text-sm {% if data.receipt.status == 'draft' %} text-red-700 {% else %} text-blue-500 {% endif %}">{{ data.receipt.status }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+<script>
+    $(document).ready(function() {
+        $('#search').on('keyup', function() {
+            var searchQuery = $(this).val();
+
+            $.ajax({
+                url: window.location.href,
+                data:{
+                    'search' : searchQuery
+                },
+                dataType: 'html',
+                success: function(response) {
+                    $('#receipt-list').html($(response).find('#receipt-list').html());
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

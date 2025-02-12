@@ -1,0 +1,39 @@
+{% extends 'base_app/inventory.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<p class="flex items-center text-4xl text-center justify-center text-gray-400 font-semibold">Still Developing The Content</p>
+<section class="flex bg-transparent">
+    <div id="stock-list" class="mx-5 py-5 flex grid grid-cols-4 gap-4 w-full">
+        {% for data in page_obj %}
+        <div>
+            <a href="{% url 'inventory:detail_product' data.product.id %}">
+                <div class="bg-transparent dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm p-4">
+                    <h6 class="text-white text-lg font-semibold">{{ data.product.name }}</h6>
+                    <p class="text-md font-thin text-white dark:text-white">Price : Rp {{ data.product.salesprice }}</p>
+                    <p class="text-md font-thin text-white dark:text-white">On Hands : {{ data.stock }} Units</p>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+<script>
+    $(document).ready(function() {
+        $('#search').on('keyup', function() {
+            var searchQuery = $(this).val();
+
+            $.ajax({
+                url: window.location.href,
+                data:{
+                    'search' : searchQuery
+                },
+                dataType: 'html',
+                success: function(response) {
+                    $('#stock-list').html($(response).find('#stock-list').html());
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

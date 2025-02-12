@@ -1,0 +1,190 @@
+{% extends 'base_app/inventory.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<div class="max-h-screen flex flex-wrap w-screen">
+    <div class="w-3/5 flex bg-transparent">
+        <div class="w-1/3 justify-start">
+            <nav class="flex gap-1 border-gray-200 bg-transparent ml-5 my-1">
+                <div class=" flex justify-start items-center">
+                    <button type="button" onclick="document.getElementById('new_receipt').submit()" class="float-start gap-1 bg-gray-700 px-3 rounded-sm py-1 hover:bg-gray-600 focus:ring-1 cursor-pointer text-white">
+                        Confirm                                         
+                    </button>
+                </div>
+            </nav>
+        </div>
+        <div class="w-2/3">
+            <div class="flex flex-wrap items-center justify-end h-full">
+                <div class="flex flex-wrap items-center justify-end h-full mx-1">
+                    <div class="items-center ms-1 text-sm font-medium text-gray-700 md:ms-2 dark:text-gray-400 select-none">
+                        Draft
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center justify-end h-full mx-1">
+                    <svg class="w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                    </svg>
+                    <div class="items-center ms-1 text-sm font-medium text-gray-700 md:ms-2 dark:text-gray-400 select-none">
+                        Ready
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center justify-end h-full mx-1">
+                    <svg class="w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                    </svg>
+                    <div class="items-center ms-1 text-sm font-medium text-gray-700 md:ms-2 dark:text-gray-400 select-none">
+                        Done
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<form class="w-3/5 bg-gray-800 py-10 px-8 rounded-md shadow-xl text-gray-900 mx-5 my-1 border-1/2 border-gray-200 resize-y" id="new_receipt" action="." method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="bg-transparent">
+        <div class="relative z-0 w-full mb-5 group">
+            <span class="ml-2 text-gray-400 bg-transparent font-semibold font-roboto text-2xl">New Receipt</span>
+        </div>
+    </div>
+    <div class="flex bg-transparent gap-">
+        <div class="bg-transparent w-2/4">
+            <div class="flex gap-2">
+                <label for="source-warehouse-id" class="text-gray-400 font-semibold w-1/2 my-2">Receive From</label>
+                <input type="text" name="source" id="source-id" class="my-2 mr-10 w-3/4 justify-end bg-transparent focus:outline-none border-b-2 border-gray-600 focus:border-blue-600 text-gray-400 placeholder:text-gray-600" placeholder="e.g Vendor">
+            </div>
+            <div class="flex gap-2">
+                <p for="operations-type-id" class="text-gray-400 font-semibold my-2">Operations Type</p>
+                <p id="operation-type-id" class="text-gray-400 font-semibold text-md bg-transparent my-2 justify-start ml-8">Receipt</p>
+            </div>
+            <div class="flex gap-2">
+                <label for="destination-warehouse-id" class="text-gray-400 font-semibold w-1/2 my-2">Destination Location</label>
+                <select name="destination-warehouse" id="destination-warehouse-id" class="my-2 mr-10 w-3/4 justify-end text-md font-semibold bg-transparent focus:outline-none border-b-2 border-gray-600 focus:border-blue-600 text-gray-400 placeholder:text-gray-600">
+                    <option value="" selected class="font-semibold text-gray-300 bg-gray-600">Choose Destinations</option>
+                    {% for warehouse in warehouses %}
+                        <option value="{{ warehouse.pk }}" class="font-semibold text-gray-300 bg-gray-600">{{ warehouse.code }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="bg-transparent w-2/4">
+            <div class="flex gap-5">
+                <label for="scheduled-date-id" class="text-gray-400 font-semibold w-1/3 my-2">Scheduled Date</label>
+                <input datepicker datepicker-autohide datepicker-buttons datepicker-autoselect-today datepicker-format="dd/mm/yyyy" autocomplete="off" name="scheduled-date" id="scheduled-date-id" class="my-2 w-1/2 border-b-2 border-gray-600 focus:border-blue-600 focus:outline-none bg-transparent text-gray-400 font-normal datetime-local:text-white cursor-pointer">
+            </div>
+            <div class="flex gap-5">
+                <label for="document-id" class="text-gray-400 font-semibold w-1/3 my-2">Source Document</label>
+                <input type="file" name="document" id="document-id" class="my-2 w-1/2 block justify-end focus:outline-none bg-gray-700 rounded-sm text-gray-400 text-sm font-normal file:bg-gray-500 file:border-none file:text-gray-400 file:font-semibold">
+            </div>
+        </div>
+    </div>  
+    <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="receipt-tab" data-tabs-toggle="#receipt-tab-content" role="tablist">
+            <li class="me-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 rounded-t-lg" id="operations-tab" data-tabs-target="#operations-id" type="button" role="tab" aria-controls="operations" aria-selected="false">Operations</button>
+            </li>
+            <li class="me-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="info-tab" data-tabs-target="#info-id" type="button" role="tab" aria-controls="info" aria-selected="false">Additional Info</button>
+            </li>
+            <li class="me-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="notes-tab" data-tabs-target="#notes-id" type="button" role="tab" aria-controls="notes" aria-selected="false">Notes</button>
+            </li>
+        </ul>
+    </div>
+    <div id="receipt-tab-content">
+        <div class="hidden rounded-lg bg-gray-50 dark:bg-gray-800 flex" id="operations-id" role="tabpanel" aria-labelledby="operations-tab">
+            <table id="productTable" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 ">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 w-3/5">
+                            Product
+                        </th>
+                        <th scope="col" class="px-6 py-3 w-1/5">
+                            Quantity
+                        </th>
+                        <th scope="col" class="px-6 py-3 w-1/5">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer">
+                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            <span id="addline" class="text-gray-400 hover:text-blue-500 hover:underline">Add Line</span>
+                        </th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="info-id" role="tabpanel" aria-labelledby="info-tab">
+            <div class="flex bg-transparent">
+                <div class="bg-transparent w-1/2">
+                    <p class="border-b border-gray-600 w-full uppercase text-gray-400 text-xs font-roboto font-bold">Other Information</p>
+                    <div class="flex gap-5 my-4">
+                        <label for="responsible-id" class="w-1/3 text-md text-gray-400 font-semibold">Responsible</label>
+                        <!-- <select name="responsible" id="responsible-id" class="w-2/3 border-b-2 border-gray-600 hover:border-blue-600 text-md text-gray-400 bg-transparent w-full">
+                            <option value="" class="bg-gray-800 text-gray-400 font-normal font-roboto">Select Responsible</option>
+                        </select> -->
+                        <input type="text"  id="responsible-id" name="responsible" autocomplete="off" class="w-2/3 border-b-2 border-gray-600 hover:border-blue-600 text-md text-gray-400 bg-transparent w-full focus:outline-none">
+                    </div>
+                    <div class="flex gap-5 mt-4">
+                        <label for="company-id" class="w-1/3 text-md text-gray-400 font-semibold">Company</label>
+                        <select name="company" id="company-id" class="w-2/3 border-b-2 border-gray-600 hover:border-blue-600 text-md text-gray-400 bg-transparent w-full focus:outline-none focus:border-blue-600">
+                            <option value="" class="bg-gray-800 text-gray-400 font-normal font-roboto">Select Company</option>
+                            {% for company in companies %}
+                                <option value="{{ company.pk }}" class="bg-gray-800 text-gray-400 font-normal font-roboto">{{ company.entity }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="bg-transparent w-1/2"></div>
+            </div>
+        </div>
+        <div class="bg-transparent" id="notes-id" role="tabpanel" aria-labelledby="notes-tab">
+            <textarea name="internalnotes" id="internal_notes" class="bg-transparent overflow-y-auto thin-scrollbar my-3 rounded-sm w-full h-auto border-b border-gray-500 focus:outline-none focus:border-b-2 focus:border-blue-600 text-gray-300 placeholder:text-gray-600" placeholder="Lorem Ipsum Dolor Sit Amet"></textarea>
+        </div>
+    </div>
+</form>
+<script>
+    let rowCount = document.querySelectorAll("#productTable tbody tr").length - 1;
+    console.log(rowCount);
+    
+    document.getElementById("addline").addEventListener("click", function() {
+        let tableBody = document.querySelector("#productTable tbody");
+        rowCount++;
+        console.log(rowCount);
+        let newRow = document.createElement("tr");
+        newRow.classList.add("bg-white", "border-b", "dark:bg-gray-800", "dark:border-gray-700", "cursor-pointer");
+        newRow.innerHTML = `
+            <td class="px-6 py-2 w-3/5">
+                <select id="products-id" name="products[]" class="block w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600">
+                    <option selected class="dark:bg-gray-600 dark:text-gray-300">Choose Product</option>
+                    {% for product in products %}
+                        <option value="{{ product.pk }}" class="dark:bg-gray-600 dark:text-gray-300">{{ product.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td class="px-6 py-2 w-1/5">
+                <input type="" name="product-quantity[]" id="product-quantity-id" class="block w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600" placeholder=" " required />
+            </td>
+            <td class="px-3 py-2 w-1/5">
+                <button type="button" class="removeRowBttn px-4 py-2 text-gray-400 hover:text-blue-500 hover:underline justify-end text-semibold">Remove</button>
+            </td>
+        `;
+
+        let rows = tableBody.querySelectorAll("tr");
+        let lastRow = rows[rows.length - 1];
+
+        if (lastRow) {
+            tableBody.insertBefore(newRow, lastRow);
+        } else {
+            tableBody.append(newRow);
+        }
+    });
+    
+    $(document).on("click", ".removeRowBttn", function(){
+        $(this).parent().parent().remove();
+        rowCount--;
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,282 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.3/flowbite.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Custom scrollbar untuk elemen */
+        .thin-scrollbar::-webkit-scrollbar {
+            width: 6px; /* Lebar scrollbar yang tipis dan cantik */
+        }
+
+        .thin-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(100, 100, 100, 0.4); /* Warna default scrollbar */
+            border-radius: 10px; /* Ujung scrollbar yang melengkung */
+            border: 1px solid rgba(0, 0, 0, 0.1); /* Memberikan efek border halus */
+            transition: background-color 0.3s ease; /* Transisi halus saat di-hover */
+        }
+
+        .thin-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(100, 100, 100, 0.7); /* Ubah warna saat di-hover */
+        }
+
+        .thin-scrollbar::-webkit-scrollbar-track {
+            background-color: transparent; /* Warna track yang halus */
+            border-radius: 20px; /* Ujung track yang melengkung */
+        }
+    </style>
+    <link rel="icon" type="image/png" href="{% static 'web_icon.png' %}">
+    <title>{% block title %}{% endblock %} | Manufacture</title>
+</head>
+<body class="bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 w-screen max-h-screen overflow-x-hidden overflow-y-hidden thin-scrollbar">
+    <nav class="relative border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-700 w-full">
+        <div class="max-w-screen flex flex-warp items-center justify-between p-1 mx-5">
+            <div class="flex justify-start w-1/3">
+                <a href="{% url 'manufacture:home' %}" class="max-w-screen-xl flex flex-wrap items-center">
+                    <img src="{% static 'web_icon.png' %}" class="h-8 w-8" alt="Manufacture" />
+                    <span class="text-xl text-white font-semibold text-center justify-start px-2">{{ title_1 }}</span>
+                </a>
+            </div>
+            <div class="p-1 flex justify-center w-1/3" id="navbar-solid-bg">
+                <ol class="flex justify-center items-start space-x-1 md:space-x-2 rtl:space-x-reverse">
+                    <li data-dropdown-toggle="employeedropdown" type="button">
+                        <div class="flex items-center">
+                            <button class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">
+                                Employees
+                            </button>
+                        </div>
+                        <div id="employeedropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-md shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
+                            <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="avatarButton">
+                                <li>
+                                    <a href="{% url 'master:employee_list' %}" class="block px-8 py-1 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Employees</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="block px-8 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Org Chart</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li type="button">
+                        <div class="flex items-center">
+                            <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                            </svg>
+                            <a href="{% url 'master:department_list' %}" class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">Department</a>
+                        </div>
+                    </li>
+                    <li data-dropdown-toggle="skilldropdown" type="button">
+                        <div class="flex items-center">
+                            <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                            </svg>
+                            <button class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">
+                                Reporting
+                            </button>
+                        </div>
+                        <div id="skilldropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-md shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
+                            <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="avatarButton">
+                                <li>
+                                    <a href="#" class="block px-8 py-1 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Skills</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li data-dropdown-toggle="configurationdropdown" type="button">
+                        <div class="flex items-center">
+                            <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                            </svg>
+                            <button class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">
+                                Configuration
+                            </button>
+                        </div>
+                        <div id="configurationdropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-md shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
+                            <ul class="py-1 text-sm text-gray-300" aria-labelledby="avatarButton">
+                                <li>
+                                    <a href="#" class="hidden block px-5 py-1 font-medium hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Settings</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="hidden block px-5 py-2 font-medium hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Activity Plan</a>
+                                </li>
+                                <p class="text-xs px-2 text-gray-400 font-semibold my-1 mt-2">Employee</p>
+                                <li>
+                                    <a href="{% url 'master:work_locations' %}" class="block px-5 py-1 font-medium hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Work Locations</a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'master:departure_list' %}" class="block px-5 py-1 font-medium hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Departure Reason</a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'master:skill_list' %}" class="block px-5 py-2 font-medium hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Skill Types</a>
+                                </li>
+                                <p class="text-xs px-2 text-gray-400 font-semibold my-1 mt-2">Recruitment</p>
+                                <li>
+                                    <a href="{% url 'master:job_position_list' %}" class="block px-5 py-1 font-medium hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Job Positions</a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'master:employment_types' %}" class="block px-5 py-2 font-medium hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Employment Types</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+            <div class="p-1 w-1/3">
+                {% if request.user.is_authenticated %}
+                    <img id="avatarButton" type="button" data-dropdown-toggle="userDropdown" data-dropdown-placement="bottom-start" class="float-end w-8 h-8 rounded-full cursor-pointer" src="{% static 'mik.jpg' %}" alt="User dropdown">
+                    <!-- Dropdown menu -->
+                    <div id="userDropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
+                        <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                        <div>{{ request.user.username }}</div>
+                        <div class="font-medium truncate">{{ request.user.email }}</div>
+                        </div>
+                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="avatarButton">
+                            <li>
+                                <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                    Settings
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Profile</a>
+                            </li>
+                        </ul>
+                        <div class="py-1">
+                            <a href="{% url 'core:logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div> 
+            </div>
+        </div> 
+        <div class="max-w-screen flex flex-wrap items-center justify-end mx-5 p-1">
+            {% if not feature == 'Cant Add' and not title_2 == 'Employee List' %}
+                <div class="flex space-y-4 sm:flex-row sm:justify-start sm:space-y-0 w-1/3">
+                    {% if title_2 == 'Job Positions' %}
+                    <a href="{% url 'master:new_job_position' %}" class="inline-flex justify-content items-center py-1 px-1 text-base text-right text-white rounded-sm bg-gray-700 hover:bg-gray-500 focus:ring-1 focus:ring-white dark:focus:ring-white transform hover:scale-105 transition-transform duration-300">
+                    {% elif title_2 == 'Employment Types' %}
+                    <a href="{% url 'master:new_employment_type' %}" class="inline-flex justify-content items-center py-1 px-1 text-base text-right text-white rounded-sm bg-gray-700 hover:bg-gray-500 focus:ring-1 focus:ring-white dark:focus:ring-white transform hover:scale-105 transition-transform duration-300">
+                    {% elif title_2 == 'Skills' %}
+                    <a href="{% url 'master:new_skills' %}" class="inline-flex justify-content items-center py-1 px-1 text-base text-right text-white rounded-sm bg-gray-700 hover:bg-gray-500 focus:ring-1 focus:ring-white dark:focus:ring-white transform hover:scale-105 transition-transform duration-300">
+                    {% elif title_2 == 'Departure Reason' %}
+                    <a href="{% url 'master:new_departure' %}" class="inline-flex justify-content items-center py-1 px-1 text-base text-right text-white rounded-sm bg-gray-700 hover:bg-gray-500 focus:ring-1 focus:ring-white dark:focus:ring-white transform hover:scale-105 transition-transform duration-300">
+                    {% elif title_2 == 'Work Locations' %}
+                    <a href="{% url 'master:new_wl' %}" class="inline-flex justify-content items-center py-1 px-1 text-base text-right text-white rounded-sm bg-gray-700 hover:bg-gray-500 focus:ring-1 focus:ring-white dark:focus:ring-white transform hover:scale-105 transition-transform duration-300">
+                    {% elif title_2 == 'Departments' %}
+                    <a href="{% url 'master:new_department' %}" class="inline-flex justify-content items-center py-1 px-1 text-base text-right text-white rounded-sm bg-gray-700 hover:bg-gray-500 focus:ring-1 focus:ring-white dark:focus:ring-white transform hover:scale-105 transition-transform duration-300">
+                    {% endif %}
+                        New
+                        <svg class="w-0.5 h-3.5 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                        </svg>
+                    </a>
+                    <p class="text-xl text-white font-semibold text-center justify-start px-2">
+                        {{ title_2 }}
+                    </p>
+                </div>
+                {% else %}
+                <div class="flex space-y-4 sm:flex-row sm:justify-start sm:space-y-0 w-1/3">
+                    <p class="text-xl text-white font-semibold text-center justify-start">
+                        {{ title_2 }}
+                    </p>
+                </div>
+            {% endif %}
+            <div class="flex justify-center items-center w-1/3">
+                <div class="relative w-96">
+                    <!-- Ikon Pencarian -->
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-2 hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="float-start h-6 w-6 text-gray-800 hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <!-- Input Box -->
+                    {% if not feature == 'Cant Add' %}
+                        <input placeholder="Search" id="search" class="bg-gray-700 text-white text-left w-full h-8 pl-10 pr-2 rounded focus:outline-none" type="text" />
+                    {% elif title_2 == 'Inventory Overview' %}
+                        <input placeholder="Search" id="search" class="bg-gray-700 text-white text-left w-full h-8 pl-10 pr-2 rounded focus:outline-none" type="text" />
+                    {% endif %}
+                </div>
+            </div>            
+            <div class="flex justify-end w-1/3">
+                {% if not feature == 'Cant Add' %}
+                    <div class="mr-5">
+                        <p class="float-start gap-1 bg-transparent font-semibold text-md text-gray-400 mr-5 text-center justify-center mt-1">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</p>
+                        <a {% if page_obj.has_next %} href="?page={{ page_obj.next_page_number }}" {% endif %}>
+                            <button class="float-end gap-1 bg-gray-700 px-1 rounded-r py-1 hover:bg-gray-600">
+                                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+                                </svg>                                                                
+                            </button>
+                        </a>
+                        <a {% if page_obj.has_previous %} href="?page={{ page_obj.previous_page_number }}" {% endif %}>
+                            <button class="float-end gap-1 bg-gray-700 px-1 rounded-l py-1 hover:bg-gray-600">
+                                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 19-7-7 7-7"/>                                                                                        
+                                </svg>
+                            </button>
+                        </a>
+                    </div>
+                    {% elif title_2 == 'Inventory Overview' %}
+                    <div class="mr-5">
+                        <p class="float-start gap-1 bg-transparent font-semibold text-md text-gray-400 mr-5 text-center justify-center mt-1">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</p>
+                        <a {% if page_obj.has_next %} href="?page={{ page_obj.next_page_number }}" {% endif %}>
+                            <button class="float-end gap-1 bg-gray-700 px-1 rounded-r py-1 hover:bg-gray-600">
+                                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+                                </svg>                                                                
+                            </button>
+                        </a>
+                        <a {% if page_obj.has_previous %} href="?page={{ page_obj.previous_page_number }}" {% endif %}>
+                            <button class="float-end gap-1 bg-gray-700 px-1 rounded-l py-1 hover:bg-gray-600">
+                                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 19-7-7 7-7"/>                                                                                        
+                                </svg>
+                            </button>
+                        </a>
+                    </div>
+                {% endif %}
+                <button class="float-end gap-1 bg-gray-700 px-1 rounded-l py-1 hover:bg-gray-600 focus:ring-1">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M9 8h10M9 12h10M9 16h10M4.99 8H5m-.02 4h.01m0 4H5"/>
+                    </svg>
+                </button>
+                <button class="float-end gap-1 bg-gray-700 px-1 py-1 hover:bg-gray-600 focus:ring-1">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                        <path fill-rule="evenodd" d="M5 5a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1h1a1 1 0 0 0 1-1 1 1 0 1 1 2 0 1 1 0 0 0 1 1 2 2 0 0 1 2 2v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a2 2 0 0 1 2-2ZM3 19v-7a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Zm6.01-6a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm-10 4a1 1 0 1 1 2 0 1 1 0 0 1-2 0Zm6 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm2 0a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z" clip-rule="evenodd"/>
+                    </svg>                      
+                </button>
+                <button class="float-end gap-1 bg-gray-700 px-1 py-1 hover:bg-gray-600 focus:ring-1">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                        <path fill-rule="evenodd" d="M15 4H9v16h6V4Zm2 16h3a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3v16ZM4 4h3v16H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" clip-rule="evenodd"/>
+                    </svg>                      
+                </button>
+                <button class="float-end gap-1 bg-gray-700 px-1 py-1 hover:bg-gray-600 focus:ring-1">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                        <path fill-rule="evenodd" d="M5 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2h-1v3a1 1 0 1 1-2 0v-3h-1v3a1 1 0 1 1-2 0v-3h-1v3a1 1 0 1 1-2 0v-3H7a1 1 0 1 1 0-2h3v-1H7a1 1 0 1 1 0-2h3V8H7a1 1 0 0 1 0-2h3V5a2 2 0 0 0-2-2H5Z" clip-rule="evenodd"/>
+                    </svg>                                           
+                </button>
+                <button class="float-end gap-1 bg-gray-700 px-1 py-1 hover:bg-gray-600 focus:ring-1">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15v4m6-6v6m6-4v4m6-6v6M3 11l6-5 6 5 5.5-5.5"/>
+                    </svg>
+                </button>
+                <button class="float-end gap-1 bg-gray-700 px-1 rounded-r py-1 hover:bg-gray-600 focus:ring-1">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                    </svg>                                           
+                </button>
+            </div>
+        </div>
+    </nav>
+    <main class="h-screen">
+        {% block content %}
+        {% endblock %}
+    </main>
+    <footer>
+
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+</body>
+</html>

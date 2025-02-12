@@ -1,0 +1,50 @@
+{% extends 'base_app/inventory.html' %}
+{% block title %}{{ title_1 }}{% endblock %}
+{% load static %}
+{% block content %}
+<section class="flex bg-transparent">
+    <div class="mx-5 py-5 flex grid grid-cols-4 gap-5 w-full" id="product-list">
+        {% for product in page_obj %}
+            <div>
+                <a href="{% url 'inventory:detail_product' product.product.id %}">
+                    <div class="bg-transparent dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm p-4">
+                        <h6 class="text-white text-lg font-semibold border-b-2 border-gray-600">{{ product.product.name }}</h6>
+                        <div class="flex">
+                            <div>
+                                <p for="type-product-id" class="text-md text-white dark:text-white font-medium">Type</p>
+                                <p for="product-sku-id" class="text-md text-white dark:text-white font-medium">Sku</p>
+                                <p for="stock-id" class="text-md text-white dark:text-white font-roboto font-thin">On Hands</p>
+                                <p for="warehouse-id" class="text-md text-white dark:text-white font-roboto font-thin">Warehouse</p>
+                            </div>
+                            <div class="ml-2">
+                                <p id="type-product-id" class="text-md font-thin text-white dark:text-white"> : {{ product.product.category_type.product_type }}</p>
+                                <p id="product-sku-id" class="text-md font-thin text-white dark:text-white"> : {{ product.product.sku }}</p>
+                                <p id="stock-id" class="text-md font-thin text-white dark:text-white"> : {{ product.stock }}</p>
+                                <p id="warehouse-id" class="text-md font-thin text-white dark:text-white"> : {{ product.warehouse.code }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+<script>
+    $(document).ready(function() {
+        $('#search').on('keyup', function() {
+            var searchQuery = $(this).val();
+
+            $.ajax({
+                url: window.location.href,
+                data:{
+                    'search' : searchQuery
+                },
+                dataType: 'html',
+                success: function(response) {
+                    $('#product-list').html($(response).find('#product-list').html());
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
