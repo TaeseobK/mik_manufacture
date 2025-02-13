@@ -4,11 +4,14 @@ from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from user_profile.models import Profile
 from django.template import RequestContext
+from django.http import JsonResponse
 from django.conf import settings
 from .models import UserActivity
-
+from django.conf import settings
+import requests
 
 def home(request) :
+
     return render(request, 'core/home.html', {
         'title' : 'Home'
     })
@@ -119,3 +122,25 @@ def profile(request, id_user) :
         'title' : 'User Profile',
         'profile' : profile
     })
+
+def get_province(request) :
+    url = 'https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json'
+    response = requests.get(url)
+    data = response.json()
+    
+    if response.status_code == 200 :
+        return JsonResponse(data, safe=False)
+    
+    else :
+        return JsonResponse({'error' : 'Failed to fetch data'}, status=500)
+    
+def get_cities(request, province_id) :
+    url = f'https://www.emsifa.com/api-wilayah-indonesia/api/regencies/{province_id}.json'
+    response = requests.get(url)
+    data = response.json()
+
+    if response.status_code == 200 :
+        return JsonResponse(data, safe=False)
+    
+    else :
+        return JsonResponse({'error' : 'Failed to fetch cities'}, status=500)

@@ -6,101 +6,163 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.3/flowbite.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <style>
         /* Custom scrollbar untuk elemen */
         .thin-scrollbar::-webkit-scrollbar {
             width: 6px; /* Lebar scrollbar yang tipis dan cantik */
         }
-
+        
         .thin-scrollbar::-webkit-scrollbar-thumb {
             background-color: rgba(100, 100, 100, 0.4); /* Warna default scrollbar */
             border-radius: 20px; /* Ujung scrollbar yang melengkung */
             border: 1px solid rgba(0, 0, 0, 0.1); /* Memberikan efek border halus */
             transition: background-color 0.3s ease; /* Transisi halus saat di-hover */
         }
-
+        
         .thin-scrollbar::-webkit-scrollbar-thumb:hover {
             background-color: rgba(100, 100, 100, 0.7); /* Ubah warna saat di-hover */
         }
-
+        
         .thin-scrollbar::-webkit-scrollbar-track {
             background-color: transparent; /* Warna track yang halus */
             border-radius: 10px; /* Ujung track yang melengkung */
         }
     </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <link rel="website icon" type="image/png" href="{% static 'web_icon.png' %}">
     <title>{% block title %}{{ title }}{% endblock %} | MIK</title>
 </head>
-<body class="bg-gray-400 dark:bg-gray-800 px-20 py-20 thin-scrollbar">
+<body class="bg-gray-300 dark:bg-gray-800 px-20 py-20 thin-scrollbar">
     <form action="." method="post" enctype="multipart/form-data">
         {% csrf_token %}
+        <input type="hidden" value="update-profile" name="metode">
         <div class="flex gap-20 bg-transparent">
             <div class=" w-1/4 bg-transparent">
                 <p class="text-gray-400 font-semibold text-lg">Profile</p>
                 <p class="text-gray-400 text-sm">This information will be displayed publicly so be careful what you share.</p>
             </div>
-            <div class=" w-3/4 bg-gray-400 rounded-md border-2 border-blue-400">
+            <div class=" w-3/4 bg-gray-300 rounded-md border-2 border-blue-400">
                 <div class="mt-5 px-5">
                     <p class="dark:text-gray-900 font-medium text-md">Photo</p>
                     <div class="flex items-center space-x-5 mt-3">
                         <img id="profilepic-id" src="{% static 'web_icon.png' %}" alt="" class="w-12 h-12 rounded-full border-2 border-gray-500">
-                        <label for="image-profile-id" class="rounded-md text-gray-900 bg-gray-500 cursor-pointer px-3 py-1 text-sm font-semibold border-2 border-gray-900">Change</label>
-                        <input type="file" id="image-profile-id" name="image-profile" class="hidden" onchange="previewImage(event)">
+                        <label for="image-profile-id" class="rounded-md text-gray-900 bg-gray-400 cursor-pointer px-3 py-1 text-sm font-semibold border-2 border-gray-900">Change</label>
+                        <input type="file" id="image-profile-id" accept="image/*" name="image-profile" class="hidden" onchange="previewImage(event)">
                     </div>
                 </div>
                 <div class="mt-7 px-5">
                     <label for="username-id" class="dark:text-gray-900 font-medium text-md">Username</label>
-                    <input type="text" value="{{ request.user.username }}" name="username" id="username-id" class="block bg-gray-400 border-2 border-gray-600 rounded-md mt-2 w-1/2 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
+                    <input type="text" value="{{ request.user.username }}" name="username" id="username-id" class="block bg-transparent border-2 border-gray-600 rounded-md mt-2 w-1/2 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
                 </div>
                 <div class="my-7 px-5">
                     <p class="dark:text-gray-900 font-medium text-md">About</p>
-                    <textarea name="" id="" class="thin-scrollbar bg-gray-400 border-2 border-gray-600 rounded-md mt-2 w-4/5 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-2 text-sm text-gray-800 font-medium"></textarea>
+                    <textarea name="" id="" class="thin-scrollbar bg-transparent border-2 border-gray-600 rounded-md mt-2 w-4/5 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-2 text-sm text-gray-800 font-medium"></textarea>
                     <p class="text-gray-800 text-sm">Write a few Sentences about yourself.</p>
                 </div>
             </div>
         </div>
         <hr class="my-10 px-20 border border-gray-700">
         <div class="flex gap-20 bg-transparent">
-            <div class=" w-1/4 bg-transparent">
+            <div class="w-1/4 bg-transparent">
                 <p class="text-gray-400 font-semibold text-lg">Personal Information</p>
                 <p class="text-gray-400 text-sm">Use your correct information so we can chit chat on whatsapp :)</p>
             </div>
-            <div class=" w-3/4 bg-gray-400 rounded-md border-2 border-blue-400">
+            <div class=" w-3/4 bg-gray-300 rounded-md border-2 border-blue-400">
                 <div class="flex gap-10 mt-5 px-5">
                     <div class="w-1/2">
                         <label for="first-name-id" class="dark:text-gray-900 font-medium text-md">First Name</label>
-                        <input type="text" value="{{ request.user.first_name }}" name="first-name" id="first-name-id" class="block bg-gray-400 border-2 border-gray-600 rounded-md mt-2 w-4/5 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
+                        <input type="text" value="{{ request.user.first_name }}" name="first-name" id="first-name-id" class="block bg-transparent border-2 border-gray-600 rounded-md mt-2 w-4/5 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
                     </div>
                     <div class="w-1/2">
                         <label for="last-name-id" class="dark:text-gray-900 font-medium text-md">Last Name</label>
-                        <input type="text" value="{{ request.user.last_name }}" name="last-name" id="last-name-id" class="block bg-gray-400 border-2 border-gray-600 rounded-md mt-2 w-4/5 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
+                        <input type="text" value="{{ request.user.last_name }}" name="last-name" id="last-name-id" class="block bg-transparent border-2 border-gray-600 rounded-md mt-2 w-4/5 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
                     </div>
                 </div>
                 <div class="mt-7 px-5">
                     <label for="email-id" class="dark:text-gray-900 font-medium text-md">Email</label>
-                    <input type="text" value="{{ request.user.email }}" name="email" id="email-id" class="block bg-gray-400 border-2 border-gray-600 rounded-md mt-2 w-1/2 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
-                </div>
-                <div class="mt-7 px-5">
-                    <label for="country-id" class="dark:text-gray-900 font-medium text-md">Country</label>
-                    <input type="text" name="country" id="country-id" class="block bg-gray-400 border-2 border-gray-600 rounded-md mt-2 w-2/5 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
+                    <input type="text" value="{{ request.user.email }}" name="email" id="email-id" class="block bg-transparent border-2 border-gray-600 rounded-md mt-2 w-1/2 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
                 </div>
                 <div class="flex gap-10 my-7 px-5">
                     <div class="w-1/3">
-                        <label for="city-id" class="dark:text-gray-900 font-medium text-md">City</label>
-                        <input type="text" name="city" id="city-id" class="block bg-gray-400 border-2 border-gray-600 rounded-md mt-2 w-full focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
+                        <label for="state-id" class="dark:text-gray-900 font-medium text-md">State / Province</label>
+                        <select name="state" id="state-id" class="block bg-transparent border-2 border-gray-600 rounded-md mt-2 w-full focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
+                            <option value="" class="bg-gray-800 text-sm font-semibold text-gray-400 hover:text-white" selected></option>
+                        </select>
                     </div>
                     <div class="w-1/3">
-                        <label for="state-id" class="dark:text-gray-900 font-medium text-md">State / Province</label>
-                        <input type="text" name="state" id="state-id" class="block bg-gray-400 border-2 border-gray-600 rounded-md mt-2 w-full focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
+                        <label for="city-id" class="dark:text-gray-900 font-medium text-md">City</label>
+                        <select name="city" id="city-id" class="block bg-transparent border-2 border-gray-600 rounded-md mt-2 w-full focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
+                            <option value="" class="bg-gray-800 text-sm font-semibold text-gray-400 hover:text-white" selected></option>
+                        </select>
                     </div>
                     <div class="w-1/3">
                         <label for="zip-id" class="dark:text-gray-900 font-medium text-md">Zip / Postal Code</label>
-                        <input type="text" name="zip" id="zip-id" class="block bg-gray-400 border-2 border-gray-600 rounded-md mt-2 w-full focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
+                        <input type="text" name="zip" id="zip-id" class="block bg-transparent border-2 border-gray-600 rounded-md mt-2 w-full focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
                     </div>
                 </div>
             </div>
         </div>
+        <hr class="my-10 px-20 border border-gray-700">
+        <div class="flex gap-20 bg-transparent">
+            <div class="w-1/4 bg-transparent">
+                <p class="text-gray-400 font-semibold text-lg">Password</p>
+                <p class="text-gray-400 text-sm">Password</p>
+            </div>
+            <div class="w-3/4 bg-gray-300 rounded-md border-2 border-blue-400 flex gap-10">
+                <div class="w-10/12 flex items-center justify-start">
+                    <button type="button" data-modal-target="change-password-id" data-modal-toggle="change-password-id" class="rounded-md m-5 text-gray-900 bg-gray-400 cursor-pointer p-1 text-sm font-semibold border-2 border-gray-900">Change Password</button>
+                </div>
+                <div class="w-1/12 flex justify-center">
+                    <button type="button" class="rounded-md m-5 text-gray-900 bg-gray-400 cursor-pointer p-1 text-sm font-semibold border-2 border-gray-900">Cancel</button>
+                </div>
+                <div class="w-1/12 flex justify-center">
+                    <button type="button" class="rounded-md m-5 text-gray-900 bg-gray-400 cursor-pointer p-1 text-sm font-semibold border-2 border-gray-900">Update</button>
+                </div>
+            </div>
+        </div>
     </form>
+    <div id="change-password-id" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-md max-h-full">
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+                <!-- Modal header -->
+                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600 border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                        Change Your Password
+                    </h3>
+                    <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="authentication-modal">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="p-4 md:p-5">
+                    <form class="space-y-4" action="#">
+                        {% csrf_token %}
+                        <input type="hidden" name="metode" value="update-password">
+                        <div>
+                            <label for="old-password-id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your existing password</label>
+                            <input type="password" name="old-password" id="old-password-id" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required />
+                        </div>
+                        <div>
+                            <label for="new-password-id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">New password</label>
+                            <input type="password" name="new-password" id="new-password-id" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required />
+                        </div>
+                        <div>
+                            <label for="retype-password-id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm new password</label>
+                            <input type="password" name="retype-password" id="retype-password-id" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required />
+                        </div>
+                        <hr class="w-full border-b border-gray-500">
+                        <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Change Password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 <script>
     function previewImage(event) {
@@ -109,5 +171,41 @@
         output.onload = function() {
             URL.revokeObjectURL(output.src)
         }
-    }
+    };
+
+    $(document).ready(function() {
+        $.ajax({
+            url : '/api/get-province/',
+            method : 'GET',
+            success : function(response) {
+                var provinces = response;
+                console.log(provinces);
+                $('#state-id').empty().append('<option class="bg-gray-800 text-sm font-semibold text-gray-400 hover:text-white" value="">SELECT PROVINCE</option>');
+                provinces.forEach(function(province) {
+                    $('#state-id').append(`<option province="${province.id}" class="bg-gray-800 text-sm font-semibold text-gray-400 hover:text-white" value="${province.name}">${province.name}</option>`)
+                });
+            },
+            error : function() {
+                alert('Error fetching provincies');
+            }
+        });
+
+        $('#state-id').change(function() {
+            var selectedOption = $(this).find(':selected');
+            var province_id = selectedOption.attr('province');
+
+            $.ajax({
+                url : '/api/get-cities/' + province_id + '/',
+                method : 'GET',
+                success : function(response) {
+                    var cities = response;
+                    console.log(cities);
+                    $('#city-id').empty().append('<option class="bg-gray-800 text-sm font-semibold text-gray-400 hover:text-white" value="">SELECT CITY</option>');
+                    cities.forEach(function(city) {
+                        $('#city-id').append('<option class="bg-gray-800 text-sm font-semibold text-gray-400 hover:text-white" value="' + city.id + '">' + city.name + '</option>')
+                    })
+                }
+            })
+        })
+    });
 </script>
