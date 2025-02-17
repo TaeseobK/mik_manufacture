@@ -63,7 +63,7 @@
                         <div id="operationdropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-md shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
                             <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="avatarButton">
                                 <li>
-                                    <a href="{% url 'user_profile:employee_list' %}" class="block px-8 py-1 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Users</a>
+                                    <a href="{% url 'user_profile:user_list' %}" class="block px-8 py-1 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Users</a>
                                 </li>
                                 <li>
                                     <a href="{% url 'master:companies_list' %}" class="block px-8 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Companies</a>
@@ -75,7 +75,7 @@
             </div>
             <div class="p-1 w-1/3">
                 {% if request.user.is_authenticated %}
-                    <img id="avatarButton" type="button" data-dropdown-toggle="userDropdown" data-dropdown-placement="bottom-start" class="float-end w-8 h-8 rounded-full cursor-pointer" src="{% static 'mik.jpg' %}" alt="User dropdown">
+                    <img id="avatarButton" type="button" data-dropdown-toggle="userDropdown" data-dropdown-placement="bottom-start" class="float-end w-8 h-8 rounded-full cursor-pointer" {% if profile.image.url %} src="{{ profile.image.url }}" {% else %} src="{% static 'mik.jpg' %}" {% endif %} alt="User dropdown">
                     <!-- Dropdown menu -->
                     <div id="userDropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
                         <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
@@ -89,7 +89,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Profile</a>
+                                <a href="{% url 'core:user_profile' request.user.pk %}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Profile</a>
                             </li>
                         </ul>
                         <div class="py-1">
@@ -101,7 +101,7 @@
             </div>
         </div> 
         <div class="max-w-screen flex flex-wrap items-center justify-end mx-5 p-1">
-            {% if not feature == 'Cant Add' and not title_2 == 'Users' %}
+            {% if not feature == 'Cant Add' and not title_2 == 'Detail User' and not title_2 == 'Users' %}
                 <div class="flex space-y-4 sm:flex-row sm:justify-start sm:space-y-0 w-1/3">
                     {% if title_2 == 'Companies' %}
                     <a href="{% url 'master:new_company' %}" class="inline-flex justify-content items-center py-1 px-1 text-base text-right text-white rounded-sm bg-gray-700 hover:bg-gray-500 focus:ring-1 focus:ring-white dark:focus:ring-white transform hover:scale-105 transition-transform duration-300">
@@ -129,23 +129,31 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
-                    <!-- Input Box -->
-                    <input placeholder="Search" class="bg-gray-700 text-white text-left w-full h-8 pl-10 pr-2 rounded" type="text" />
+                    {% if not feature == 'Cant Add' %}
+                        <input placeholder="Search" id="search" class="bg-gray-700 text-white text-left w-full h-8 pl-10 pr-2 rounded focus:outline-none" type="text" />
+                    {% endif %}
                 </div>
             </div>            
             <div class="flex justify-end w-1/3">
-                <div class="mr-5">
-                    <button class="float-end gap-1 bg-gray-700 px-1 rounded-r py-1 hover:bg-gray-600">
-                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
-                        </svg>                                                                
-                    </button>
-                    <button class="float-end gap-1 bg-gray-700 px-1 rounded-l py-1 hover:bg-gray-600">
-                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 19-7-7 7-7"/>                                                                                        
-                        </svg>
-                    </button>
-                </div>
+                {% if not feature == 'Cant Add' %}
+                    <div class="mr-5">
+                        <p class="float-start gap-1 bg-transparent font-semibold text-md text-gray-400 mr-5 text-center justify-center mt-1">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</p>
+                        <a {% if page_obj.has_next %} href="?page={{ page_obj.next_page_number }}" {% endif %}>
+                            <button class="float-end gap-1 bg-gray-700 px-1 rounded-r py-1 hover:bg-gray-600">
+                                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+                                </svg>                                                                
+                            </button>
+                        </a>
+                        <a {% if page_obj.has_previous %} href="?page={{ page_obj.previous_page_number }}" {% endif %}>
+                            <button class="float-end gap-1 bg-gray-700 px-1 rounded-l py-1 hover:bg-gray-600">
+                                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 19-7-7 7-7"/>                                                                                        
+                                </svg>
+                            </button>
+                        </a>
+                    </div>
+                {% endif %}
                 <button class="float-end gap-1 bg-gray-700 px-1 rounded-l py-1 hover:bg-gray-600 focus:ring-1">
                     <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M9 8h10M9 12h10M9 16h10M4.99 8H5m-.02 4h.01m0 4H5"/>

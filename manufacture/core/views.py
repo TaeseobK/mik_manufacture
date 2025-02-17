@@ -2,18 +2,26 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash, authenticate
 from user_profile.models import Profile
-from django.template import RequestContext
 from django.http import JsonResponse
-from django.conf import settings
 from .models import UserActivity
-from django.conf import settings
+from django.core.files.storage import default_storage
 import requests
 
 def home(request) :
+    u = request.user
+
+    if u.is_authenticated :
+        user = User.objects.using('default').get(id=int(u.pk))
+        profile = Profile.objects.using('profile').get(user=int(user.pk))
+
+    else :
+        profile = ''
 
     return render(request, 'core/home.html', {
-        'title' : 'Home'
+        'title' : 'Home',
+        'profile' : profile if profile else None
     })
 
 def register(request) :
@@ -117,6 +125,78 @@ def profile(request, id_user) :
     user = request.user
 
     profile = Profile.objects.using('profile').get(user=int(id_user))
+
+    if request.method == 'POST' :
+        metode = request.POST['metode']
+
+        if metode == 'update-profile' :
+            files = request.FILES.get('image-profile')
+            user = request.user
+            phone = request.POST['phone']
+            company = request.POST['company']
+            username = request.POST['username']
+            about = request.POST['about']
+            first_name = request.POST['first-name']
+            last_name = request.POST['last-name']
+            email = request.POST['email']
+            state = request.POST['state']
+            city = request.POST['city']
+            zip = request.POST['zip']
+
+            file_name = None
+
+            if files :
+                file_name = f'profile_images/{files.name}'
+                file_name = default_storage.save(file_name, files)
+                file_url = default_storage.url(file_name)
+
+            new_p = Profile.objects.using('profile').get(user=user.pk)
+
+            new_p.phone = phone
+            new_p.image = file_name if file_name else 'Doesnt Exist'
+            new_p.company = company
+            new_p.about = about
+            new_p.province = state
+            new_p.city = city
+            new_p.zip = zip
+            new_p.save()
+
+            up_user = User.objects.using('default').get(id=int(user.pk))
+
+            up_user.username = username
+            up_user.first_name = first_name
+            up_user.last_name = last_name
+            up_user.email = email
+            up_user.save()
+
+            return redirect('core:user_profile', id_user=id_user)
+        
+        elif metode == 'update-password' :
+            old = request.POST['old-password']
+            new = request.POST['new-password']
+            retype = request.POST['retype-password']
+            user_new = User.objects.using('default').get(id=int(id_user))
+
+            print(old)
+            print(new)
+            print(user_new.password)
+
+            if new == retype :
+                if user_new.check_password(old) :
+                    user_new.set_password(new)
+                    user_new.save()
+
+                    update_session_auth_hash(request, user_new)
+                    messages.success(request, "Your Password Has Been Changed")
+                    return redirect('core:home')
+                
+                else :
+                    messages.error(request, "Incorrect Old Password!")
+                    return redirect('core:user_profile', id_user=id_user)
+
+            else :
+                messages.error(request, "Your New Password and Confirmation Password Does Not Match")
+                return redirect('core:user_profile', id_user=id_user)
 
     return render(request, 'core/profile.html', {
         'title' : 'User Profile',

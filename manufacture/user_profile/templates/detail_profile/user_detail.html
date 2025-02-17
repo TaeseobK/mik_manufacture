@@ -17,33 +17,45 @@
 </div>
 <form id="form-user" class="w-3/5 bg-gray-800 py-10 px-8 rounded-md shadow-xl text-gray-900 mx-5 my-1 border-1/2 border-gray-200 resize-y" action="." method="post">
     {% csrf_token %}
-    <div class="flex gap-5 items-center my-2">
-        <label for="department-id" class="text-gray-400 text-md font-semibold items-center w-1/5">Name</label>
-        <p class="w-2/5 justify-start border-b-2 text-md font-semibold items-center text-gray-400 bg-transparent border-gray-400">{{ data.0.user.username }}</p>
-    </div>
-    <div class="flex gap-5 items-center mt-5">
-        <label for="manager-id" class="text-gray-400 text-md font-semibold items-center w-1/5">Manager</label>
-        <select name="manager" id="manager-id" class="w-2/5 justify-start border-b-2 text-md font-semibold items-center text-gray-400 bg-transparent focus:outline-none border-gray-400 hover:border-red-600 focus:border-blue-600">
-            <option value="" class="bg-gray-800 text-gray-400 hover:text-white font-semibold" selected>Choose Manager</option>
-        </select>
-    </div>
-    <div class="flex gap-5 items-center mt-5">
-        <label for="parent-id" class="text-gray-400 text-md font-semibold items-center w-1/5">Parent Department</label>
-        <select name="parent" id="parent-id" class="w-2/5 justify-start border-b-2 text-md font-semibold items-center text-gray-400 bg-transparent focus:outline-none border-gray-400 hover:border-red-600 focus:border-blue-600">
-            <option value="" class="bg-gray-800 text-gray-400 hover:text-white font-semibold" selected>Choose Parent</option>
-            {% for data in data.0.department %}
-            <option value="{{ data.pk }}" class="bg-gray-800 text-gray-400 hover:text-white font-semibold" {% if data.pk == department.parent.pk %} selected {% endif %} >{{ data.department }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="flex gap-5 items-center mt-5">
-        <label for="company-id" class="text-gray-400 text-md font-semibold items-center w-1/5">Company</label>
-        <select name="company" id="company-id" class="w-2/5 justify-start border-b-2 text-md font-semibold items-center text-gray-400 bg-transparent focus:outline-none border-gray-400 hover:border-red-600 focus:border-blue-600">
-            <option value="" class="bg-gray-800 text-gray-400 hover:text-white font-semibold" selected>Choose Company</option>
-            {% for data in data.0.company %}
-                <option value="{{ data.pk }}" class="bg-gray-800 text-gray-400 hover:text-white font-semibold" {% if data.pk == department.company.pk %} selected {% endif %} >{{ data.entity }}</option>
-            {% endfor %}
-        </select>
+    <div class="bg-transparent p-2">
+        <ul class="space-y-5">
+            <li class="mt-4">
+                <div class="flex items-center justify-start bg-transparent w-full">
+                    <label for="username-id" class="w-2/12 text-gray-400 font-semibold text-medium">Username</label>
+                    <input type="text" id="username-id" name="username" value="{{ user.username }}" class="w-3/12 bg-transparent border-b border-gray-400 focus:outline-none hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-medium">
+                </div>
+            </li>
+            <li class="mt-4">
+                <div class="flex items-center justify-start bg-transparent w-full">
+                    <div class="w-full flex items-center">
+                        <label for="first-name-id" class="w-4/12 text-gray-400 font-semibold text-medium">First Name</label>
+                        <input type="text" name="first-name" id="first-name-id" value="{{ user.first_name }}" class="w-6/12 bg-transparent border-b border-gray-400 focus:outline-none hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-medium">
+                    </div>
+                    <div class="w-full flex items-center">
+                        <label for="last-name-id" class="w-4/12 text-gray-400 font-semibold text-medium">Last Name</label>
+                        <input type="text" name="last-name" id="last-name-id" value="{{ user.last_name }}" class="w-6/12 bg-transparent border-b border-gray-400 focus:outline-none hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-medium">
+                    </div>
+                </div>
+            </li>
+            <li class="mt-4">
+                <div class="flex items-center w-full justify-start bg-transparent">
+                    <label for="user-email-id" class="w-2/12 text-gray-400 font-semibold text-medium">Email</label>
+                    <input type="text" name="user-email" id="user-email-id" value="{{ user.email }}" class="w-3/12 bg-transparent border-b border-gray-400 focus:outline-none hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-medium">
+                </div>
+            </li>
+            <li class="mt-4">
+                <div class="ml-3 space-y-2 items-center w-full justify-start bg-transparent gap-5">
+                    <div class="flex gap-3 items-center">
+                        <input type="checkbox" id="staff-id" name="staff" value="1" {% if user.is_staff %} checked {% endif %} class="text-gray-400 font-medium cursor-pointer text-medium">
+                        <label for="staff-id" class="text-gray-400 font-medium text-medium">Staff</label>
+                    </div>
+                    <div class="flex gap-3 items-center">
+                        <input type="checkbox" id="active-id" name="active" value="1" {% if user.is_active %} checked {% endif %} class="text-gray-400 font-medium cursor-pointer text-medium">
+                        <label for="active-id" class="text-gray-400 font-medium text-medium">Active</label>
+                    </div>
+                </div>
+            </li>
+        </ul>
     </div>
 </form>
 {% endblock %}

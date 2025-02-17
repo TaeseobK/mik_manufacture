@@ -34,6 +34,11 @@
     <link rel="website icon" type="image/png" href="{% static 'web_icon.png' %}">
     <title>{% block title %}{{ title }}{% endblock %} | MIK</title>
 </head>
+<a href="{% url 'core:home' %}" class="top-5 left-5 p-1 absolute bg-gray-500 border-blue-400 border-2 rounded-md hover:bg-gray-800 dark:text-gray-800 hover:dark:text-gray-400">
+    <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 19-7-7 7-7"/>
+    </svg>
+</a>
 <body class="bg-gray-300 dark:bg-gray-800 px-20 py-20 thin-scrollbar">
     <form action="." method="post" enctype="multipart/form-data">
         {% csrf_token %}
@@ -47,7 +52,7 @@
                 <div class="mt-5 px-5">
                     <p class="dark:text-gray-900 font-medium text-md">Photo</p>
                     <div class="flex items-center space-x-5 mt-3">
-                        <img id="profilepic-id" src="{% static 'web_icon.png' %}" alt="" class="w-12 h-12 rounded-full border-2 border-gray-500">
+                        <img id="profilepic-id" src="{{ profile.image.url }}" alt="" class="w-12 h-12 rounded-full border-2 border-gray-500">
                         <label for="image-profile-id" class="rounded-md text-gray-900 bg-gray-400 cursor-pointer px-3 py-1 text-sm font-semibold border-2 border-gray-900">Change</label>
                         <input type="file" id="image-profile-id" accept="image/*" name="image-profile" class="hidden" onchange="previewImage(event)">
                     </div>
@@ -58,7 +63,7 @@
                 </div>
                 <div class="my-7 px-5">
                     <p class="dark:text-gray-900 font-medium text-md">About</p>
-                    <textarea name="" id="" class="thin-scrollbar bg-transparent border-2 border-gray-600 rounded-md mt-2 w-4/5 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-2 text-sm text-gray-800 font-medium"></textarea>
+                    <textarea name="about" id="about-id" class="thin-scrollbar bg-transparent border-2 border-gray-600 rounded-md mt-2 w-4/5 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-2 text-sm text-gray-800 font-medium">{{ profile.about }}</textarea>
                     <p class="text-gray-800 text-sm">Write a few Sentences about yourself.</p>
                 </div>
             </div>
@@ -84,6 +89,14 @@
                     <label for="email-id" class="dark:text-gray-900 font-medium text-md">Email</label>
                     <input type="text" value="{{ request.user.email }}" name="email" id="email-id" class="block bg-transparent border-2 border-gray-600 rounded-md mt-2 w-1/2 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
                 </div>
+                <div class="mt-7 px-5">
+                    <label for="phone-id" class="dark:text-gray-900 font-medium text-md">Phone Number</label>
+                    <input type="text" value="{{ profile.phone }}" name="phone" id="phone-id" class="block bg-transparent border-2 border-gray-600 rounded-md mt-2 w-1/3 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
+                </div>
+                <div class="mt-7 px-5">
+                    <label for="company-id" class="dark:text-gray-900 font-medium text-md">Company Name</label>
+                    <input type="text" value="{{ profile.company }}" name="company" id="company-id" class="block bg-transparent border-2 border-gray-600 rounded-md mt-2 w-1/3 focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
+                </div>
                 <div class="flex gap-10 my-7 px-5">
                     <div class="w-1/3">
                         <label for="state-id" class="dark:text-gray-900 font-medium text-md">State / Province</label>
@@ -99,7 +112,7 @@
                     </div>
                     <div class="w-1/3">
                         <label for="zip-id" class="dark:text-gray-900 font-medium text-md">Zip / Postal Code</label>
-                        <input type="text" name="zip" id="zip-id" class="block bg-transparent border-2 border-gray-600 rounded-md mt-2 w-full focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
+                        <input type="text" name="zip" value="{{ profile.zip }}" id="zip-id" class="block bg-transparent border-2 border-gray-600 rounded-md mt-2 w-full focus:outline-none focus:border-2 focus:border-blue-600 px-3 py-1 text-sm text-gray-800 font-medium">
                     </div>
                 </div>
             </div>
@@ -112,13 +125,11 @@
             </div>
             <div class="w-3/4 bg-gray-300 rounded-md border-2 border-blue-400 flex gap-10">
                 <div class="w-10/12 flex items-center justify-start">
-                    <button type="button" data-modal-target="change-password-id" data-modal-toggle="change-password-id" class="rounded-md m-5 text-gray-900 bg-gray-400 cursor-pointer p-1 text-sm font-semibold border-2 border-gray-900">Change Password</button>
+                    <button type="button" data-modal-target="change-password-id" data-modal-toggle="change-password-id" class="rounded-md my-3 mx-5 text-gray-900 bg-gray-400 cursor-pointer p-1 text-sm font-semibold border-2 border-gray-900">Change Password</button>
                 </div>
-                <div class="w-1/12 flex justify-center">
-                    <button type="button" class="rounded-md m-5 text-gray-900 bg-gray-400 cursor-pointer p-1 text-sm font-semibold border-2 border-gray-900">Cancel</button>
-                </div>
-                <div class="w-1/12 flex justify-center">
-                    <button type="button" class="rounded-md m-5 text-gray-900 bg-gray-400 cursor-pointer p-1 text-sm font-semibold border-2 border-gray-900">Update</button>
+                <div class="w-2/12 flex gap-3 items-center justify-center">
+                    <button type="button" onclick="window.location.href='/';" class="rounded-md my-3 text-gray-900 bg-gray-400 cursor-pointer p-1 text-sm font-semibold border-2 border-gray-900">Cancel</button>
+                    <button type="submit" class="rounded-md my-3 mr-5 text-gray-900 bg-gray-400 cursor-pointer p-1 text-sm font-semibold border-2 border-gray-900">Update</button>
                 </div>
             </div>
         </div>
@@ -132,7 +143,7 @@
                     <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                         Change Your Password
                     </h3>
-                    <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="authentication-modal">
+                    <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="change-password-id">
                         <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                         </svg>
@@ -140,8 +151,8 @@
                     </button>
                 </div>
                 <!-- Modal body -->
-                <div class="p-4 md:p-5">
-                    <form class="space-y-4" action="#">
+                <div class="p-4 md:p-5 justify-center">
+                    <form class="space-y-4" action="." method="post">
                         {% csrf_token %}
                         <input type="hidden" name="metode" value="update-password">
                         <div>
@@ -156,8 +167,8 @@
                             <label for="retype-password-id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm new password</label>
                             <input type="password" name="retype-password" id="retype-password-id" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required />
                         </div>
-                        <hr class="w-full border-b border-gray-500">
-                        <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Change Password</button>
+                        <hr class="border-b border-gray-500">
+                        <button type="submit" class="w-full justify-center text-gray-900 bg-gray-400 hover:bg-gray-800 hover:text-gray-400 focus:outline-none focus:ring-blue-300 font-medium rounded-md text-sm px-2 py-2 text-center border-gray-900 border-2 dark:bg-gray-400 dark:hover:bg-gray-800 dark:focus:ring-blue-800">Change Password</button>
                     </form>
                 </div>
             </div>
@@ -174,38 +185,64 @@
     };
 
     $(document).ready(function() {
+    var selectedCity = "{{ profile.city|escapejs }}";
+    var selectedProvince = "{{ profile.province|escapejs }}";
+    
         $.ajax({
-            url : '/api/get-province/',
-            method : 'GET',
-            success : function(response) {
+            url: '/api/get-province/',
+            method: 'GET',
+            success: function(response) {
                 var provinces = response;
-                console.log(provinces);
+                console.log(provinces); // Verifikasi respons provinsi
                 $('#state-id').empty().append('<option class="bg-gray-800 text-sm font-semibold text-gray-400 hover:text-white" value="">SELECT PROVINCE</option>');
+                
+                // Loop untuk mengisi dropdown provinsi
                 provinces.forEach(function(province) {
-                    $('#state-id').append(`<option province="${province.id}" class="bg-gray-800 text-sm font-semibold text-gray-400 hover:text-white" value="${province.name}">${province.name}</option>`)
+                    var isSelected = (selectedProvince === province.name) ? 'selected' : '';
+                    $('#state-id').append(`<option province="${province.id}" class="bg-gray-800 text-sm font-semibold text-gray-400 hover:text-white" ${isSelected} value="${province.name}">${province.name}</option>`);
                 });
+
+                // Trigger change jika ada provinsi yang sudah dipilih (untuk mengisi kota secara otomatis)
+                if (selectedProvince) {
+                    $('#state-id').trigger('change');
+                }
             },
-            error : function() {
-                alert('Error fetching provincies');
+            error: function() {
+                alert('Error fetching provinces');
             }
         });
 
+        // Event handler ketika provinsi dipilih
         $('#state-id').change(function() {
             var selectedOption = $(this).find(':selected');
             var province_id = selectedOption.attr('province');
-
-            $.ajax({
-                url : '/api/get-cities/' + province_id + '/',
-                method : 'GET',
-                success : function(response) {
-                    var cities = response;
-                    console.log(cities);
-                    $('#city-id').empty().append('<option class="bg-gray-800 text-sm font-semibold text-gray-400 hover:text-white" value="">SELECT CITY</option>');
-                    cities.forEach(function(city) {
-                        $('#city-id').append('<option class="bg-gray-800 text-sm font-semibold text-gray-400 hover:text-white" value="' + city.id + '">' + city.name + '</option>')
-                    })
-                }
-            })
-        })
+            console.log(province_id); // Pastikan ini menunjukkan ID provinsi yang benar
+            
+            // Jika province_id tidak kosong, lakukan request untuk mendapatkan kota
+            if (province_id) {
+                $.ajax({
+                    url: '/api/get-cities/' + province_id + '/',
+                    method: 'GET',
+                    success: function(response) {
+                        var cities = response;
+                        console.log(cities); // Verifikasi respons kota
+                        
+                        $('#city-id').empty().append('<option class="bg-gray-800 text-sm font-semibold text-gray-400 hover:text-white" value="">SELECT CITY</option>');
+                        
+                        // Loop untuk mengisi dropdown kota
+                        cities.forEach(function(city) {
+                            var isSelectedCity = (selectedCity === city.name) ? 'selected' : '';
+                            $('#city-id').append(`<option class="bg-gray-800 text-sm font-semibold text-gray-400 hover:text-white" ${isSelectedCity} value="${city.name}">${city.name}</option>`);
+                        });
+                    },
+                    error: function() {
+                        alert('Error fetching cities');
+                    }
+                });
+            } else {
+                // Jika provinsi tidak dipilih, kosongkan dropdown kota
+                $('#city-id').empty().append('<option class="bg-gray-800 text-sm font-semibold text-gray-400 hover:text-white" value="">SELECT CITY</option>');
+            }
+        });
     });
 </script>

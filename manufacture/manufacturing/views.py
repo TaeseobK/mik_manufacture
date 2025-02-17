@@ -20,26 +20,22 @@ def staff_required(user) :
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def home(request) :
-    
     user = request.user
-
-    if Employee.objects.using('profile').filter(user=user.pk).exists() :
-        pass
-    
-    else :
-        Employee.objects.using('profile').create(
-            user=user.pk
-        )
+    profiles = Profile.objects.using('profile').get(user=int(user.pk))
 
     return render(request, 'pages_manufacture/home.html', {
         'title' : 'manufacturing',
         'title_1' : 'Home',
-        'feature' : 'Cant Add'
+        'feature' : 'Cant Add',
+        'profile' : profiles
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='login/')
 def manufacturing_orders(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     search_query = request.GET.get('search', '')
 
     mos = ManufacturingOrders.objects.using('manufacturing').all()
@@ -114,28 +110,40 @@ def manufacturing_orders(request) :
     return render(request, 'pages_manufacture/manufacturing_orders.html', {
         'title_1' : 'Manufacture',
         'title_2' : 'Manufacturing Orders',
-        'page_obj' : page_obj
+        'page_obj' : page_obj,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='login/')
 def unbuild_orders(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     return render(request, 'pages_manufacture/unbuild_orders.html', {
         'title_1' : 'Manufacture',
-        'title_2' : 'Unbuild Orders'
+        'title_2' : 'Unbuild Orders',
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='login/')
 def scrap_orders(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     return render(request, 'pages_manufacture/scrap_orders.html', {
         'title_1' : 'Manufacture',
-        'title_2' : 'Scrap Orders'
+        'title_2' : 'Scrap Orders',
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='login/')
 def new_mo(request):
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     products = Product.objects.using('inventory').all()
     boms = BillofMaterials.objects.using('manufacturing').filter(bom_type="Manufacture This Product")
     companies = Entity.objects.using('master').all()
@@ -262,12 +270,16 @@ def new_mo(request):
         'products': products,
         'boms': bom_product_name,
         'companies' : companies,
-        'warehouses' : warehouses
+        'warehouses' : warehouses,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='login/')
 def product_list(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     search_query = request.GET.get('search', '')
 
     products = Product.objects.using('inventory').all()
@@ -305,12 +317,16 @@ def product_list(request) :
     return render(request, 'pages_manufacture/product_list.html', {
         'title_1' : 'Manufacture',
         'title_2' : 'Product List',
-        'page_obj' : page_obj
+        'page_obj' : page_obj,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def list_bom(request):
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     search_query = request.GET.get('search', '')
 
     boms = BillofMaterials.objects.using('manufacturing').all()
@@ -353,12 +369,16 @@ def list_bom(request):
     return render(request, 'pages_manufacture/bom_list.html', {
         'title_1': 'manufacturing',
         'title_2': 'Bill of Materials',
-        'page_obj': page_obj
+        'page_obj': page_obj,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def new_bom(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     products = Product.objects.using('inventory').all()
     warehoses = Warehouse.objects.using('inventory').all()
 
@@ -398,12 +418,16 @@ def new_bom(request) :
         'feature' : 'Cant Add',
         'title_2' : 'New BOM',
         'products' : products,
-        'warehouses' : warehoses
+        'warehouses' : warehoses,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def detail_bom(request, bom_id):
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     # Mengambil BOM dari database 'manufacturing' berdasarkan ID
     bom = BillofMaterials.objects.using('manufacturing').get(id=bom_id)
     
@@ -480,12 +504,16 @@ def detail_bom(request, bom_id):
         'bom_components': bom_components,
         'products': products,
         'title_1': 'manufacturing',
-        'warehouses' : warehouses
+        'warehouses' : warehouses,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def detail_mo(request, mo_id) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     mos = ManufacturingOrders.objects.using('manufacturing').get(id=int(mo_id))
     mos.warehouse = int(mos.warehouse)
     companies = Entity.objects.using('master').all()
@@ -611,5 +639,6 @@ def detail_mo(request, mo_id) :
         'components_data' : component_data,
         'warehouses' : whs,
         'companies' : companies,
-        'file_type' : file_type
+        'file_type' : file_type,
+        'profile' : profile
     })

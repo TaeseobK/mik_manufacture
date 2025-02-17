@@ -2,9 +2,11 @@ import json
 from datetime import datetime
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.files.storage import default_storage
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator
 from django.core.paginator import Paginator
 from .models import *
 from user_profile.models import *
@@ -18,15 +20,23 @@ def admin_required(user) :
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def general_settings(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     return render(request, 'pages_master/general_settings.html', {
         'title_1' : 'Settings',
         'title_2' : 'General Settings',
-        'feature' : 'Cant Add'
+        'feature' : 'Cant Add',
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def companies_list(request):
+    search_query = request.GET.get('search', '')
+
+    user = request.user
+    profiles = Profile.objects.using('profile').get(user=int(user.pk))
 
     entities = Entity.objects.using('master').all()
 
@@ -57,15 +67,39 @@ def companies_list(request):
             'profile' : profile
         })
 
+    if search_query :
+        entity_data = [
+            data for data in entity_data
+            if (
+                search_query.lower() in str(data['entity'].entity).lower() or
+                any(search_query.lower() in branch['branch_name'].lower() for branch in data['branches']) or
+                search_query.lower() in str(data['profile'].website).lower()
+            )
+        ]
+    
+    paginator = Paginator(entity_data, 12)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' :
+        return render(request, 'pages_master/companies_list.html', {
+            'page_obj' : page_obj
+        })
+
     return render(request, 'pages_master/companies_list.html', {
         'title_1': 'Settings',
         'title_2': 'Companies',
-        'entities': entity_data
+        'page_obj': page_obj,
+        'profile' : profiles
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def new_company(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     if request.method == 'POST' :
         company_name = request.POST['name-company']
         street_1 = request.POST['street-1']
@@ -126,11 +160,15 @@ def new_company(request) :
         'title_1' : 'Settings',
         'title_2' : 'New Companies',
         'feature' : 'Cant Add',
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def detail_company(request, company_id) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     entity = Entity.objects.using('master').get(id=company_id)
     company_profile = CompanyProfile.objects.using('master').get(entity=entity)
 
@@ -203,32 +241,50 @@ def detail_company(request, company_id) :
         'feature' : 'Cant Add',
         'branches' : branch_data,
         'entity' : entity,
-        'company_profile' : company_profile
-    })
-
-@login_required
-@user_passes_test(admin_required, login_url='/login/')
-def employee_list(request) :
-    return render(request, 'pages_master/employee_list.html', {
-        'title_1' : 'Employees',
-        'title_2' : 'Employees'
+        'company_profile' : company_profile,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(admin_required, login_url='/login/')
 def job_position_list(request) :
+    search_query = request.GET.get('search', '')
+
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
 
     job_position = JobPosition.objects.using('master').all()
+
+    if search_query :
+        job_position = [
+            data for data in job_position
+            if (
+                search_query.lower() in str(data.name).lower()
+            )
+        ]
+
+    paginator = Paginator(job_position, 12)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' :
+        return render(request, 'pages_master/job_position_list.html', {
+            'page_obj' : page_obj
+        })
 
     return render(request, 'pages_master/job_position_list.html', {
         'title_1' : 'Employees',
         'title_2' : 'Job Positions',
-        'job_position' : job_position
+        'page_obj' : page_obj,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(admin_required, login_url='/login/')
 def new_job_position(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
     
     if request.method == 'POST' :
         job_position = request.POST['job-name']
@@ -242,12 +298,15 @@ def new_job_position(request) :
     return render(request, 'master_new/new_job_position.html', {
         'title_1' : 'Employees', 
         'title_2' : 'New Job Positions',
-        'feature' : 'Cant Add'
+        'feature' : 'Cant Add',
+        'profile' :profile
     })
 
 @login_required
 @user_passes_test(admin_required, login_url='/login/')
 def detail_job_position(request, jb_id) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
 
     job_position = JobPosition.objects.using('master').get(id=int(jb_id))
 
@@ -262,24 +321,50 @@ def detail_job_position(request, jb_id) :
         'title_1' : 'Employees',
         'title_2' : 'Detail Job Position',
         'feature' : 'Cant Add',
-        'job_position' : job_position
+        'job_position' : job_position,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(admin_required, login_url='/login/')
 def employment_types(request) :
+    search_query = request.GET.get('search', '')
+
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
 
     data = EmploymentTypes.objects.using('master').all()
+
+    if search_query :
+        data = [
+            d for d in data
+            if (
+                search_query.lower() in str(d.name).lower()
+            )
+        ]
+    
+    paginator = Paginator(data, 12)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' :
+        return render(request, 'pages_master/employment_types.html', {
+            'page_obj' : page_obj
+        })
 
     return render(request, 'pages_master/employment_types.html', {
         'title_1' : 'Employees',
         'title_2' : 'Employment Types',
-        'data' : data
+        'page_obj' : page_obj,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(admin_required, login_url='/login/')
 def new_employment_type(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
 
     if request.method == 'POST' :
         name = request.POST['type-name']
@@ -293,12 +378,15 @@ def new_employment_type(request) :
     return render(request, 'master_new/new_employment_type.html', {
         'title_1' : 'Employees',
         'title_2' : 'New Employment Type',
-        'feature' : 'Cant Add'
+        'feature' : 'Cant Add',
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(admin_required, login_url='/login/')
 def detail_employment_type(request, et_id) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
 
     type = EmploymentTypes.objects.using('master').get(id=int(et_id))
 
@@ -313,12 +401,17 @@ def detail_employment_type(request, et_id) :
         'title_1' : 'Employees', 
         'title_2' : 'Detail Employment Type',
         'feature' : 'Cant Add',
-        'et' : type
+        'et' : type,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(admin_required, login_url='/login/')
 def skill_list(request) :
+    search_query = request.GET.get('search', '')
+
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
 
     all_skills = Skills.objects.using('master').all()
 
@@ -335,15 +428,39 @@ def skill_list(request) :
             'skills' : skills
         })
 
+    if search_query :
+        data_r = [
+            d for d in data_r
+            if (
+                search_query.lower() in str(d['data']).lower() or
+                search_query.lower() in " ".join([str(t['level']) for t in d['levels']]).lower() or
+                search_query.lower() in " ".join([str(t['progress']) for t in d['levels']]).lower() or
+                search_query.lower() in " ".join([str(t['skill']) for t in d['skills']]).lower()
+            )
+        ]
+
+    paginator = Paginator(data_r, 12)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' :
+        return render(request, 'pages_master/skill_list.html', {
+            'page_obj' : page_obj
+        })
+
     return render(request, 'pages_master/skill_list.html', {
         'title_1' : 'Employees',
         'title_2' : 'Skills',
-        'page_obj' : data_r
+        'page_obj' : page_obj,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(admin_required, login_url='/login/')
 def new_skills(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
 
     if request.method == 'POST' :
         skill_type = request.POST['type-name']
@@ -377,12 +494,15 @@ def new_skills(request) :
     return render(request, 'master_new/new_skills.html', {
         'title_1' : 'Employee',
         'title_2' : 'New Skills',
-        'feature' : 'Cant Add'
+        'feature' : 'Cant Add',
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(admin_required, login_url='/login/')
 def detail_skills(request, skill_id) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
     skill = Skills.objects.using('master').get(id=skill_id)
     skill.levels = json.loads(skill.levels)
     skill.skills = json.loads(skill.skills)
@@ -391,24 +511,50 @@ def detail_skills(request, skill_id) :
         'title_1' : 'Employees',
         'title_2' : 'Detail Skill',
         'feature' : 'Cant Add',
-        'data' : skill
+        'data' : skill,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(admin_required, login_url='/login/')
 def departure_list(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
+    search_query = request.GET.get('search', '')
 
     all_departure = Departure.objects.using('master').all()
+
+    if search_query :
+        all_departure = [
+            data for data in all_departure
+            if (
+                search_query.lower() in str(data.departure).lower()
+            )
+        ]
+
+    paginator = Paginator(all_departure, 12)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' :
+        return render(request, 'pages_master/departure_list.html', {
+            'page_obj' : page_obj
+        })
 
     return render(request, 'pages_master/departure_list.html', {
         'title_1' : 'Employee',
         'title_2' : 'Departure Reason',
-        'data' : all_departure
+        'profile' : profile,
+        'page_obj' : page_obj
     })
 
 @login_required
 @user_passes_test(admin_required, login_url='/login/')
 def new_departure(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
 
     if request.method == 'POST' :
         name = request.POST['name']
@@ -422,25 +568,37 @@ def new_departure(request) :
     return render(request, 'master_new/new_departure.html', {
         'title_1' : 'Employee',
         'title_2' : 'New Departure Reason',
-        'feature' : 'Cant Add'
+        'feature' : 'Cant Add',
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(admin_required, login_url='/login/')
 def detail_departure(request, dp_id) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
 
     departure = Departure.objects.using('master').get(id=int(dp_id))
+
+    if request.method == 'POST' :
+        departure.departure = request.POST['name']
+        departure.save()
+        
+        return redirect('master:departure_list')
 
     return render(request, 'detail_master/detail_departure.html', {
         'title_1' : 'Employee',
         'title_2' : 'Detail Departure',
         'feature' : 'Cant Add',
-        'data' : departure
+        'data' : departure,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(admin_required, login_url='/login/')
 def work_locations(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
     search_query = request.GET.get('search', '')
 
     work = WorkLocations.objects.using('master').all()
@@ -468,12 +626,15 @@ def work_locations(request) :
     return render(request, 'pages_master/work_locations.html', {
         'title_1' : 'Employees',
         'title_2' : 'Work Locations',
-        'page_obj' : page_obj
+        'page_obj' : page_obj,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(admin_required, login_url='/login/')
 def new_work_locations(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
 
     company = Entity.objects.using('master').all()
 
@@ -496,12 +657,15 @@ def new_work_locations(request) :
         'title_1' : 'Employees',
         'title_2' : 'New Work Locations',
         'feature' : 'Cant Add',
-        'company' : company
+        'company' : company,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(admin_required, login_url='/login/')
 def detail_work_location(request, wk_id) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
 
     wok = WorkLocations.objects.using('master').get(id=int(wk_id))
 
@@ -512,12 +676,15 @@ def detail_work_location(request, wk_id) :
         'title_2' : 'Detail Work Locations',
         'feature' : 'Cant Add',
         'data' : wok,
-        'company' : company
+        'company' : company,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(admin_required, login_url='/login/')
 def department_list(request):
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
     search_query = request.GET.get('search', '')
 
     data = []
@@ -551,12 +718,15 @@ def department_list(request):
     return render(request, 'pages_master/department.html', {
         'title_1': 'Employees',
         'title_2': 'Departments',
-        'page_obj': page_obj
+        'page_obj': page_obj,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(admin_required, login_url='/login/')
 def new_department(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
 
     data = []
 
@@ -589,8 +759,9 @@ def new_department(request) :
             sub_department=0
         )
 
-        if new.parent == 'None' or new.parent == '' :
+        if new.parent == None or new.parent == 0 :
             new.sub_department = 0
+
         else :
             new.sub_department = 1
 
@@ -602,12 +773,15 @@ def new_department(request) :
         'title_1' : 'Employees',
         'title_2' : 'New Department',
         'feature' : 'Cant Add',
-        'data' : data
+        'data' : data,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(admin_required, login_url='/login/')
 def detail_department(request, d_id) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
 
     data = []
 
@@ -615,7 +789,7 @@ def detail_department(request, d_id) :
 
     user = User.objects.filter(is_staff=1, is_active=1, is_superuser=0)
 
-    department = Department.objects.using('master').filter(sub_department=0)
+    department = Department.objects.using('master').filter(sub_department=0).exclude(id=int(d_id))
 
     data.append({
         'company' : company,
@@ -637,12 +811,17 @@ def detail_department(request, d_id) :
         'title_2' : 'Detail Department',
         'feature' : 'Cant Add',
         'department' : department,
-        'data' : data
+        'data' : data,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def employee_list(request) :
+    search_query = request.GET.get('search', '')
+
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
 
     data = []
 
@@ -653,61 +832,41 @@ def employee_list(request) :
 
         if user.is_superuser == 0 :
 
-            if not d.level == 0 :
-                level = Level.objects.using('master').get(id=int(d.level))
-            
-            else :
-                level = ""
-
-            if not d.department == 0 :
-                department = Department.objects.using('master').get(id=int(d.department))
-            
-            else :
-                department = ""
-
-            if not d.entity == 0 :
-                entity = Entity.objects.using('master').get(id=int(d.entity))
-
-            else :
-                entity = ""
-
-            if not d.position == 0 :
-                position = JobPosition.objects.using('master').get(id=int(d.position))
-            
-            else :
-                position = ""
-
-            if (
-                d.level == 0 or
-                d.department == 0 or
-                d.entity == 0 or
-                d.position == 0 or
-                d.position == 0
-            ) :
-                status = "Not Activated"
-            
-            else :
-                status = "Active"
-
             data.append({
                 'employee' : d,
-                'user' : user,
-                'level' : level,
-                'department' : department,
-                'entity' : entity,
-                'position' : position,
-                'status' : status
+                'user' : user
             })
+
+    if search_query :
+        data = [
+            d for d in data
+            if (
+                search_query.lower() in str(d['user'].username)
+            )
+        ]
+
+    paginator = Paginator(data, 9)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' :
+        return render(request, 'pages_master/employee_list.html', {
+            'page_obj' : page_obj
+        })
 
     return render(request, 'pages_master/employee_list.html', {
         'title_1' : 'Employees', 
         'title_2' : 'Employee List',
-        'data' : data
+        'page_obj' : page_obj,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def detail_employee(request, e_id) :
+    user_n = request.user
+    profiles = Profile.objects.using('profile').get(user=int(user_n.pk))
 
     data = []
 
@@ -721,7 +880,7 @@ def detail_employee(request, e_id) :
     skills = Skills.objects.using('master').all()
     entity = CompanyProfile.objects.using('master').all()
     department = Department.objects.using('master').all()
-    user_p = User.objects.using('default').filter(is_superuser=0)
+    user_p = User.objects.using('default').filter(is_superuser=0, is_staff=1)
 
     distance = [
         'km', 'hm', 'dkm', 'm',
@@ -758,9 +917,236 @@ def detail_employee(request, e_id) :
         'marital' : marital
     })
 
+    if request.method == 'POST' :
+        metode = request.POST['metode']
+
+        if metode == 'post' :
+            job_title = request.POST['job-title']
+            phone_number = request.POST['phone-number']
+            mobile_number = request.POST['mobile-number']
+            tags = request.POST['tags']
+            company = request.POST['company']
+
+            department_p = request.POST['department']
+            position_p = request.POST['position']
+            manager = request.POST['manager']
+            coach = request.POST['coach']
+
+            #For The Resume
+
+            #For the Work Information
+            work_company = request.POST['work-company']
+
+            #For the Employee Information
+            #=================================================#
+            employer = {
+                'job_title' : job_title,
+                'work_phone' : phone_number,
+                'work_mobile' : mobile_number,
+                'tags' : tags,
+                'company' : company,
+                'department' : department_p,
+                'job_position' : position_p,
+                'manager' : manager,
+                'coach' : coach
+            }
+
+
+            #For the private information
+            #=================================================#
+
+            #PRIVATE CONTACT
+            #----------------------------------#
+
+            #ADDRESSSS===============
+            street_1 = request.POST['street1']
+            street_2 = request.POST['street2']
+            state = request.POST['state']
+            city = request.POST['city']
+            zip = request.POST['zip']
+            country = request.POST['country']
+
+            #CONTACTT
+            private_email = request.POST['private-email']
+            private_phone = request.POST['private-phone']
+            bank_number = request.POST['bank-number']
+            bank_name = request.POST['bank-name']
+
+            home_distance = request.POST['home-distance']
+            long_measure = request.POST['distance']
+
+            car_plate = request.POST['car-plate']
+
+
+            #CITIZENSHIP
+            #----------------------------------#
+
+            nationality = request.POST['nationality']
+            identification = request.POST['identification']
+            ssn_no = request.POST['ssn']
+            passport = request.POST['passport']
+            gender_p = request.POST['gender']
+            birth_date = request.POST['birthdate']
+            birthplace = request.POST['birthplace']
+            birthcountry = request.POST['birthcountry']
+
+
+            #EMERGENCY
+            #----------------------------------#
+            contact_emergency = request.POST['contact-emergency']
+            number_emergency = request.POST['phone-emergency']
+
+
+            #EDUCATION
+            #----------------------------------#
+            certification = request.POST['certification']
+            field_study = request.POST['field-study']
+            school = request.POST['school']
+
+
+            
+            #FAMILY STATUS
+            #----------------------------------#
+            marital_status = request.POST['marital']
+            dependent_children = request.POST['dependent-children']
+
+            
+            #WORK PERMIT
+            #----------------------------------#
+            no_visa = request.POST['visa']
+            no_work_permit = request.POST['work-permit']
+            exp_visa = request.POST['visa-expired']
+            exp_work_permit = request.POST['work-permit-expiry']
+
+            files = request.FILES.get('work-permit-file')
+
+            file_name = None
+
+            if files :
+                file_name = f'work_permit/{files.name}'
+                file_name = default_storage.save(file_name, files)
+                file_url = default_storage.url(file_name)
+
+
+            #For the Settings
+            #=================================================#
+            
+            #Status
+            employee_type = request.POST['employee-status']
+
+            #Pay Rate
+            pay_rate = request.POST['pay-rate']
+
+
+            #WORK INFORMATION DATA
+            #=================================#
+
+            company_profile = CompanyProfile.objects.using('master').get(entity=int(work_company))
+
+            work_information = {
+                'work_address' : {
+                    'street_1' : company_profile.street_1.upper(),
+                    'street_2' : company_profile.street_2.upper(),
+                    'city' : company_profile.city.upper(),
+                    'state' : company_profile.state.upper(),
+                    'zip' : company_profile.zip_code,
+                    'country' : company_profile.country
+                }
+            }
+
+
+            #PRIVATE INFORMATION DATA
+            #=================================#
+            if birth_date :
+                date_of_birth = datetime.strptime(birth_date,'%m/%d/%Y')
+                birthdateobj = date_of_birth.strftime('%Y-%m-%d')
+
+            else :
+                birthdateobj = ""
+
+            if exp_visa :
+                visa_exp = datetime.strptime(exp_visa, '%m/%d/%Y')
+                visa_exp_date = visa_exp.strftime('%Y-%m-%d')
+            
+            else :
+                visa_exp_date = ""
+
+            if exp_work_permit :
+                work_permit_exp = datetime.strptime(exp_work_permit, '%m/%d/%Y')
+                work_permit_exp_date = work_permit_exp.strftime('%Y-%m-%d')
+
+            else :
+                work_permit_exp_date = ""
+
+            private_information = {
+                'private_contact' : {
+                    'private_address' : {
+                        'street_1' : street_1,
+                        'street_2' : street_2,
+                        'state' : state,
+                        'city' : city,
+                        'zip' : zip,
+                        'country' : country
+                    },
+                    'private_email' : private_email,
+                    'private_phone' : private_phone,
+                    'bank_account' : {
+                        'number' : bank_number,
+                        'name' : bank_name
+                    },
+                    'home_distance' : {
+                        'distance' : home_distance,
+                        'measure' : long_measure
+                    },
+                    'private_car_plate' : car_plate
+                },
+                'citizenship' : {
+                    'nationality' : nationality,
+                    'identification_number' : identification,
+                    'ssn_no' : ssn_no,
+                    'passport_no' : passport,
+                    'gender' : gender_p,
+                    'date_of_birth' : birthdateobj,
+                    'birthplace' : birthplace,
+                    'birthcountry' : birthcountry
+                },
+                'emergency_contact' : {
+                    'contact_name' : contact_emergency,
+                    'contact_number' : number_emergency
+                },
+                'education' : {
+                    'certification' : certification,
+                    'field_of_study' : field_study,
+                    'school' : school
+                },
+                'family_status' : {
+                    'marital_status' : marital_status,
+                    'dependent_children' : dependent_children,
+                },
+                'work_permit' : {
+                    'visa_no' : no_visa,
+                    'work_permit_no' : no_work_permit,
+                    'visa_exp' : visa_exp_date,
+                    'work_permit_exp' : work_permit_exp_date
+                }
+            }
+
+
+            #SETTINGS
+            #=================================#
+            setting = {
+                'status' : employee_type,
+                'pay_rate' : pay_rate
+            }
+
+            print(json.dumps(setting))
+            print(json.dumps(work_information))
+            print(json.dumps(private_information))
+
     return render(request, 'detail_master/detail_employee.html', {
         'title_1' : 'Employees',
         'title_2' : 'Detail Employee',
         'feature' : 'Cant Add',
-        'data' : data
+        'data' : data,
+        'profile' : profiles
     })

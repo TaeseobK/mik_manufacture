@@ -2,7 +2,7 @@
 {% block title %}{{ title_1 }}{% endblock %}
 {% load static %}
 {% block content %}
-<section class="flex content-center bg-transparent h-full">
+<section class="flex content-center bg-transparent overflow-hidden h-screen">
      <aside id="default-sidebar" class="mt-1 left-0 w-auto transition-transform -translate-x-full sm:translate-x-0 w-1/10" aria-label="Sidebar">
         <div class="px-3 py-4 bg-gray-50 h-full dark:bg-gray-800 border-r-2 border-gray-400">
            <ul class="space-y-1 font-medium">
@@ -70,8 +70,8 @@
            </ul>
         </div>
      </aside>
-     <div class="mx-5 py-5 flex grid grid-cols-3 gap-5 w-full">
-      {% for d in data %}
+     <div id="user-list" class="mx-5 py-5 flex grid grid-cols-3 gap-5 w-full">
+      {% for d in page_obj %}
         <div>
             <a href="{% url 'master:detail_e' d.employee.pk %}">
                 <div class="bg-transparent dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-sm p-6">
@@ -102,4 +102,22 @@
       {% endfor %}
      </div>     
 </section>
+<script>
+    $(document).ready(function() {
+        $('#search').on('keyup', function() {
+            var searchQuery = $(this).val();
+
+            $.ajax({
+                url: window.location.href,
+                data:{
+                    'search' : searchQuery
+                },
+                dataType: 'html',
+                success: function(response) {
+                    $('#user-list').html($(response).find('#user-list').html());
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

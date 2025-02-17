@@ -5,7 +5,11 @@ class Profile(models.Model) :
     user = models.IntegerField()
     phone = models.CharField(max_length=15, null=True, blank=True)
     company = models.CharField(max_length=64, null=True, blank=True)
-    image = models.ImageField(upload_to='profile_images', default='mik.jpg')
+    about = models.TextField(null=True, blank=True)
+    province = models.CharField(max_length=64, null=True, blank=True)
+    city = models.CharField(max_length=64, null=True, blank=True)
+    zip = models.CharField(max_length=64, null=True, blank=True)
+    image = models.ImageField(upload_to='profile_images/', default='mik.jpg', max_length=255)
 
     class Meta :
         app_label = 'user_profile'
@@ -22,17 +26,13 @@ class Profile(models.Model) :
 
 class Employee(models.Model) :
     user = models.IntegerField()
-    department = models.IntegerField(default=0)
-    level = models.IntegerField(default=0)
-    type_employment = models.IntegerField(default=0)
-    position = models.IntegerField(default=0)
-    skills = models.IntegerField(default=0)
-    entity = models.IntegerField(default=0)
-    department = models.IntegerField(default=0)
-    address = models.TextField(null=True, blank=True)
-    join_date = models.DateField(null=True, blank=True)
-    leave_date = models.DateField(null=True, blank=True)
-    code = models.CharField(max_length=64)
+    resume = models.TextField(null=True, blank=True)
+    employer = models.TextField(null=True, blank=True)
+    skills = models.TextField(null=True, blank=True)
+    work_information = models.TextField(null=True, blank=True)
+    private_information = models.TextField(null=True, blank=True)
+    settings = models.TextField(null=True, blank=True)
+    work_permit = models.FileField(upload_to='user_upload_file/', null=True, blank=True, max_length=255)
     create_at = models.DateTimeField(auto_now_add=True)
 
     class Meta :

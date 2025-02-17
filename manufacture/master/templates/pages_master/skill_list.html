@@ -18,7 +18,7 @@
                     </th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="skill-list">
                 {% for data in page_obj %}
                     <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-gray-900 hover:text-white">
                         <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
@@ -58,4 +58,22 @@
         </table>
     </div>
 </section>
+<script>
+    $(document).ready(function() {
+        $('#search').on('keyup', function() {
+            var searchQuery = $(this).val();
+
+            $.ajax({
+                url: window.location.href,
+                data:{
+                    'search' : searchQuery
+                },
+                dataType: 'html',
+                success: function(response) {
+                    $('#skill-list').html($(response).find('#skill-list').html());
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

@@ -31,15 +31,20 @@ class UserActivityMiddleware:
         return response
 
     def log_activity(self, user_id, username,path, method, timestamp, ip_address):
+
+        if not method == 'GET' :
         
-        UserActivity.objects.using('dump').create(
-            user=user_id,
-            username=username,
-            path=path,
-            method=method,
-            timestamp=timestamp,
-            ip_address=ip_address
-        )
+            UserActivity.objects.using('dump').create(
+                user=user_id,
+                username=username,
+                path=path,
+                method=method,
+                timestamp=timestamp,
+                ip_address=ip_address
+            )
+
+        else :
+            pass
 
 class AutoLogout :
     def __init__(self, get_response):

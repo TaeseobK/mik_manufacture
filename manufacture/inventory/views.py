@@ -10,6 +10,7 @@ from .models import *
 from master.models import *
 from manufacturing.models import *
 from django.core.paginator import Paginator
+from user_profile.models import Profile
 
 def staff_required(user) :
     return user.is_staff
@@ -17,6 +18,9 @@ def staff_required(user) :
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def overview(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     search_query = request.GET.get('search', '')
 
     stock = StockTotal.objects.using('inventory').all()
@@ -45,12 +49,16 @@ def overview(request) :
         'feature' : 'Cant Add',
         'title_1' : 'Inventory',
         'title_2' : 'Inventory Overview',
-        'page_obj' : page_obj
+        'page_obj' : page_obj,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(user_passes_test, login_url='/login/')
 def receipt_list(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     search_query = request.GET.get('search', '')
 
     receipts = Receipt.objects.using('inventory').all()
@@ -106,19 +114,27 @@ def receipt_list(request) :
         'title_1' : 'Inventory',
         'title_2' : 'Receipts',
         'page_obj' : page_obj,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def location_list(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     return render(request, 'pages_inventory/locations_list.html', {
         'title_1' : 'Inventory',
-        'title_2' : 'Locations'
+        'title_2' : 'Locations',
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def storage_category_list(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     search_query = request.GET.get('search', '')
 
     storage_categories = StorageCategories.objects.using('inventory').all()
@@ -155,12 +171,16 @@ def storage_category_list(request) :
     return render(request, 'pages_inventory/storage_category_list.html', {
         'title_1' : 'Inventory',
         'title_2' : 'Storage Categories',
-        'page_obj' : page_obj
+        'page_obj' : page_obj,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def product_list(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     search_query = request.GET.get('search', '')
 
     stock = StockTotal.objects.using('inventory').all()
@@ -189,20 +209,28 @@ def product_list(request) :
     return render(request, 'pages_inventory/product_list.html', {
         'title_1' : 'Inventory',
         'title_2' : 'Products',
-        'page_obj' : page_obj
+        'page_obj' : page_obj,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(user_passes_test, login_url='/login/')
 def delivery_list(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     return render(request, 'pages_inventory/deliveries.html', {
         'title_1' : 'Inventory',
-        'title_2' : 'Deliveries'
+        'title_2' : 'Deliveries',
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(user_passes_test, login_url='/login/')
 def internal_transfers(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     search_query = request.GET.get('search', '')
 
     internal_transfer = InternalTransfer.objects.using('inventory').all()
@@ -252,12 +280,16 @@ def internal_transfers(request) :
     return render(request, 'pages_inventory/internal.html', {
         'title_1' : 'Inventory',
         'title_2' : 'Internal Transfers',
-        'page_obj' : page_obj
+        'page_obj' : page_obj,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(user_passes_test, login_url='/login/')
 def manufacturings(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     search_query = request.GET.get('search', '')
 
     mos = ManufacturingOrders.objects.using('manufacturing').all()
@@ -327,28 +359,40 @@ def manufacturings(request) :
     return render(request, 'pages_inventory/manufacturings.html', {
         'title_1' : 'Inventory',
         'title_2' : 'Manufacturing Orders',
-        'page_obj' : page_obj
+        'page_obj' : page_obj,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(user_passes_test, login_url='/login/')
 def inventory_adjusment(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     return render(request, 'pages_inventory/inventory_adjustment.html', {
         'title_1' : 'Inventory',
-        'title_2' : 'Inventory Adjustment'
+        'title_2' : 'Inventory Adjustment',
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(user_passes_test, login_url='/login/')
 def scrap(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     return render(request, 'pages_inventory/scrap.html', {
         'title_1' : 'Inventory',
-        'title_2' : 'Scrap'
+        'title_2' : 'Scrap',
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(user_passes_test, login_url='/login/')
 def new_product(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     if request.method == 'POST' :
         product_name = request.POST['product_name']
         category_id = request.POST['category']
@@ -396,12 +440,15 @@ def new_product(request) :
         'title_2' : 'New Product',
         'categories' : categories,
         'references' : references,
-        'entities' : entities
+        'entities' : entities,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(user_passes_test, login_url='/login/')
 def new_category(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
 
     if request.method == 'POST' :
         type_product = request.POST['category_name']
@@ -423,12 +470,16 @@ def new_category(request) :
     return render(request, 'new_inventory/new_categories.html', {
         'feature' : 'Cant Add',
         'title_1' : 'Inventory',
-        'title_2' : 'New Product Category'
+        'title_2' : 'New Product Category',
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def category_list(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     search_query = request.GET.get('search', '')
 
 
@@ -454,12 +505,16 @@ def category_list(request) :
     return render(request, 'pages_inventory/product_category.html', {
         'title_1' : 'Inventory',
         'title_2' : 'Product Categories',
-        'page_obj' : page_obj
+        'page_obj' : page_obj,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def detail_product(request, product_id):
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     product = Product.objects.using('inventory').get(id=product_id)
     categories = TypeProduct.objects.using('inventory').all()
     references = BillofMaterials.objects.using('manufacturing').all()
@@ -506,12 +561,15 @@ def detail_product(request, product_id):
         'title_2': product.sku,
         'references': references,
         'title_1': 'Inventory',
-        'entities' : entities
+        'entities' : entities,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def detail_category(request, category_id) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
 
     category = TypeProduct.objects.using('inventory').get(id=category_id)
 
@@ -536,12 +594,16 @@ def detail_category(request, category_id) :
         'title_1' : 'inventory',
         'feature' : 'Cant Add',
         'title_2' : category.code,
-        'category' : category
+        'category' : category,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def warehouse_list(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     search_query = request.GET.get('search', '')
 
     warehouses = Warehouse.objects.using('inventory').all()
@@ -588,12 +650,16 @@ def warehouse_list(request) :
     return render(request, 'pages_inventory/warehouse.html', {
         'title_1' : 'Inventory',
         'title_2' : 'Warehouses',
-        'page_obj' : page_obj
+        'page_obj' : page_obj,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def new_warehouse(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     entities = Entity.objects.using('master').all()
     if request.method == 'POST' :
         warehouse_name = request.POST['warehouse-name']
@@ -634,12 +700,16 @@ def new_warehouse(request) :
         'title_1' : 'Inventory',
         'title_2' : 'New Warehouse',
         'feature' : 'Cant Add',
-        'entities' : entities
+        'entities' : entities,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def detail_warehouse(request, warehouse_id) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     warehouse = Warehouse.objects.using('inventory').get(id=warehouse_id)
     warehouse.code = warehouse.code.split('/')[0][0:3]
     entities = Entity.objects.using('master').all()
@@ -682,12 +752,16 @@ def detail_warehouse(request, warehouse_id) :
         'title_2' : warehouse.warehouse,
         'feature' : 'Cant Add',
         'warehouse' : warehouse,
-        'entities' : entities
+        'entities' : entities,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def new_receipt(request):
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     warehouses = Warehouse.objects.using('inventory').all()
     companies = Entity.objects.using('master').all()
     products = Product.objects.using('inventory').all()
@@ -777,12 +851,16 @@ def new_receipt(request):
         'feature': 'Cant Add',
         'warehouses': warehouses,
         'companies': companies,
-        'products': products
+        'products': products,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def new_location(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     companies = Entity.objects.using('master').all()
     products = Product.objects.using('inventory').all()
 
@@ -791,12 +869,15 @@ def new_location(request) :
         'title_2' : 'New Location',
         'feature' : 'Cant Add',
         'products' : products,
-        'companies' : companies
+        'companies' : companies,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def new_storage_category(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
     products = Product.objects.using('inventory').all()
     companies = Entity.objects.using('master').all()
 
@@ -828,12 +909,15 @@ def new_storage_category(request) :
         'title_2' : 'New Storage Category',
         'feature' : 'Cant Add',
         'products' : products,
-        'companies' : companies
+        'companies' : companies,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def detail_storage_category(request, storage_category_id) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
     sc = StorageCategories.objects.using('inventory').get(id=storage_category_id)
     company = Entity.objects.using('master').all()
     products = Product.objects.using('inventory').all()
@@ -883,12 +967,15 @@ def detail_storage_category(request, storage_category_id) :
         'storage_data' : storage_data,
         'storage_category' : sc,
         'companies' : company,
-        'products' : products
+        'products' : products,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def new_internal_transfer(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
     warehouses = Warehouse.objects.using('inventory').all()
     products = Product.objects.using('inventory').all()
     companies = Entity.objects.using('master').all()
@@ -999,12 +1086,15 @@ def new_internal_transfer(request) :
         'warehouses' : warehouses,
         'companies' : companies,
         'products' : products,
-        'transport' : transport
+        'transport' : transport,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def detail_internal_transfer(request, st_id):
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
     data = []
     stock_move = StockMove.objects.using('inventory').get(id=st_id)
     destination = Warehouse.objects.using('inventory').get(id=int(stock_move.destination))
@@ -1127,12 +1217,15 @@ def detail_internal_transfer(request, st_id):
         'title_1' : 'Inventory',
         'title_2' : 'Detail Internal Transfer',
         'feature' : 'Cant Add',
-        'datas' : data
+        'datas' : data,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def shipping_list(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
     search_query = request.GET.get('search', '')
 
     shipping = ShippingService.objects.using('master').all()
@@ -1161,12 +1254,15 @@ def shipping_list(request) :
     return render(request, 'pages_inventory/shipping_list.html', {
         'title_1' : 'Inventory',
         'title_2' : 'Shipping List',
-        'page_obj' : page_obj
+        'page_obj' : page_obj,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def new_shipping(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
     if request.method == 'POST' :
         name = request.POST['service-name']
         category = request.POST['category']
@@ -1188,12 +1284,15 @@ def new_shipping(request) :
     return render(request, 'new_inventory/new_shipping.html', {
         'title_1' : 'Inventory',
         'title_2' : 'New Courier',
-        'feature' : 'Cant Add'
+        'feature' : 'Cant Add',
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def new_delivery(request) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
     data = []
 
     warehouse = Warehouse.objects.using('inventory').all()
@@ -1323,12 +1422,16 @@ def new_delivery(request) :
         'title_1' : 'Inventory',
         'title_2' : 'New Delivery',
         'feature' : 'Cant Add',
-        'data' : data
+        'data' : data,
+        'profile' : profile
     })
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def detail_receipt(request, receipt_id) :
+    user = request.user
+    profile = Profile.objects.using('profile').get(user=int(user.pk))
+
     data = []
 
     stock_move = StockMove.objects.using('inventory').get(id=int(receipt_id))
@@ -1414,5 +1517,6 @@ def detail_receipt(request, receipt_id) :
         'title_1' : 'Inventory',
         'title_2' : 'Detail Receipt',
         'feature' : 'Cant Add',
-        'data' : data
+        'data' : data,
+        'profile' : profile
     })

@@ -17,75 +17,115 @@ def admin_required(user) :
 
 @login_required
 @user_passes_test(admin_required, login_url='/login/')
-def employee_list(request) :
+def user_list(request) :
+    search_query = request.GET.get('search', '')
+
+    u = request.user
+    profiles = Profile.objects.using('profile').get(user=int(u.pk))
 
     data = []
 
-    employees = Employee.objects.using('profile').all()
+    user_list = User.objects.using('default').exclude(is_superuser=1)
     
-    for e in employees :
-        user = User.objects.using('default').get(id=int(e.user))
-        if not user.is_superuser == 1 :
-            if not e.entity == 0 :
-                e.entity = Entity.objects.using('master').get(id=int(e.entity))
-            
-            else :
-                e.entity = e.entity
 
+    for d in user_list :
+        profile = Profile.objects.using('profile').get(user=int(d.pk))
+
+        if d.is_staff == True :
+            status = "Staff"
+        else :
+            status = "Not Staff"
+
+        
+        if d.is_active == True :
+            active = "Active"
+        else :
+            active = "Not Active"
+
+        data.append({
+            'user' : d,
+            'status' : status,
+            'active' : active,
+            'profile' : profile
+        }) 
+
+    if search_query :
+        data = [
+            t for t in data
             if (
-                not e.department == 0 and
-                not e.level == 0 and
-                not e.type_employment == 0 and
-                not e.position == 0 and
-                not e.entity == 0 and
-                not e.department == 0
-            ) :
-                status = "Active"
-            
-            else :
-                status = "Not Active"
+                search_query.lower() in str(t['user'].username).lower() or
+                search_query.lower() in str(t['user'].email).lower() or
+                search_query.lower() in str(t['status']).lower() or
+                search_query.lower() in str(t['active']).lower() or
+                search_query.lower() in str(t['profile'].company).lower()
+            )
+        ]
 
-            data.append({
-                'employee' : e,
-                'user' : user,
-                'status' : status
-            })
+    paginator = Paginator(data, 12)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' :
+        return render(request, 'pages_profile/user_list.html', {
+            'page_obj' : page_obj
+        })
 
     return render(request, 'pages_profile/user_list.html', {
         'title_1' : 'Settings',
         'title_2' : 'Users',
-        'data' : data
+        'page_obj' : page_obj,
+        'profile' : profiles
     })
 
 @login_required
 @user_passes_test(admin_required, login_url='/login/')
-def detail_user(request, employee_id) :
-    
-    data = []
+def user_detail(request, u_id) :
 
-    e = Employee.objects.using('profile').get(id=int(employee_id))
-    user = User.objects.using('default').get(id=int(e.user))
-    level = Level.objects.using('master').all()
-    type_employment = EmploymentTypes.objects.using('master').all()
-    position = JobPosition.objects.using('master').all()
-    skills = Skills.objects.using('master').all()
-    entity = Entity.objects.using('master').all()
-    department = Department.objects.using('master').all()
+    u = request.user
+    profiles = Profile.objects.using('profile').get(user=int(u.pk))
 
-    data.append({
-        'employee' : e,
-        'user' : user,
-        'level' : level,
-        'type' : type_employment,
-        'position' : position,
-        'skills' : skills,
-        'entity' : entity,
-        'department' : department
-    })
+    user = User.objects.using('default').get(id=int(u_id))
+
+    if request.method == 'POST' :
+        username = request.POST['username']
+        first_name = request.POST['first-name']
+        last_name = request.POST['last-name']
+        email = request.POST['user-email']
+        staff = request.POST.get('staff', 'off')
+        activate = request.POST.get('active', 'off')
+
+        user.username = username
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+
+        if staff == 1 or staff == "1" :
+            user.is_staff = True
+        else :
+            user.is_staff = False
+
+        if activate == 1 or activate == "1" :
+            user.is_active = True
+        else :
+            user.is_active = False
+
+        if user.is_staff == True :
+            new, created = Employee.objects.using('profile').get_or_create(
+                user = user.pk
+            )
+
+            if not created :
+                pass
+
+        user.save()
+
+        return redirect('user_profile:user_list')
 
     return render(request, 'detail_profile/user_detail.html', {
-        'title_1' : 'Settings',
-        'title_2' : 'Detail User',
-        'feature' : 'Cant Add',
-        'data' : data
+        'title_1' : 'Settings', 
+        'title_2' : 'Detail User', 
+        'user' : user,
+        'profile' : profiles,
+        'feature' : 'Cant Add'
     })

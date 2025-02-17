@@ -35,7 +35,7 @@
             <input type="text" name="job-title" id="job-title-id" class="block my-5 w-full text-md font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600 placeholder:text-gray-600" placeholder="Job Title">
         </div>
         <div class="flex justify-center items-center relative z-0 w-1/5 mb-5 group">
-            <img src="{% static 'web_icon.png' %}" alt="image" class="w-24 h-24">
+            <img src="{{ data.0.profile.image.url }}" alt="image" class="w-24 h-24 border-2 border-gray-400 rounded-sm">
         </div>
     </div>
     <div class="flex rounded-sm mx-1 px-1 w-full bg-transparent shadow-lg border border-gray-600 gap-5">
@@ -74,7 +74,7 @@
                         <input type="text" name="tags" id="tags-id" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
                     </li>
                     <li>
-                        <select name="" id="" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
+                        <select name="company" id="company-id" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
                             <option value="" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white" selected>Company</option>
                             {% for d in data.0.entity %}
                                 <option value="{{ d.entity.pk }}" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.entity }}</option>
@@ -120,7 +120,7 @@
                         </select>
                     </li>
                     <li>
-                        <select name="position" id="position-id" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
+                        <select name="manager" id="manager-id" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
                             <option value="" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white" selected>Manager</option>
                             {% for d in data.0.user_p %}
                                 <option value="{{ d.pk }}" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.username }}</option>
@@ -128,7 +128,7 @@
                         </select>
                     </li>
                     <li>
-                        <select name="position" id="position-id" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
+                        <select name="coach" id="coach-id" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
                             <option value="" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white" selected>Coach</option>
                             {% for d in data.0.user_p %}
                                 <option value="{{ d.pk }}" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.username }}</option>
@@ -170,7 +170,7 @@
                         If skills are missing, they can be created by an HR officer.
                     </p>
                     <div class="flex justify-center items-center">
-                        <button type="button" id="pick-skill" class="px-1 items-center justify-center bg-gray-700 border-2 border-gray-400 rounded-sm hover:bg-gray-400 hover:text-gray-800 hover:border-blue-600 text-gray-400 font-bold mt-5">Pick skill from the list</button>
+                        <button type="button" data-modal-toggle="skill-modal" data-modal-target="modal-skill" id="pick-skill" class="px-1 items-center justify-center bg-gray-700 border-2 border-gray-400 rounded-sm hover:bg-gray-400 hover:text-gray-800 hover:border-blue-600 text-gray-400 font-bold mt-5">Pick skill from the list</button>
                     </div>
                 </div>
             </div>
@@ -193,7 +193,7 @@
                         <div class="w-4/5">
                             <ul class="space-y-3">
                                 <li>
-                                    <select name="" id="" class="border-b border-gray-400 text-gray-400 font-semibold text-sm focus:outline-none hover:border-red-600 focus:border-blue-600 bg-transparent w-full">
+                                    <select name="work-company" id="work-company-id" class="border-b border-gray-400 text-gray-400 font-semibold text-sm focus:outline-none hover:border-red-600 focus:border-blue-600 bg-transparent w-full">
                                         <option value="" selected class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white"></option>
                                         {% for d in data.0.entity %}
                                             <option value="{{ d.pk }}" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.entity.entity }}</option>
@@ -240,8 +240,8 @@
                                 </li>
                                 <li>
                                     <div class="flex gap-5">
-                                        <input type="text" autocomplete="off" name="city" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="City">
                                         <input type="text" autocomplete="off" name="state" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="State">
+                                        <input type="text" autocomplete="off" name="city" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="City">
                                         <input type="text" autocomplete="off" name="zip" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="Zip">
                                     </div>
                                 </li>
@@ -475,7 +475,7 @@
                         </li>
                         <li class="mt-2">
                             <div class="flex gap-3 mt-4">
-                                <label for="work-permit-file-id" class="text-gray-400 font-semibold text-sm w-4/12 mt-1">Work Permit Expiration Date</label>
+                                <label for="work-permit-file-id" class="text-gray-400 font-semibold text-sm w-4/12 mt-1">Work Permit</label>
                                 <input type="file" accept="*" name="work-permit-file" id="work-permit-file-id" class="w-8/12 file:bg-transparent file:text-gray-400 file:border-gray-400 file:border-none text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                             </div>
                         </li>
@@ -493,7 +493,7 @@
                                 <label for="employee-status-id" class="text-gray-400 font-semibold text-sm w-3/12">Employee Type</label>
                                 <select name="employee-status" id="employee-status-id" class="w-9/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                                     <option value="" class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white" selected></option>
-                                    {% for d in data.0.position %}
+                                    {% for d in data.0.type_employment %}
                                     <option value="{{ d }}" class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white">{{ d }}</option>
                                     {% endfor %}
                                 </select>
@@ -513,4 +513,35 @@
         </div>
     </div>
 </form>
+<div id="skill-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-x-hidden fixed right-0 left-0 z-50 justify-center items-center w-full md:inset-0 max-h-full">
+    <div class="relative p-4 w-full max-w-xl max-h-xl">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-3 md:p-3 border-b rounded-t dark:border-gray-600 border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    Pick a Skill
+                </h3>
+                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="skill-modal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="p-4 md:p-5 space-y-4">
+                <form action="." method="post">
+                    {% csrf_token %}
+                    
+                </form>
+            </div>
+            <!-- Modal footer -->
+            <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                <button data-modal-hide="skill-modal" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-md text-sm py-2 px-4 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">I accept</button>
+                <button data-modal-hide="skill-modal" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Decline</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
