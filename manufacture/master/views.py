@@ -3,7 +3,7 @@ from datetime import datetime
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.files.storage import default_storage
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.http import JsonResponse
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
@@ -12,14 +12,20 @@ from .models import *
 from user_profile.models import *
 
 def staff_required(user):
-    return user.is_staff
+    return user.is_staff or user.is_superuser
 
 def admin_required(user) :
-    return user.is_superuser
+    return user.groups.filter(name='Admin').exists()
+
+def group_required(group_name) :
+    def in_group(user) :
+        return (user.is_authenticated and user.groups.filter(name=group_name).exists()) or user.is_superuser
+    return user_passes_test(in_group)
 
 @login_required
-@user_passes_test(staff_required, login_url='/login/')
+@user_passes_test(admin_required, login_url='/login/')
 def general_settings(request) :
+
     user = request.user
     profile = Profile.objects.using('profile').get(user=int(user.pk))
 
@@ -31,7 +37,7 @@ def general_settings(request) :
     })
 
 @login_required
-@user_passes_test(staff_required, login_url='/login/')
+@user_passes_test(admin_required, login_url='/login/')
 def companies_list(request):
     search_query = request.GET.get('search', '')
 
@@ -95,7 +101,7 @@ def companies_list(request):
     })
 
 @login_required
-@user_passes_test(staff_required, login_url='/login/')
+@user_passes_test(admin_required, login_url='/login/')
 def new_company(request) :
     user = request.user
     profile = Profile.objects.using('profile').get(user=int(user.pk))
@@ -164,7 +170,7 @@ def new_company(request) :
     })
 
 @login_required
-@user_passes_test(staff_required, login_url='/login/')
+@user_passes_test(admin_required, login_url='/login/')
 def detail_company(request, company_id) :
     user = request.user
     profile = Profile.objects.using('profile').get(user=int(user.pk))
@@ -246,7 +252,8 @@ def detail_company(request, company_id) :
     })
 
 @login_required
-@user_passes_test(admin_required, login_url='/login/')
+@group_required('Employee')
+@user_passes_test(staff_required, login_url='/login/')
 def job_position_list(request) :
     search_query = request.GET.get('search', '')
 
@@ -281,7 +288,8 @@ def job_position_list(request) :
     })
 
 @login_required
-@user_passes_test(admin_required, login_url='/login/')
+@group_required('Employee')
+@user_passes_test(staff_required, login_url='/login/')
 def new_job_position(request) :
     user = request.user
     profile = Profile.objects.using('profile').get(user=int(user.pk))
@@ -303,7 +311,8 @@ def new_job_position(request) :
     })
 
 @login_required
-@user_passes_test(admin_required, login_url='/login/')
+@group_required('Employee')
+@user_passes_test(staff_required, login_url='/login/')
 def detail_job_position(request, jb_id) :
     user = request.user
     profile = Profile.objects.using('profile').get(user=int(user.pk))
@@ -326,7 +335,8 @@ def detail_job_position(request, jb_id) :
     })
 
 @login_required
-@user_passes_test(admin_required, login_url='/login/')
+@group_required('Employee')
+@user_passes_test(staff_required, login_url='/login/')
 def employment_types(request) :
     search_query = request.GET.get('search', '')
 
@@ -361,7 +371,8 @@ def employment_types(request) :
     })
 
 @login_required
-@user_passes_test(admin_required, login_url='/login/')
+@group_required('Employee')
+@user_passes_test(staff_required, login_url='/login/')
 def new_employment_type(request) :
     user = request.user
     profile = Profile.objects.using('profile').get(user=int(user.pk))
@@ -383,7 +394,8 @@ def new_employment_type(request) :
     })
 
 @login_required
-@user_passes_test(admin_required, login_url='/login/')
+@group_required('Employee')
+@user_passes_test(staff_required, login_url='/login/')
 def detail_employment_type(request, et_id) :
     user = request.user
     profile = Profile.objects.using('profile').get(user=int(user.pk))
@@ -406,7 +418,8 @@ def detail_employment_type(request, et_id) :
     })
 
 @login_required
-@user_passes_test(admin_required, login_url='/login/')
+@group_required('Employee')
+@user_passes_test(staff_required, login_url='/login/')
 def skill_list(request) :
     search_query = request.GET.get('search', '')
 
@@ -457,7 +470,8 @@ def skill_list(request) :
     })
 
 @login_required
-@user_passes_test(admin_required, login_url='/login/')
+@group_required('Employee')
+@user_passes_test(staff_required, login_url='/login/')
 def new_skills(request) :
     user = request.user
     profile = Profile.objects.using('profile').get(user=int(user.pk))
@@ -499,7 +513,8 @@ def new_skills(request) :
     })
 
 @login_required
-@user_passes_test(admin_required, login_url='/login/')
+@group_required('Employee')
+@user_passes_test(staff_required, login_url='/login/')
 def detail_skills(request, skill_id) :
     user = request.user
     profile = Profile.objects.using('profile').get(user=int(user.pk))
@@ -516,7 +531,8 @@ def detail_skills(request, skill_id) :
     })
 
 @login_required
-@user_passes_test(admin_required, login_url='/login/')
+@group_required('Employee')
+@user_passes_test(staff_required, login_url='/login/')
 def departure_list(request) :
     user = request.user
     profile = Profile.objects.using('profile').get(user=int(user.pk))
@@ -551,7 +567,8 @@ def departure_list(request) :
     })
 
 @login_required
-@user_passes_test(admin_required, login_url='/login/')
+@group_required('Employee')
+@user_passes_test(staff_required, login_url='/login/')
 def new_departure(request) :
     user = request.user
     profile = Profile.objects.using('profile').get(user=int(user.pk))
@@ -573,7 +590,8 @@ def new_departure(request) :
     })
 
 @login_required
-@user_passes_test(admin_required, login_url='/login/')
+@group_required('Employee')
+@user_passes_test(staff_required, login_url='/login/')
 def detail_departure(request, dp_id) :
     user = request.user
     profile = Profile.objects.using('profile').get(user=int(user.pk))
@@ -595,7 +613,8 @@ def detail_departure(request, dp_id) :
     })
 
 @login_required
-@user_passes_test(admin_required, login_url='/login/')
+@group_required('Employee')
+@user_passes_test(staff_required, login_url='/login/')
 def work_locations(request) :
     user = request.user
     profile = Profile.objects.using('profile').get(user=int(user.pk))
@@ -631,7 +650,8 @@ def work_locations(request) :
     })
 
 @login_required
-@user_passes_test(admin_required, login_url='/login/')
+@group_required('Employee')
+@user_passes_test(staff_required, login_url='/login/')
 def new_work_locations(request) :
     user = request.user
     profile = Profile.objects.using('profile').get(user=int(user.pk))
@@ -662,7 +682,8 @@ def new_work_locations(request) :
     })
 
 @login_required
-@user_passes_test(admin_required, login_url='/login/')
+@group_required('Employee')
+@user_passes_test(staff_required, login_url='/login/')
 def detail_work_location(request, wk_id) :
     user = request.user
     profile = Profile.objects.using('profile').get(user=int(user.pk))
@@ -681,7 +702,8 @@ def detail_work_location(request, wk_id) :
     })
 
 @login_required
-@user_passes_test(admin_required, login_url='/login/')
+@group_required('Employee')
+@user_passes_test(staff_required, login_url='/login/')
 def department_list(request):
     user = request.user
     profile = Profile.objects.using('profile').get(user=int(user.pk))
@@ -723,7 +745,8 @@ def department_list(request):
     })
 
 @login_required
-@user_passes_test(admin_required, login_url='/login/')
+@group_required('Employee')
+@user_passes_test(staff_required, login_url='/login/')
 def new_department(request) :
     user = request.user
     profile = Profile.objects.using('profile').get(user=int(user.pk))
@@ -778,7 +801,8 @@ def new_department(request) :
     })
 
 @login_required
-@user_passes_test(admin_required, login_url='/login/')
+@group_required('Employee')
+@user_passes_test(staff_required, login_url='/login/')
 def detail_department(request, d_id) :
     user = request.user
     profile = Profile.objects.using('profile').get(user=int(user.pk))
@@ -806,6 +830,30 @@ def detail_department(request, d_id) :
 
     department.manager = User.objects.using('default').get(id=int(department.manager))
 
+    if request.method == 'POST' :
+        department_name = request.POST['department']
+        manager = request.POST['manager']
+        parent = request.POST['parent']
+        company_d = request.POST['company']
+
+        company_id = Entity.objects.using('master').get(id=int(company_d))
+        manager_id = User.objects.using('default').get(id=int(manager))
+
+        department.department = department_name
+        department.manager = manager_id.pk
+        department.parent = parent
+        department.company = company_id
+
+        if department.parent == '' or department.parent == None :
+            department.sub_department = 0
+        
+        else :
+            department.sub_department = 1
+
+        department.save()
+
+        return redirect('master:department_list')
+
     return render(request, 'detail_master/department_detail.html', {
         'title_1' : 'Employees',
         'title_2' : 'Detail Department',
@@ -816,6 +864,7 @@ def detail_department(request, d_id) :
     })
 
 @login_required
+@group_required('Employee')
 @user_passes_test(staff_required, login_url='/login/')
 def employee_list(request) :
     search_query = request.GET.get('search', '')
@@ -830,18 +879,32 @@ def employee_list(request) :
     for d in employees :
         user = User.objects.using('default').get(id=int(d.user))
 
+        if (
+            not d.private_information == '' and
+            not d.settings == '' and
+            not d.resume == '' and
+            not d.work_information == '' and
+            not d.employer == '' and
+            not d.work_permit == ''
+        ) :
+            status = "Up to Date"
+        else :
+            status = "Need Update"
+
         if user.is_superuser == 0 :
 
             data.append({
                 'employee' : d,
-                'user' : user
+                'user' : user,
+                'status' : status
             })
 
     if search_query :
         data = [
             d for d in data
             if (
-                search_query.lower() in str(d['user'].username)
+                search_query.lower() in str(d['user'].username) or
+                search_query.lower() in str(d['status'])
             )
         ]
 
@@ -863,10 +926,12 @@ def employee_list(request) :
     })
 
 @login_required
+@group_required('Employee')
 @user_passes_test(staff_required, login_url='/login/')
 def detail_employee(request, e_id) :
     user_n = request.user
     profiles = Profile.objects.using('profile').get(user=int(user_n.pk))
+
 
     data = []
 
@@ -899,6 +964,7 @@ def detail_employee(request, e_id) :
     marital = [
         'Single', 'Married', 'Legal Cohabitant', 'Widower', 'Divorced'
     ]
+    detail = Employee.objects.using('profile').get(user=int(user.pk))
 
     data.append({
         'employee' : employee,
@@ -916,6 +982,13 @@ def detail_employee(request, e_id) :
         'education' : education,
         'marital' : marital
     })
+
+    pp = {
+        'employer' : json.loads(detail.employer) if detail.employer else None,
+        'private_information' : json.loads(detail.private_information) if detail.private_information else None,
+        'work_information' : json.loads(detail.work_information) if detail.work_information else None,
+        'settings' : json.loads(detail.settings) if detail.settings else None
+    }
 
     if request.method == 'POST' :
         metode = request.POST['metode']
@@ -1044,6 +1117,7 @@ def detail_employee(request, e_id) :
             company_profile = CompanyProfile.objects.using('master').get(entity=int(work_company))
 
             work_information = {
+                'company' : int(work_company),
                 'work_address' : {
                     'street_1' : company_profile.street_1.upper(),
                     'street_2' : company_profile.street_2.upper(),
@@ -1058,21 +1132,21 @@ def detail_employee(request, e_id) :
             #PRIVATE INFORMATION DATA
             #=================================#
             if birth_date :
-                date_of_birth = datetime.strptime(birth_date,'%m/%d/%Y')
+                date_of_birth = datetime.strptime(birth_date,'%Y/%m/%d')
                 birthdateobj = date_of_birth.strftime('%Y-%m-%d')
 
             else :
                 birthdateobj = ""
 
             if exp_visa :
-                visa_exp = datetime.strptime(exp_visa, '%m/%d/%Y')
+                visa_exp = datetime.strptime(exp_visa, '%Y/%m/%d')
                 visa_exp_date = visa_exp.strftime('%Y-%m-%d')
             
             else :
                 visa_exp_date = ""
 
             if exp_work_permit :
-                work_permit_exp = datetime.strptime(exp_work_permit, '%m/%d/%Y')
+                work_permit_exp = datetime.strptime(exp_work_permit, '%Y/%m/%d')
                 work_permit_exp_date = work_permit_exp.strftime('%Y-%m-%d')
 
             else :
@@ -1139,14 +1213,20 @@ def detail_employee(request, e_id) :
                 'pay_rate' : pay_rate
             }
 
-            print(json.dumps(setting))
-            print(json.dumps(work_information))
-            print(json.dumps(private_information))
+            employee.private_information = json.dumps(private_information)
+            employee.work_information = json.dumps(work_information)
+            employee.settings = json.dumps(setting)
+            employee.employer = json.dumps(employer)
+
+            employee.save()
+
+            return redirect('master:employee_list')
 
     return render(request, 'detail_master/detail_employee.html', {
         'title_1' : 'Employees',
         'title_2' : 'Detail Employee',
         'feature' : 'Cant Add',
         'data' : data,
+        'pp' : pp,
         'profile' : profiles
     })

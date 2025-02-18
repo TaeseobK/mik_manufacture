@@ -135,10 +135,12 @@
                     <p class="border-b border-gray-600 w-full uppercase text-gray-400 text-xs font-roboto font-bold">Other Information</p>
                     <div class="flex gap-5 my-4">
                         <label for="responsible-id" class="w-1/3 text-md text-gray-400 font-semibold">Responsible</label>
-                        <!-- <select name="responsible" id="responsible-id" class="w-2/3 border-b-2 border-gray-600 hover:border-blue-600 text-md text-gray-400 bg-transparent w-full">
+                        <select name="responsible" id="responsible-id" class="w-2/3 border-b-2 border-gray-600 hover:border-blue-600 text-md text-gray-400 bg-transparent w-full focus:outline-none">
                             <option value="" class="bg-gray-800 text-gray-400 font-normal font-roboto">Select Responsible</option>
-                        </select> -->
-                        <input type="text"  id="responsible-id" name="responsible" class="w-2/3 border-b-2 border-gray-600 hover:border-blue-600 text-md text-gray-400 bg-transparent w-full focus:outline-none">
+                            {% for data in respons %}
+                            <option value="{{ data.pk }}" class="bg-gray-800 text-gray-400 font-normal font-roboto">{{ data.username }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="flex gap-5 my-4">
                         <label for="company-id" class="w-1/3 text-md text-gray-400 font-semibold">Company</label>

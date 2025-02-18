@@ -32,7 +32,7 @@
     </div>
     <div class="flex justify-start gap-10">
         <div class="relative z-0 w-4/5 mb-5 group">
-            <input type="text" name="job-title" id="job-title-id" class="block my-5 w-full text-md font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600 placeholder:text-gray-600" placeholder="Job Title">
+            <input type="text" name="job-title" value="{{ pp.employer.job_title }}" id="job-title-id" class="block my-5 w-full text-md font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-blue-600 placeholder:text-gray-600" placeholder="Job Title">
         </div>
         <div class="flex justify-center items-center relative z-0 w-1/5 mb-5 group">
             <img src="{{ data.0.profile.image.url }}" alt="image" class="w-24 h-24 border-2 border-gray-400 rounded-sm">
@@ -65,19 +65,19 @@
                         <p class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold w-full">{{ data.0.user.email }}</p>
                     </li>
                     <li>
-                        <input type="text" name="phone-number" id="phone-number-id" placeholder="{{ data.0.profile.phone }}" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
+                        <input type="text" name="phone-number" id="phone-number-id" placeholder="{{ data.0.profile.phone }}" value="{{ pp.employer.work_phone }}" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
                     </li>
                     <li>
-                        <input type="text" name="mobile-number" id="mobile-number-id" placeholder="e.g 089214" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
+                        <input type="text" name="mobile-number" id="mobile-number-id" placeholder="e.g 089214" value="{{ pp.employer.work_mobile }}" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
                     </li>
                     <li>
-                        <input type="text" name="tags" id="tags-id" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
+                        <input type="text" name="tags" id="tags-id" value="{{ pp.employer.tags }}" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
                     </li>
                     <li>
                         <select name="company" id="company-id" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
                             <option value="" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white" selected>Company</option>
                             {% for d in data.0.entity %}
-                                <option value="{{ d.entity.pk }}" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.entity }}</option>
+                                <option value="{{ d.entity.pk }}" {% if pp.employer.company|add:0 == d.entity.pk %} selected {% endif %} class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.entity }}</option>
                             {% endfor %}
                         </select>
                     </li>
@@ -107,7 +107,7 @@
                         <select name="department" id="department-id" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
                             <option value="" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white" selected>Department</option>
                             {% for d in data.0.department %}
-                                <option value="{{ d.pk }}" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.department }}</option>
+                                <option value="{{ d.pk }}" {% if pp.employer.department|add:0 == d.pk %} selected {% endif %} class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.department }}</option>
                             {% endfor %}
                         </select>
                     </li>
@@ -115,7 +115,7 @@
                         <select name="position" id="position-id" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
                             <option value="" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white" selected>Position</option>
                             {% for d in data.0.position %}
-                                <option value="{{ d.pk }}" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.name }}</option>
+                                <option value="{{ d.pk }}" {% if pp.employer.job_position|add:0 == d.pk %} selected {% endif %} class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.name }}</option>
                             {% endfor %}
                         </select>
                     </li>
@@ -123,7 +123,7 @@
                         <select name="manager" id="manager-id" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
                             <option value="" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white" selected>Manager</option>
                             {% for d in data.0.user_p %}
-                                <option value="{{ d.pk }}" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.username }}</option>
+                                <option value="{{ d.pk }}" {% if pp.employer.manager|add:0 == d.pk %} selected {% endif %} class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.username }}</option>
                             {% endfor %}
                         </select>
                     </li>
@@ -131,7 +131,7 @@
                         <select name="coach" id="coach-id" class="bg-transparent border-b border-gray-500 focus:outline-none hover:border-red-600 text-gray-400 font-semibold placeholder:text-gray-600 w-full">
                             <option value="" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white" selected>Coach</option>
                             {% for d in data.0.user_p %}
-                                <option value="{{ d.pk }}" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.username }}</option>
+                                <option value="{{ d.pk }}" {% if pp.employer.coach|add:0 == d.pk %} selected {% endif %} class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.username }}</option>
                             {% endfor %}
                         </select>
                     </li>
@@ -196,7 +196,7 @@
                                     <select name="work-company" id="work-company-id" class="border-b border-gray-400 text-gray-400 font-semibold text-sm focus:outline-none hover:border-red-600 focus:border-blue-600 bg-transparent w-full">
                                         <option value="" selected class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white"></option>
                                         {% for d in data.0.entity %}
-                                            <option value="{{ d.pk }}" class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.entity.entity }}</option>
+                                            <option value="{{ d.pk }}" {% if pp.work_information.company|add:0 == d.pk %} selected {% endif %} class="bg-gray-800 text-gray-400 font-bold text-sm hover:text-white">{{ d.entity.entity }}</option>
                                         {% endfor %}
                                     </select>
                                     <div id="company-address" class="company-address">
@@ -233,20 +233,20 @@
                         <div class="w-8/12">
                             <ul class="space-y-3">
                                 <li>
-                                    <input type="text" autocomplete="off" name="street1" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="Street...">
+                                    <input type="text" autocomplete="off" name="street1" value="{{ pp.private_information.private_contact.private_address.street_1 }}" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="Street...">
                                 </li>
                                 <li>
-                                    <input type="text" autocomplete="off" name="street2" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="Street 2...">
+                                    <input type="text" autocomplete="off" name="street2" value="{{ pp.private_information.private_contact.private_address.street_2 }}" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="Street 2...">
                                 </li>
                                 <li>
                                     <div class="flex gap-5">
-                                        <input type="text" autocomplete="off" name="state" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="State">
-                                        <input type="text" autocomplete="off" name="city" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="City">
-                                        <input type="text" autocomplete="off" name="zip" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="Zip">
+                                        <input type="text" autocomplete="off" name="state" value="{{ pp.private_information.private_contact.private_address.state }}" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="State">
+                                        <input type="text" autocomplete="off" name="city" value="{{ pp.private_information.private_contact.private_address.city }}" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="City">
+                                        <input type="text" autocomplete="off" name="zip" value="{{ pp.private_information.private_contact.private_address.zip }}" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="Zip">
                                     </div>
                                 </li>
                                 <li>
-                                    <input type="text" autocomplete="off" name="country" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="Country">
+                                    <input type="text" autocomplete="off" name="country" value="{{ pp.private_information.private_contact.private_address.country }}" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none placeholder:text-gray-600" placeholder="Country">
                                 </li>
                             </ul>
                         </div>
@@ -274,29 +274,29 @@
                         <div class="w-8/12">
                             <ul class="space-y-3">
                                 <li class="mt-2">
-                                    <input name="private-email" autocomplete="off" id="private-email-id" type="text" value="{{ data.0.user.email }}" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none">
+                                    <input name="private-email" autocomplete="off" id="private-email-id" type="text" {% if pp.private_information.private_contact.private_email %} value="{{ pp.private_information.private_contact.private_email }}" {% else %} value="{{ data.0.user.email }}" {% endif %} class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none">
                                 </li>
                                 <li class="mt-2">
-                                    <input name="private-phone" autocomplete="off" id="private-phone-id" type="text" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none">
+                                    <input name="private-phone" autocomplete="off" id="private-phone-id" type="text" value="{{ pp.private_information.private_contact.private_phone }}" class="border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent w-full focus:outline-none">
                                 </li>
                                 <li class="mt-2">
                                     <div class="flex gap-5" id="bank-account-id">
-                                        <input name="bank-number" autocomplete="off" id="bank-number-id" type="text" class="w-4/5 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none placeholder:text-gray-600" placeholder="Account Number e.g 1234567890">
-                                        <input name="bank-name" autocomplete="off" id="bank-name-id" type="text" class="w-1/5 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none placeholder:text-gray-600" placeholder="eg. BCA">
+                                        <input name="bank-number" autocomplete="off" value="{{ pp.private_information.private_contact.bank_account.number }}" id="bank-number-id" type="text" class="w-4/5 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none placeholder:text-gray-600" placeholder="Account Number e.g 1234567890">
+                                        <input name="bank-name" autocomplete="off" value="{{ pp.private_information.private_contact.bank_account.name }}" id="bank-name-id" type="text" class="w-1/5 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none placeholder:text-gray-600" placeholder="eg. BCA">
                                     </div>
                                 </li>
                                 <li class="mt-2">
                                     <div class="flex gap-5" id="home-distance-id">
-                                        <input name="home-distance" value="0" autocomplete="off" id="bank-number-id" type="text" class="w-4/5 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                        <input name="home-distance" {% if pp.private_information.private_contact.home_distance.distance %} value="{{ pp.private_information.private_contact.home_distance.distance }}" {% else %} value="0" {% endif %} autocomplete="off" id="bank-number-id" type="text" class="w-4/5 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                                         <select name="distance" id="distance-id" class="w-1/5 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none placeholder:text-gray-600">
                                             {% for d in data.0.distance %}
-                                                <option value="{{ d }}" class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white" {% if d == 'km' %} selected {% endif %} >{{ d }}</option>
+                                                <option value="{{ d }}" class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white" {% if pp.private_information.private_contact.home_distance.measure %} {% if pp.private_information.private_contact.home_distance.measure == d %} selected {% endif %} {% else %} {% if d == 'km' %} selected {% endif %} {% endif %} >{{ d }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
                                 </li>
                                 <li class="mt-2">
-                                    <input type="text" name="car-plate" autocomplete="off" id="car-plate-id" class="w-full border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                    <input type="text" name="car-plate" value="{{ pp.private_information.private_contact.private_car_plate }}" autocomplete="off" id="car-plate-id" class="w-full border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                                 </li>
                             </ul>
                         </div>
@@ -308,25 +308,25 @@
                         <li class="mt-2">
                             <div class="flex gap-3 mt-4">
                                 <label for="nationality-id" class="text-gray-400 font-semibold text-sm w-4/12">Nationality (Country)</label>
-                                <input type="text" name="nationality" id="nationality-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                <input type="text" name="nationality" value="{{ pp.private_information.citizenship.nationality }}" id="nationality-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                             </div>
                         </li>
                         <li class="mt-2">
                             <div class="flex gap-3 mt-4">
                                 <label for="identification-id" class="text-gray-400 font-semibold text-sm w-4/12">Identification No</label>
-                                <input type="text" name="identification" id="identification-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                <input type="text" name="identification" value="{{ pp.private_information.citizenship.identification_number }}" id="identification-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                             </div>
                         </li>
                         <li class="mt-2">
                             <div class="flex gap-3 mt-4">
                                 <label for="ssn-id" class="text-gray-400 font-semibold text-sm w-4/12">SSN No</label>
-                                <input type="text" name="ssn" id="ssn-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                <input type="text" name="ssn" id="ssn-id" value="{{ pp.private_information.citizenship.ssn_no }}" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                             </div>
                         </li>
                         <li class="mt-2">
                             <div class="flex gap-3 mt-4">
                                 <label for="passport-id" class="text-gray-400 font-semibold text-sm w-4/12">Passport No</label>
-                                <input type="text" name="passport" id="passport-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                <input type="text" name="passport" id="passport-id" value="{{ pp.private_information.citizenship.passport_no }}" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                             </div>
                         </li>
                         <li class="mt-2">
@@ -335,7 +335,7 @@
                                 <select name="gender" id="gender-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                                     <option value="" class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white" selected></option>
                                     {% for d in data.0.gender %}
-                                    <option value="{{ d }}" class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white">{{ d }}</option>
+                                    <option value="{{ d }}" {% if pp.private_information.citizenship.gender == d %} selected {% endif %} class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white">{{ d }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -343,19 +343,19 @@
                         <li class="mt-2">
                             <div class="flex gap-3 mt-4">
                                 <label for="birthdate-id" class="text-gray-400 font-semibold text-sm w-4/12">Date of Birth</label>
-                                <input type="text" datepicker datepicker-autohide datepicker-buttons datepicker-autoselect-today name="birthdate" id="birthdate-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                <input type="text" value="{{ pp.private_information.citizenship.date_of_birth }}" datepicker datepicker-autohide datepicker-buttons datepicker-autoselect-today name="birthdate" datepicker-format="yyyy/mm/dd" id="birthdate-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                             </div>
                         </li>
                         <li class="mt-2">
                             <div class="flex gap-3 mt-4">
                                 <label for="birthplace-id" class="text-gray-400 font-semibold text-sm w-4/12">Place of Birth</label>
-                                <input type="text" name="birthplace" id="birthplace-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                <input type="text" name="birthplace" id="birthplace-id" value="{{ pp.private_information.citizenship.birthplace }}" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                             </div>
                         </li>
                         <li class="mt-2">
                             <div class="flex gap-3 mt-4">
                                 <label for="birthcountry-id" class="text-gray-400 font-semibold text-sm w-4/12">Country of Birth</label>
-                                <input type="text" name="birthcountry" id="birthcountry-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                <input type="text" name="birthcountry" id="birthcountry-id" value="{{ pp.private_information.citizenship.birthcountry }}" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                             </div>
                         </li>
                     </ul>
@@ -371,17 +371,17 @@
                                     <label for="contact-emergency-id" class="text-gray-400 font-semibold text-sm">Contact Name</label>
                                 </li>
                                 <li class="mt-2">
-                                    <label for="phone-emergency-id" class="text-gray-400 font-semibold text-sm">Contact Name</label>
+                                    <label for="phone-emergency-id" class="text-gray-400 font-semibold text-sm">Contact Phone</label>
                                 </li>
                             </ul>
                         </div>
                         <div class="w-8/12">
                             <ul class="space-y-3 items-center">
                                 <li class="mt-2">
-                                    <input type="text" id="contact-emergency-id" name="contact-emergency" autocomplete="off" class="w-full border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                    <input type="text" value="{{ pp.private_information.emergency_contact.contact_name }}" id="contact-emergency-id" name="contact-emergency" autocomplete="off" class="w-full border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                                 </li>
                                 <li class="mt-2">
-                                    <input type="text" id="phone-emergency-id" name="phone-emergency" autocomplete="off" class="w-full border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                    <input type="text" value="{{ pp.private_information.emergency_contact.contact_number }}" id="phone-emergency-id" name="phone-emergency" autocomplete="off" class="w-full border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                                 </li>
                             </ul>
                         </div>
@@ -409,15 +409,15 @@
                                     <select name="certification" id="cerfication-id" class="w-full border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                                         <option value="" class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white" selected></option>
                                         {% for d in data.0.education %}
-                                            <option value="{{ d }}" class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white">{{ d }}</option>
+                                            <option value="{{ d }}" {% if pp.private_information.education.certification == d %} selected {% endif %} class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white">{{ d }}</option>
                                         {% endfor %}
                                     </select>
                                 </li>
                                 <li class="mt-2">
-                                    <input type="text" id="field-study-id" name="field-study" autocomplete="off" class="w-full border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                    <input type="text" id="field-study-id" value="{{ pp.private_information.education.field_of_study }}" name="field-study" autocomplete="off" class="w-full border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                                 </li>
                                 <li class="mt-2">
-                                    <input type="text" id="school-id" name="school" autocomplete="off" class="w-full border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                    <input type="text" id="school-id" value="{{ pp.private_information.education.school }}" name="school" autocomplete="off" class="w-full border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                                 </li>
                             </ul>
                         </div>
@@ -433,7 +433,7 @@
                                 <label for="marital-id" class="text-gray-400 font-semibold text-sm w-4/12">Marital Status</label>
                                 <select name="marital" id="marital-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                                     {% for d in data.0.marital %}
-                                        <option value="{{ d }}" class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white" {% if d == 'Single' %} selected {% endif %}>{{ d }}</option>
+                                        <option value="{{ d }}" class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white" {% if pp.private_information.family_status.marital_status %} {% if pp.private_information.family_status.marital_status == d %} selected {% endif %} {% else %} {% if d == 'Single' %} selected {% endif %} {% endif %} >{{ d }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -441,7 +441,7 @@
                         <li class="mt-2">
                             <div class="flex gap-3 mt-4">
                                 <label for="dependent-children-id" class="text-gray-400 font-semibold text-sm w-4/12">Number of Dependent Children</label>
-                                <input type="text" name="dependent-children" id="dependent-children-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                <input type="text" name="dependent-children" id="dependent-children-id" value="{{ pp.private_information.family_status.dependent_children }}" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                             </div>
                         </li>
                     </ul>
@@ -452,25 +452,25 @@
                         <li class="mt-2">
                             <div class="flex gap-3 mt-4">
                                 <label for="visa-id" class="text-gray-400 font-semibold text-sm w-4/12">Visa No</label>
-                                <input type="text" id="visa-id" name="visa" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                <input type="text" id="visa-id" name="visa" value="{{ pp.private_information.work_permit.visa_no }}" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                             </div>
                         </li>
                         <li class="mt-2">
                             <div class="flex gap-3 mt-4">
                                 <label for="work-permit-id" class="text-gray-400 font-semibold text-sm w-4/12">Work Permit No</label>
-                                <input type="text" name="work-permit" id="work-permit-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                <input type="text" name="work-permit" id="work-permit-id" value="{{ pp.private_information.work_permit.work_permit_no }}" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                             </div>
                         </li>
                         <li class="mt-2">
                             <div class="flex gap-3 mt-4">
                                 <label for="visa-expired-id" class="text-gray-400 font-semibold text-sm w-4/12">Visa Expiration Date</label>
-                                <input type="text" datepicker datepicker-buttons datepicker-autoselect-today datepicker-autohide name="visa-expired" id="visa-expired-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                <input type="text" datepicker datepicker-buttons datepicker-autoselect-today datepicker-autohide value="{{ pp.private_information.work_permit.visa_exp }}" name="visa-expired" datepicker-format="yyyy/mm/dd" id="visa-expired-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                             </div>
                         </li>
                         <li class="mt-2">
                             <div class="flex gap-3 mt-4">
                                 <label for="work-permit-expiry-id" class="text-gray-400 font-semibold text-sm w-4/12">Work Permit Expiration Date</label>
-                                <input type="text" datepicker datepicker-buttons datepicker-autoselect-today datepicker-autohide name="work-permit-expiry" id="work-permit-expiry-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
+                                <input type="text" datepicker datepicker-buttons datepicker-autoselect-today datepicker-autohide value="{{ pp.private_information.work_permit.work_permit_exp }}" name="work-permit-expiry" datepicker-format="yyyy/mm/dd" id="work-permit-expiry-id" class="w-8/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                             </div>
                         </li>
                         <li class="mt-2">
@@ -494,7 +494,7 @@
                                 <select name="employee-status" id="employee-status-id" class="w-9/12 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 text-gray-400 font-semibold text-sm bg-transparent focus:outline-none">
                                     <option value="" class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white" selected></option>
                                     {% for d in data.0.type_employment %}
-                                    <option value="{{ d }}" class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white">{{ d }}</option>
+                                    <option value="{{ d.pk }}" {% if pp.settings.status|add:0 == d.pk %} selected {% endif %} class="bg-gray-800 text-gray-400 font-bold text-xs hover:text-white">{{ d }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -505,7 +505,7 @@
                         <label for="pay-rate-id" class="text-gray-400 font-semibold text-sm w-3/12">Monthly Rate</label>
                         <div class="flex w-9/12">
                             <span class="text-gray-400 font-semibold text-sm">Rp</span>
-                            <input type="text" name="pay-rate" id="pay-rate-id" class="ml-2 w-1/4 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 focus:outline-none text-gray-400 text-sm font-semibold bg-transparent">
+                            <input type="text" name="pay-rate" id="pay-rate-id" value="{{ pp.settings.pay_rate }}" class="ml-2 w-1/4 border-b border-gray-400 hover:border-red-600 focus:border-blue-600 focus:outline-none text-gray-400 text-sm font-semibold bg-transparent">
                         </div>
                     </div>
                 </div>

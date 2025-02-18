@@ -2,15 +2,13 @@ import json
 from datetime import datetime
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.http import JsonResponse
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
+from django.http import HttpResponse
 from master.models import *
 from .models import *
-
-def staff_required(user) :
-    return user.is_staff
 
 def admin_required(user) :
     return user.is_superuser
@@ -85,6 +83,8 @@ def user_detail(request, u_id) :
     u = request.user
     profiles = Profile.objects.using('profile').get(user=int(u.pk))
 
+    groups = Group.objects.using('default').all()
+
     user = User.objects.using('default').get(id=int(u_id))
 
     if request.method == 'POST' :
@@ -94,6 +94,7 @@ def user_detail(request, u_id) :
         email = request.POST['user-email']
         staff = request.POST.get('staff', 'off')
         activate = request.POST.get('active', 'off')
+        group_ids = request.POST.getlist('groups')
 
         user.username = username
         user.first_name = first_name
@@ -118,14 +119,26 @@ def user_detail(request, u_id) :
             if not created :
                 pass
 
+        user.groups.clear()
+
+        for group_id in group_ids :
+            try :
+                group = Group.objects.using('default').get(id=int(group_id))
+                user.groups.add(group)
+
+            except Group.DoesNotExist :
+                return HttpResponse("Group Doesn't Exist", status=404)
+
         user.save()
 
         return redirect('user_profile:user_list')
 
     return render(request, 'detail_profile/user_detail.html', {
         'title_1' : 'Settings', 
-        'title_2' : 'Detail User', 
+        'title_2' : f'Detail User - {user.username}', 
         'user' : user,
+        'groups' : groups,
+        'user_groups' : user.groups.all(),
         'profile' : profiles,
         'feature' : 'Cant Add'
     })

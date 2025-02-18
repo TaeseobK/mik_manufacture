@@ -166,8 +166,8 @@
                                     {{ component.warehouse.id }}
                                 </td>
                                 <td class="px-6 py-3 min-w-1/10">
-                                    {% if not component.status == "done" %}
-                                        <button type="button" class="button-update flex justify-center text-center h-6 w-6 bg-gray-700 rounded-sm text-sm text-blue-200" data-id="{{ component.product_id }}">
+                                    {% if not component.status_f == "done" %}
+                                        <button type="button" class="button-update flex justify-center text-center h-6 w-6 bg-gray-700 rounded-sm text-sm text-blue-200" {% if not component.status == "Ready" %} disabled {% endif %} data-id="{{ component.product_id }}">
                                             <svg class="w-6 h-6 text-gray-800 dark:text-gray-300 hover:dark:text-black" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="none" viewBox="0 0 24 24">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 11.917 9.724 16.5 19 7.5"/>
                                             </svg>

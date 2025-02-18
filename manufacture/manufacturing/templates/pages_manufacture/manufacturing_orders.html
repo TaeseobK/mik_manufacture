@@ -40,7 +40,7 @@
                 {% for mo in page_obj %}
                     <tr onclick="" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 cursor-pointer hover:bg-gray-900 hover:text-white">
                         <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            <a href="{% url 'manufacture:detail_mo' mo.mo.id %}" class="cursor-pointer hover:text-blue-600 hover:underline">
+                            <a href="{% url 'manufacture:detail_mo' mo.mo.pk %}" class="cursor-pointer hover:text-blue-600 hover:underline">
                                 {{ mo.mo.mo_number }}
                             </a>
                         </th>
@@ -48,13 +48,13 @@
                             {{ mo.mo.start_date }}
                         </td>
                         <td class="px-6 py-4">
-                            {{ mo.product }}
+                            {{ mo.mo.product.name }}
                         </td>
                         <td class="px-6 py-4">
                             
                         </td>
                         <td class="px-6 py-4">
-                            {{ mo.warehouse.code }}
+                            {{ mo.mo.warehouse.code }}
                         </td>
                         <td class="px-6 py-4 font-medium">
                             {{ mo.status }}
@@ -63,7 +63,7 @@
                             {{ mo.mo.quantity }}
                         </td>
                         <td class="px-6 py-4">
-                            {{ mo.mo.company }}
+                            {{ mo.word }}
                         </td>
                         <td class="px-6 py-4 font-bold capitalize {% if mo.mo.status == 'draft' %} text-red-500 {% elif mo.mo.status == 'confirmed' %} text-green-500 {% elif mo.mo.status == 'in progress' %} text-yellow-500 {% elif mo.mo.status == 'done' %} text-blue-500 {% endif %}">
                             {{ mo.mo.status }}

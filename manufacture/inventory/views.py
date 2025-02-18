@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.core.files.storage import default_storage
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Q
+from django.contrib.auth.models import User, Group
 from datetime import datetime
 from .models import *
 from master.models import *
@@ -15,7 +16,13 @@ from user_profile.models import Profile
 def staff_required(user) :
     return user.is_staff
 
+def group_required(group_name) :
+    def in_group(user) :
+        return (user.is_authenticated and user.groups.filter(name=group_name).exists()) or user.is_superuser
+    return user_passes_test(in_group)
+
 @login_required
+@group_required('Inventory')
 @user_passes_test(staff_required, login_url='/login/')
 def overview(request) :
     user = request.user
@@ -54,6 +61,7 @@ def overview(request) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(user_passes_test, login_url='/login/')
 def receipt_list(request) :
     user = request.user
@@ -69,6 +77,7 @@ def receipt_list(request) :
         stock_move = StockMove.objects.using('inventory').get(id=int(data.stock_move.pk))
         warehouse = Warehouse.objects.using('inventory').get(id=int(stock_move.destination))
         company = Entity.objects.using('master').get(id=int(stock_move.company))
+        stock_move.responsible = User.objects.using('default').get(id=int(stock_move.responsible)).username
         
         words = company.entity.split()
 
@@ -118,6 +127,7 @@ def receipt_list(request) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(staff_required, login_url='/login/')
 def location_list(request) :
     user = request.user
@@ -130,6 +140,7 @@ def location_list(request) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(staff_required, login_url='/login/')
 def storage_category_list(request) :
     user = request.user
@@ -176,6 +187,7 @@ def storage_category_list(request) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(staff_required, login_url='/login/')
 def product_list(request) :
     user = request.user
@@ -183,20 +195,32 @@ def product_list(request) :
 
     search_query = request.GET.get('search', '')
 
+    data = []
+
     stock = StockTotal.objects.using('inventory').all()
+    
+    for d in stock :
+        product = Product.objects.using('inventory').get(id=int(d.product.pk))
+        warehouse = Warehouse.objects.using('inventory').get(id=int(d.warehouse.pk))
+
+        data.append({
+            'product' : product,
+            'stock' : d,
+            'warehouse' : warehouse
+        })
+
 
     if search_query :
-        stock = [
-            data for data in stock
+        data = [
+            d for d in data
             if (
-                search_query.lower() in str(data.product.name).lower() or
-                search_query.lower() in str(data.product.salesprice).lower() or
-                search_query.lower() in str(data.stock).lower() or
-                search_query.lower() in str(data.warehouse.code).lower()
+                search_query.lower() in str(d['product'].name) or
+                search_query.lower() in str(d['product'].sku) or
+                search_query.lower() in str(d['warehouse'].warehouse)
             )
         ]
 
-    paginator = Paginator(stock, 20)
+    paginator = Paginator(data, 20)
 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -214,6 +238,7 @@ def product_list(request) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(user_passes_test, login_url='/login/')
 def delivery_list(request) :
     user = request.user
@@ -226,6 +251,7 @@ def delivery_list(request) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(user_passes_test, login_url='/login/')
 def internal_transfers(request) :
     user = request.user
@@ -240,6 +266,8 @@ def internal_transfers(request) :
     for t in internal_transfer :
         stock_move = StockMove.objects.using('inventory').get(id=t.stock_move.pk)
         stock_move.source = Warehouse.objects.using('inventory').get(id=int(stock_move.source))
+        stock_move.destination = Warehouse.objects.using('inventory').get(id=int(stock_move.destination))
+        stock_move.responsible = User.objects.using('default').get(id=int(stock_move.responsible))
         stock_company = Entity.objects.using('master').get(id=int(stock_move.company))
         words = stock_company.entity.split()
         
@@ -285,6 +313,7 @@ def internal_transfers(request) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(user_passes_test, login_url='/login/')
 def manufacturings(request) :
     user = request.user
@@ -292,62 +321,76 @@ def manufacturings(request) :
 
     search_query = request.GET.get('search', '')
 
-    mos = ManufacturingOrders.objects.using('manufacturing').all()
+    sos = StockMove.objects.using('inventory').filter(operation_type="Manufacture").all()
 
-    mo_data = []
+    data = []
 
-    for mo in mos :
+    for so in sos :
+        mo = ManufacturingOrders.objects.using('manufacturing').get(stock_move_id=so.pk)
+        mo.responsible = User.objects.using('default').get(id=int(mo.responsible))
+        mo.product = Product.objects.using('inventory').get(id=int(mo.product))
+        mo.warehouse = Warehouse.objects.using('inventory').get(id=int(mo.warehouse))
+        company = Entity.objects.using('master').get(id=int(so.company))
 
-        try :
-            product = Product.objects.using('inventory').get(id=mo.product)
-        except Product.DoesNotExist :
-            product = None
+        words = company.entity.split()
 
-        try :
-            warehouse = Warehouse.objects.using('inventory').get(id=mo.warehouse)
-        except :
-            warehouse = None
+        if len(words) == 1 :
+            word = words
+        else :
+            word = ''.join([w[0] for w in words[:3]])
 
+        if not mo.approved_by == 0 :
+            mo.approved_by = User.objects.using('default').get(id=int(mo.approved_by))
+        else :
+            mo.approved_by = mo.approved_by
+        
         status_data = []
+        
+        for d in mo.product_component :
 
-        for data in mo.product_component :
-            stock_on_hand = StockTotal.objects.using('inventory').get(product_id=int(data['product_id']), warehouse_id=int(data['warehouse_id'])).stock
-            if int(data['product_quantity']) >= int(stock_on_hand) :
+            if StockTotal.objects.using('inventory').filter(product_id=int(d['product_id']), warehouse_id=int(d['warehouse_id'])).exists() :
+                stock_on_hand = StockTotal.objects.using('inventory').get(product_id=int(d['product_id']), warehouse_id=int(d['warehouse_id'])).stock
+
+                if int(d['product_quantity']) >= int(stock_on_hand) :
+                    status = "Not Ready"
+                elif int(d['product_quantity']) <= int(stock_on_hand) :
+                    status = "Ready"
+
+            else :
                 status = "Not Ready"
-            elif int(data['product_quantity']) <= int(stock_on_hand) :
-                status = "Ready"
+            
             status_data.append({
-                'status' : str(status)
+                'status' : status
             })
 
-        if all(product['status'] == 'Ready' for product in status_data) :
-            final_status = "All Components Ready"
-        elif all(product['status'] == 'Not Ready' for product in status_data) :
-            final_status = "All Components Not Ready"
-        elif any(product['status'] == 'Ready' for product in status_data) :
-            final_status = "One or More Components Not Ready"
+            if all(s['status'] == 'Ready' for s in status_data) :
+                final_status = "All Components Ready"
+            elif all(s['status'] == 'Not Ready' for s in status_data) :
+                final_status = "All Components Not Ready"
+            elif any(s['status'] == 'Ready' for s in status_data) :
+                final_status = "One or More Components Not Ready"
 
-        mo_data.append({
-            'mo': mo,
-            'product': product,
-            'warehouse' : warehouse,
-            'status' : final_status
+        data.append({
+            'mo' : mo,
+            'status' : final_status,
+            'word' : word
         })
-    
+
     if search_query :
-        mo_data = [
-            data for data in mo_data
+        data = [
+            d for d in data
             if (
-                search_query.lower() in str(data['mo'].mo_number).lower() or
-                search_query.lower() in str(data['mo'].start_date).lower() or
-                search_query.lower() in str(data['mo'].responsible).lower() or
-                search_query.lower() in str(data['mo'].status).lower() or
-                search_query.lower() in str(data['product'].name).lower() or
-                search_query.lower() in str(data['warehouse'].code).lower()
+                search_query.lower() in str(d['mo'].mo_number).lower() or
+                search_query.lower() in str(d['mo'].start_date).lower() or
+                search_query.lower() in str(d['mo'].responsible).lower() or
+                search_query.lower() in str(d['status']).lower() or
+                search_query.lower() in str(d['mo'].product.name).lower() or
+                search_query.lower() in str(d['mo'].warehouse.code).lower()
             )
         ]
     
-    paginator = Paginator(mo_data, 12)
+    paginator = Paginator(data,12)
+
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -364,6 +407,7 @@ def manufacturings(request) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(user_passes_test, login_url='/login/')
 def inventory_adjusment(request) :
     user = request.user
@@ -376,6 +420,7 @@ def inventory_adjusment(request) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(user_passes_test, login_url='/login/')
 def scrap(request) :
     user = request.user
@@ -388,6 +433,7 @@ def scrap(request) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(user_passes_test, login_url='/login/')
 def new_product(request) :
     user = request.user
@@ -445,6 +491,7 @@ def new_product(request) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(user_passes_test, login_url='/login/')
 def new_category(request) :
     user = request.user
@@ -475,6 +522,7 @@ def new_category(request) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(staff_required, login_url='/login/')
 def category_list(request) :
     user = request.user
@@ -510,6 +558,7 @@ def category_list(request) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(staff_required, login_url='/login/')
 def detail_product(request, product_id):
     user = request.user
@@ -566,6 +615,7 @@ def detail_product(request, product_id):
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(staff_required, login_url='/login/')
 def detail_category(request, category_id) :
     user = request.user
@@ -599,6 +649,7 @@ def detail_category(request, category_id) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(staff_required, login_url='/login/')
 def warehouse_list(request) :
     user = request.user
@@ -655,6 +706,7 @@ def warehouse_list(request) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(staff_required, login_url='/login/')
 def new_warehouse(request) :
     user = request.user
@@ -705,6 +757,7 @@ def new_warehouse(request) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(staff_required, login_url='/login/')
 def detail_warehouse(request, warehouse_id) :
     user = request.user
@@ -757,6 +810,7 @@ def detail_warehouse(request, warehouse_id) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(staff_required, login_url='/login/')
 def new_receipt(request):
     user = request.user
@@ -765,6 +819,7 @@ def new_receipt(request):
     warehouses = Warehouse.objects.using('inventory').all()
     companies = Entity.objects.using('master').all()
     products = Product.objects.using('inventory').all()
+    respons = User.objects.using('default').filter(is_superuser=False, groups__name='Inventory').all()
 
     if request.method == 'POST':
         operation_type = "Receipt"
@@ -772,11 +827,13 @@ def new_receipt(request):
         destination = request.POST['destination-warehouse']
         scheduled_date = request.POST['scheduled-date']
         files = request.FILES['document']
-        responsible = request.POST['responsible']
+        res_id = request.POST['responsible']
         company = request.POST['company']
         notes = request.POST['internalnotes']
         product = request.POST.getlist('products[]')
         product_quantity = request.POST.getlist('product-quantity[]')
+
+        responsible = User.objects.using('default').get(id=int(res_id))
 
         file_name = None
 
@@ -816,7 +873,7 @@ def new_receipt(request):
             destination=str(warehouse.pk),
             scheduled_date=date_obj,
             files=file_name if file_name else 'Doesnt Exists',
-            responsible=responsible,
+            responsible=responsible.pk,
             company=company,
             notes=notes,
             products=product_json,
@@ -852,10 +909,12 @@ def new_receipt(request):
         'warehouses': warehouses,
         'companies': companies,
         'products': products,
-        'profile' : profile
+        'profile' : profile,
+        'respons' : respons
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(staff_required, login_url='/login/')
 def new_location(request) :
     user = request.user
@@ -874,6 +933,7 @@ def new_location(request) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(staff_required, login_url='/login/')
 def new_storage_category(request) :
     user = request.user
@@ -914,6 +974,7 @@ def new_storage_category(request) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(staff_required, login_url='/login/')
 def detail_storage_category(request, storage_category_id) :
     user = request.user
@@ -972,6 +1033,7 @@ def detail_storage_category(request, storage_category_id) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(staff_required, login_url='/login/')
 def new_internal_transfer(request) :
     user = request.user
@@ -980,6 +1042,7 @@ def new_internal_transfer(request) :
     products = Product.objects.using('inventory').all()
     companies = Entity.objects.using('master').all()
     transport = ShippingService.objects.using('master').all()
+    respons = User.objects.using('default').filter(is_superuser=False, groups__name='Inventory').all()
 
     if request.method == 'POST' :
         operation_type = "Internal Transfer"
@@ -989,7 +1052,7 @@ def new_internal_transfer(request) :
         files = request.FILES['documents']
         product_ids = request.POST.getlist('products[]')
         components = request.POST.getlist('product-quantity[]')
-        responsible = request.POST['responsible']
+        res_id = request.POST['responsible']
         company = request.POST['company']
         notes = request.POST['internalnotes']
         shipping_service = request.POST['shipping-service']
@@ -1000,6 +1063,8 @@ def new_internal_transfer(request) :
 
         date_value = datetime.strptime(scheduled_date, '%d/%m/%Y')
         date_value_2 = date_value.strftime('%Y-%m-%d')
+
+        responsible = User.objects.using('default').get(id=int(res_id))
 
         file_name = None
 
@@ -1041,7 +1106,7 @@ def new_internal_transfer(request) :
             destination=str(destination_id.pk),
             scheduled_date=date_value_2,
             files=file_name if file_name else 'Doesnt Exists',
-            responsible=responsible,
+            responsible=responsible.pk,
             company=company_id.pk,
             notes=notes,
             products=product_json,
@@ -1087,23 +1152,26 @@ def new_internal_transfer(request) :
         'companies' : companies,
         'products' : products,
         'transport' : transport,
-        'profile' : profile
+        'profile' : profile,
+        'respons' : respons
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(staff_required, login_url='/login/')
 def detail_internal_transfer(request, st_id):
     user = request.user
     profile = Profile.objects.using('profile').get(user=int(user.pk))
     data = []
     stock_move = StockMove.objects.using('inventory').get(id=st_id)
-    destination = Warehouse.objects.using('inventory').get(id=int(stock_move.destination))
+    destination_w = Warehouse.objects.using('inventory').get(id=int(stock_move.destination))
     source_warehouse = Warehouse.objects.using('inventory').get(id=int(stock_move.source))
     company = Entity.objects.using('master').get(id=int(stock_move.company))
     internal_transfers = InternalTransfer.objects.using('inventory').get(stock_move_id=stock_move.pk)
     shipping_service = ShippingService.objects.using('master').get(id=internal_transfers.shipping_service)
 
     stock_move.scheduled_date = datetime.strftime(stock_move.scheduled_date, '%d/%m/%Y')
+    stock_move.responsible = User.objects.using('default').get(id=int(stock_move.responsible))
 
     data_r = []
 
@@ -1151,10 +1219,12 @@ def detail_internal_transfer(request, st_id):
             file_type = 'image'
         elif ext == '.pdf' :
             file_type = 'pdf'
+        else :
+            file_type = None
     
     data.append({
         'stock_move' : stock_move,
-        'destination' : destination,
+        'destination_w' : destination_w,
         'source' : source_warehouse,
         'company' : company,
         'transfer_component' : transfer_component,
@@ -1171,8 +1241,8 @@ def detail_internal_transfer(request, st_id):
             product_id = request.POST['product_id']
             product_quantity = request.POST['product_quantity']
             status = request.POST['status']
-            source = request.POST['source_warehouse']
-            destination = request.POST['destination']
+            source = request.POST.get('source_warehouse')
+            destination = request.POST['destination_warehouse']
 
             # Cutting Source Stock
             cutt = StockTotal.objects.using('inventory').get(warehouse_id=int(source), product_id=int(product_id))
@@ -1182,20 +1252,16 @@ def detail_internal_transfer(request, st_id):
             cutt.save()
 
             #Append Destination Stock
-            stock_up = StockTotal.objects.using('inventory').get(warehouse_id=int(destination), product_id=int(product_id))
+            stock_u, created = StockTotal.objects.using('inventory').get_or_create(
+                warehouse_id=destination,
+                product_id=product_id,
+                stock=int(product_quantity)
+            )
 
-            try :
-                stock_up_now = stock_up.stock
-                stock_up_update = stock_up_now + int(product_quantity)
-                stock_up.stock = stock_up_update
-                stock_up.save()
+            if not created :
+                stock_u.stock = stock_u.stock + int(product_quantity)
 
-            except stock_up.DoesNotExist :
-                StockTotal.objects.using('inventory').create(
-                    warehouse_id=int(destination),
-                    product_id=int(product_id),
-                    stock=int(product_quantity)
-                )
+                stock_u.save()
 
             #Update Internal Transfer
             for r in internal_transfers.product :
@@ -1222,6 +1288,7 @@ def detail_internal_transfer(request, st_id):
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(staff_required, login_url='/login/')
 def shipping_list(request) :
     user = request.user
@@ -1259,6 +1326,7 @@ def shipping_list(request) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(staff_required, login_url='/login/')
 def new_shipping(request) :
     user = request.user
@@ -1289,6 +1357,7 @@ def new_shipping(request) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(staff_required, login_url='/login/')
 def new_delivery(request) :
     user = request.user
@@ -1427,6 +1496,7 @@ def new_delivery(request) :
     })
 
 @login_required
+@group_required('Inventory')
 @user_passes_test(staff_required, login_url='/login/')
 def detail_receipt(request, receipt_id) :
     user = request.user
@@ -1440,6 +1510,7 @@ def detail_receipt(request, receipt_id) :
     warehouse = Warehouse.objects.using('inventory').get(id=int(stock_move.destination))
 
     stock_move.scheduled_date = stock_move.scheduled_date.strftime('%Y/%m/%d')
+    stock_move.responsible = User.objects.using('default').get(id=int(stock_move.responsible))
 
     component = []
 

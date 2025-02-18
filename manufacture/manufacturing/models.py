@@ -37,7 +37,7 @@ class ManufacturingOrders(models.Model) :
     bom_number = models.IntegerField(default=0)
     quantity = models.IntegerField()
     status = models.CharField(max_length=24, choices=[('draft', 'Draft'), ('confirmed', 'Confirmed'), ('in progress', 'In Progress'), ('done', 'Done')])
-    responsible = models.CharField(max_length=255)
+    responsible = models.IntegerField()
     product_component = models.JSONField()
     start_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)

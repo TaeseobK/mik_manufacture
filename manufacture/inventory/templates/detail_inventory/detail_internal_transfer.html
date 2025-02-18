@@ -66,14 +66,14 @@
                 <p name="source-warehouse" id="source-warehouse-id" class="my-2 mr-10 w-3/4 justify-end text-md font-semibold bg-transparent focus:outline-none border-b-2 border-gray-600 focus:border-blue-600 text-gray-500 placeholder:text-gray-600">
                     {{ datas.0.source.code }}
                 </p>
-                <input type="hidden" value="{{ datas.0.source.pk }}" id="source-id">
+                <input type="hidden" value="{{ datas.0.source.pk }}" name="source_warehouse" id="source-id">
             </div>
             <div class="flex gap-2">
                 <label for="destination-warehouse-id" class="text-gray-400 font-semibold w-1/2 my-2">Destination Location</label>
                 <p name="destination-warehouse" id="destination-warehouse-id" class="my-2 mr-10 w-3/4 justify-end text-md font-semibold bg-transparent focus:outline-none border-b-2 border-gray-600 focus:border-blue-600 text-gray-500 placeholder:text-gray-600">
-                    {{ datas.0.destination.code }}
+                    {{ datas.0.destination_w.code }}
                 </p>
-                <input type="hidden" value="{{ datas.0.destination.pk }}" id="destination-id">
+                <input type="hidden" value="{{ datas.0.destination_w.pk }}" name="destination_warehouse" id="destination-id">
             </div>
         </div>
         <div class="bg-transparent w-2/4">

@@ -44,7 +44,9 @@
                 </div>
             </li>
             <li class="mt-4">
-                <div class="ml-3 space-y-2 items-center w-full justify-start bg-transparent gap-5">
+                <hr class="border-b-1 border-gray-400 w-1/3">
+                <p class="mt-4 text-gray-400 font-bold">Status :</p>
+                <div class="ml-3 mt-2 space-y-2 items-center w-full justify-start bg-transparent gap-5">
                     <div class="flex gap-3 items-center">
                         <input type="checkbox" id="staff-id" name="staff" value="1" {% if user.is_staff %} checked {% endif %} class="text-gray-400 font-medium cursor-pointer text-medium">
                         <label for="staff-id" class="text-gray-400 font-medium text-medium">Staff</label>
@@ -54,6 +56,18 @@
                         <label for="active-id" class="text-gray-400 font-medium text-medium">Active</label>
                     </div>
                 </div>
+            </li>
+            <li class="mt-4">
+                <hr class="border-b-1 border-gray-400 w-1/3">
+                <p class="mt-5 mb-4 text-gray-400 font-bold text-medium">Access Module :</p>
+                <ul class="space-y-2 ml-3">
+                    {% for data in groups %}
+                        <li class="flex gap-5 mt-2">
+                            <input type="checkbox" {% if data in user_groups %} checked {% endif %} name="groups" id="{{ data.id }}-id" value="{{ data.id }}" class="text-gray-400 cursor-pointer text-medium font-medium">
+                            <label for="{{ data.id }}-id" class="items-center flex text-gray-400 font-semibold text-medium cursor-pointer">{{ data.name }}</label>
+                        </li>
+                    {% endfor %}
+                </ul>
             </li>
         </ul>
     </div>

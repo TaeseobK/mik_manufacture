@@ -2,7 +2,7 @@
 {% block title %}{{ title_1 }}{% endblock %}
 {% load static %}
 {% block content %}
-<section class="flex content-center bg-transparent overflow-hidden h-screen">
+<section class="flex content-center bg-transparent overflow-y-hidden h-screen">
      <aside id="default-sidebar" class="mt-1 left-0 w-auto transition-transform -translate-x-full sm:translate-x-0 w-1/10" aria-label="Sidebar">
         <div class="px-3 py-4 bg-gray-50 h-full dark:bg-gray-800 border-r-2 border-gray-400">
            <ul class="space-y-1 font-medium">
@@ -89,7 +89,7 @@
                            </li>
                            <li class="flex">
                               <div>
-                                 <div class="rounded-sm border-2 p-1 font-bold text-sm {% if d.status == 'Active' %} bg-gray-400 text-gray-800 border-gray-600 {% else %} bg-red-600 text-white border-white {% endif %}">
+                                 <div class="rounded-sm border-2 p-1 font-bold text-sm {% if not d.status == 'Need Update' %} bg-gray-400 text-gray-800 border-gray-600 {% else %} bg-red-600 text-white border-white {% endif %}">
                                     {{ d.status }}
                                  </div>
                               </div>

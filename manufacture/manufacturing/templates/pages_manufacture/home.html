@@ -4,54 +4,105 @@
 {% block content %}
 <section>
     <div class="flex flex-wrap justify-center max-h-screen border-gray-800 items-center content-center p-72">
-        <div class="w-1/6">
-            <a href="{% url 'inventory:overview' %}">
-                <img class="invert bg-gray-transparent rounded-lg items-center h-auto max-w-full scale-75 cursor-pointer transform hover:scale-90 transition-transform duration-300" src="{% static 'inventory.png' %}" alt="">
-                <p class="text-center text-white text-l font-mono">
-                    Inventory
-                </p>
-            </a>
-        </div>
-        <div class="w-1/6">
-            <a href="{% url 'manufacture:manufacturing_orders' %}">
-                <img class="invert bg-gray-transparent rounded-lg items-center h-auto max-w-full scale-75 cursor-pointer transform hover:scale-90 transition-transform duration-300" src="{% static 'manufacture.png' %}" alt="Manufacture">
-                <p class="text-center text-white text-l font-mono">
-                    Manufacture
-                </p>
-            </a>
-        </div>
-        <div class="w-1/6">
-            <a href="{% url 'master:employee_list' %}">
-                <img class="invert bg-gray-transparent rounded-lg items-center h-auto max-w-full scale-75 cursor-pointer transform hover:scale-90 transition-transform duration-300" src="{% static 'employee.png' %}" alt="">
-                <p class="text-center text-white text-l font-mono">
-                    Employee
-                </p>
-            </a>
-        </div>
-        <div class="w-1/6">
-            <a href="#">
-                <img class="invert bg-gray-transparent rounded-lg items-center h-auto max-w-full scale-75 cursor-pointer transform hover:scale-90 transition-transform duration-300" src="{% static 'dashboard.png' %}" alt="">
-                <p class="text-center text-white text-l font-mono">
-                    Dashboard
-                </p>
-            </a>
-        </div>
-        <div class="w-1/6">
-            <a href="#">
-                <img class="invert bg-gray-transparent rounded-lg items-center h-auto max-w-full scale-75 cursor-pointer transform hover:scale-90 transition-transform duration-300" src="{% static 'shop_floor.png' %}" alt="">
-                <p class="text-center text-white text-l font-mono">
-                    Shop Floor
-                </p>
-            </a>
-        </div>
-        <div class="w-1/6">
-            <a href="{% url 'master:general_settings' %}">
-                <img class="invert bg-gray-transparent rounded-lg items-center h-auto max-w-full scale-75 cursor-pointer transform hover:scale-90 transition-transform duration-300" src="{% static 'settings.png' %}" alt="">
-                <p class="text-center text-white text-l font-mono">
-                    Settings
-                </p>
-            </a>
-        </div>
+        {% if request.user.is_superuser %}
+            <div class="w-1/6">
+                <a href="{% url 'inventory:overview' %}">
+                    <img class="invert bg-gray-transparent rounded-lg items-center h-auto max-w-full scale-75 cursor-pointer transform hover:scale-90 transition-transform duration-300" src="{% static 'inventory.png' %}" alt="">
+                    <p class="text-center text-white text-l font-mono">
+                        Inventory
+                    </p>
+                </a>
+            </div>
+            <div class="w-1/6">
+                <a href="{% url 'manufacture:manufacturing_orders' %}">
+                    <img class="invert bg-gray-transparent rounded-lg items-center h-auto max-w-full scale-75 cursor-pointer transform hover:scale-90 transition-transform duration-300" src="{% static 'manufacture.png' %}" alt="Manufacture">
+                    <p class="text-center text-white text-l font-mono">
+                        Manufacture
+                    </p>
+                </a>
+            </div>
+            <div class="w-1/6">
+                <a href="{% url 'master:employee_list' %}">
+                    <img class="invert bg-gray-transparent rounded-lg items-center h-auto max-w-full scale-75 cursor-pointer transform hover:scale-90 transition-transform duration-300" src="{% static 'employee.png' %}" alt="">
+                    <p class="text-center text-white text-l font-mono">
+                        Employee
+                    </p>
+                </a>
+            </div>
+            <div class="w-1/6">
+                <a href="#">
+                    <img class="invert bg-gray-transparent rounded-lg items-center h-auto max-w-full scale-75 cursor-pointer transform hover:scale-90 transition-transform duration-300" src="{% static 'dashboard.png' %}" alt="">
+                    <p class="text-center text-white text-l font-mono">
+                        Dashboard
+                    </p>
+                </a>
+            </div>
+            <div class="w-1/6">
+                <a href="#">
+                    <img class="invert bg-gray-transparent rounded-lg items-center h-auto max-w-full scale-75 cursor-pointer transform hover:scale-90 transition-transform duration-300" src="{% static 'shop_floor.png' %}" alt="">
+                    <p class="text-center text-white text-l font-mono">
+                        Shop Floor
+                    </p>
+                </a>
+            </div>
+            <div class="w-1/6">
+                <a href="{% url 'master:general_settings' %}">
+                    <img class="invert bg-gray-transparent rounded-lg items-center h-auto max-w-full scale-75 cursor-pointer transform hover:scale-90 transition-transform duration-300" src="{% static 'settings.png' %}" alt="">
+                    <p class="text-center text-white text-l font-mono">
+                        Settings
+                    </p>
+                </a>
+            </div>
+        {% else %}
+            {% for group in groups %}
+                {% if group.name == 'Inventory'%}
+                    <div class="w-1/6">
+                        <a href="{% url 'inventory:overview' %}">
+                            <img class="invert bg-gray-transparent rounded-lg items-center h-auto max-w-full scale-75 cursor-pointer transform hover:scale-90 transition-transform duration-300" src="{% static 'inventory.png' %}" alt="">
+                            <p class="text-center text-white text-l font-mono">
+                                Inventory
+                            </p>
+                        </a>
+                    </div>
+                {% elif group.name == 'Manufacture' %}
+                    <div class="w-1/6">
+                        <a href="{% url 'manufacture:manufacturing_orders' %}">
+                            <img class="invert bg-gray-transparent rounded-lg items-center h-auto max-w-full scale-75 cursor-pointer transform hover:scale-90 transition-transform duration-300" src="{% static 'manufacture.png' %}" alt="Manufacture">
+                            <p class="text-center text-white text-l font-mono">
+                                Manufacture
+                            </p>
+                        </a>
+                    </div>
+                {% elif group.name == 'Employee' %}
+                    <div class="w-1/6">
+                        <a href="{% url 'master:employee_list' %}">
+                            <img class="invert bg-gray-transparent rounded-lg items-center h-auto max-w-full scale-75 cursor-pointer transform hover:scale-90 transition-transform duration-300" src="{% static 'employee.png' %}" alt="">
+                            <p class="text-center text-white text-l font-mono">
+                                Employee
+                            </p>
+                        </a>
+                    </div>
+                {% elif group.name == 'Dashboard' %}
+                    <div class="w-1/6">
+                        <a href="#">
+                            <img class="invert bg-gray-transparent rounded-lg items-center h-auto max-w-full scale-75 cursor-pointer transform hover:scale-90 transition-transform duration-300" src="{% static 'dashboard.png' %}" alt="">
+                            <p class="text-center text-white text-l font-mono">
+                                Dashboard
+                            </p>
+                        </a>
+                    </div>
+                {% elif group.name == 'Shop Floor' %}
+                    <div class="w-1/6">
+                        <a href="#">
+                            <img class="invert bg-gray-transparent rounded-lg items-center h-auto max-w-full scale-75 cursor-pointer transform hover:scale-90 transition-transform duration-300" src="{% static 'shop_floor.png' %}" alt="">
+                            <p class="text-center text-white text-l font-mono">
+                                Shop Floor
+                            </p>
+                        </a>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
     </div>
 </section>
 {% endblock %}

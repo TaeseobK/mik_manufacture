@@ -157,7 +157,7 @@ class StockMove(models.Model) :
     destination = models.CharField(max_length=11)
     scheduled_date = models.DateField(null=True, blank=True)
     files = models.FileField(upload_to="user_upload_file/")
-    responsible = models.TextField()
+    responsible = models.IntegerField()
     company = models.IntegerField()
     notes = models.TextField()
     products = models.TextField()

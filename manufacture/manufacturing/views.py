@@ -12,25 +12,41 @@ from django.http import JsonResponse
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.core.paginator import Paginator
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 def staff_required(user) :
     return user.is_staff
+
+def group_required(group_name) :
+    def in_group(user) :
+        return (user.is_authenticated and user.groups.filter(name=group_name).exists()) or user.is_superuser
+    return user_passes_test(in_group)
 
 @login_required
 @user_passes_test(staff_required, login_url='/login/')
 def home(request) :
     user = request.user
     profiles = Profile.objects.using('profile').get(user=int(user.pk))
+    user_group = user.groups.all()
+
+    groups = []
+
+    for data in user_group :
+        groups.append({
+            'name' : data.name
+        })
 
     return render(request, 'pages_manufacture/home.html', {
         'title' : 'manufacturing',
         'title_1' : 'Home',
         'feature' : 'Cant Add',
-        'profile' : profiles
+        'profile' : profiles,
+        'user' : user,
+        'groups' : groups
     })
 
 @login_required
+@group_required('Manufacture')
 @user_passes_test(staff_required, login_url='login/')
 def manufacturing_orders(request) :
     user = request.user
@@ -38,67 +54,76 @@ def manufacturing_orders(request) :
 
     search_query = request.GET.get('search', '')
 
-    mos = ManufacturingOrders.objects.using('manufacturing').all()
+    sos = StockMove.objects.using('inventory').filter(operation_type="Manufacture").all()
 
-    mo_data = []
+    data = []
 
-    for mo in mos :
+    for so in sos :
+        mo = ManufacturingOrders.objects.using('manufacturing').get(stock_move_id=so.pk)
+        mo.responsible = User.objects.using('default').get(id=int(mo.responsible))
+        mo.product = Product.objects.using('inventory').get(id=int(mo.product))
+        mo.warehouse = Warehouse.objects.using('inventory').get(id=int(mo.warehouse))
+        company = Entity.objects.using('master').get(id=int(so.company))
 
-        try :
-            product = Product.objects.using('inventory').get(id=mo.product)
-        except Product.DoesNotExist :
-            product = None
+        words = company.entity.split()
 
-        try :
-            warehouse = Warehouse.objects.using('inventory').get(id=mo.warehouse)
-        except :
-            warehouse = None
-
-        if mo.status == 'done' :
-            final_status = "Completed"
-
+        if len(words) == 1 :
+            word = words
         else :
+            word = ''.join([w[0] for w in words[:3]])
 
-            status_data = []
+        if not mo.approved_by == 0 :
+            mo.approved_by = User.objects.using('default').get(id=int(mo.approved_by))
+        else :
+            mo.approved_by = mo.approved_by
+        
+        status_data = []
+        
+        for d in mo.product_component :
 
-            for data in mo.product_component :
-                stock_on_hand = StockTotal.objects.using('inventory').get(product_id=int(data['product_id']), warehouse_id=int(data['warehouse_id'])).stock
-                if int(data['product_quantity']) >= int(stock_on_hand) :
+            if StockTotal.objects.using('inventory').filter(product_id=int(d['product_id']), warehouse_id=int(d['warehouse_id'])).exists() :
+                stock_on_hand = StockTotal.objects.using('inventory').get(product_id=int(d['product_id']), warehouse_id=int(d['warehouse_id'])).stock
+
+                if int(d['product_quantity']) >= int(stock_on_hand) :
                     status = "Not Ready"
-                elif int(data['product_quantity']) <= int(stock_on_hand) :
+                elif int(d['product_quantity']) <= int(stock_on_hand) :
                     status = "Ready"
-                status_data.append({
-                    'status' : str(status)
-                })
 
-            if all(product['status'] == 'Ready' for product in status_data) :
+            else :
+                status = "Not Ready"
+            
+            status_data.append({
+                'status' : status
+            })
+
+            if all(s['status'] == 'Ready' for s in status_data) :
                 final_status = "All Components Ready"
-            elif all(product['status'] == 'Not Ready' for product in status_data) :
+            elif all(s['status'] == 'Not Ready' for s in status_data) :
                 final_status = "All Components Not Ready"
-            elif any(product['status'] == 'Ready' for product in status_data) :
+            elif any(s['status'] == 'Ready' for s in status_data) :
                 final_status = "One or More Components Not Ready"
 
-        mo_data.append({
-            'mo': mo,
-            'product': product,
-            'warehouse' : warehouse,
-            'status' : final_status
+        data.append({
+            'mo' : mo,
+            'status' : final_status,
+            'word' : word
         })
-    
+
     if search_query :
-        mo_data = [
-            data for data in mo_data
+        data = [
+            d for d in data
             if (
-                search_query.lower() in str(data['mo'].mo_number).lower() or
-                search_query.lower() in str(data['mo'].start_date).lower() or
-                search_query.lower() in str(data['mo'].responsible).lower() or
-                search_query.lower() in str(data['mo'].status).lower() or
-                search_query.lower() in str(data['product'].name).lower() or
-                search_query.lower() in str(data['warehouse'].code).lower()
+                search_query.lower() in str(d['mo'].mo_number).lower() or
+                search_query.lower() in str(d['mo'].start_date).lower() or
+                search_query.lower() in str(d['mo'].responsible).lower() or
+                search_query.lower() in str(d['status']).lower() or
+                search_query.lower() in str(d['mo'].product.name).lower() or
+                search_query.lower() in str(d['mo'].warehouse.code).lower()
             )
         ]
     
-    paginator = Paginator(mo_data, 12)
+    paginator = Paginator(data,12)
+
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -115,6 +140,7 @@ def manufacturing_orders(request) :
     })
 
 @login_required
+@group_required('Manufacture')
 @user_passes_test(staff_required, login_url='login/')
 def unbuild_orders(request) :
     user = request.user
@@ -127,6 +153,7 @@ def unbuild_orders(request) :
     })
 
 @login_required
+@group_required('Manufacture')
 @user_passes_test(staff_required, login_url='login/')
 def scrap_orders(request) :
     user = request.user
@@ -139,6 +166,7 @@ def scrap_orders(request) :
     })
 
 @login_required
+@group_required('Manufacture')
 @user_passes_test(staff_required, login_url='login/')
 def new_mo(request):
     user = request.user
@@ -148,6 +176,7 @@ def new_mo(request):
     boms = BillofMaterials.objects.using('manufacturing').filter(bom_type="Manufacture This Product")
     companies = Entity.objects.using('master').all()
     warehouses = Warehouse.objects.using('inventory').all()
+    respons = User.objects.using('default').filter(is_superuser=False, groups__name='Manufacture')
 
     bom_product_name = []
 
@@ -165,8 +194,10 @@ def new_mo(request):
         product_id_post = request.POST['products']
         scheduled_date = request.POST['scheduled-date']
         quantity_bom = request.POST['quantity-bom']
-        responsible = request.POST['responsible']
+        res_id = request.POST['responsible']
         bom_number = request.POST['bom']
+
+        responsible = User.objects.using('default').get(id=int(res_id))
 
         #for StockMove
         operation_type = "Manufacture"
@@ -222,7 +253,7 @@ def new_mo(request):
         last_manufacture = StockMove.objects.using('inventory').filter(
             operation_type=operation_type,
             source=source_warehouse,
-            destination_warehouse=destination_warehouse
+            destination=destination_warehouse
         ).count()
         
         move_code = mo_code
@@ -233,7 +264,7 @@ def new_mo(request):
             bom_number=bom_number,
             quantity=quantity_bom,
             status="draft",
-            responsible=responsible,
+            responsible=responsible.pk,
             product_component=component_list,
             start_date=scheduled_date,
             warehouse=str(source_warehouse),
@@ -246,10 +277,10 @@ def new_mo(request):
             code=move_code,
             operation_type=operation_type,
             source=str(source_wr.pk),
-            destination_warehouse=destination_wr,
+            destination=destination_wr.pk,
             scheduled_date=scheduled_date,
             files=file_name if file_name else 'Doesnt Exists',
-            responsible=responsible,
+            responsible=responsible.pk,
             company=company,
             notes=internal_notes,
             products=json.dumps(product_ids),
@@ -271,10 +302,12 @@ def new_mo(request):
         'boms': bom_product_name,
         'companies' : companies,
         'warehouses' : warehouses,
-        'profile' : profile
+        'profile' : profile,
+        'respons' : respons
     })
 
 @login_required
+@group_required('Manufacture')
 @user_passes_test(staff_required, login_url='login/')
 def product_list(request) :
     user = request.user
@@ -322,6 +355,7 @@ def product_list(request) :
     })
 
 @login_required
+@group_required('Manufacture')
 @user_passes_test(staff_required, login_url='/login/')
 def list_bom(request):
     user = request.user
@@ -367,13 +401,14 @@ def list_bom(request):
         })
     
     return render(request, 'pages_manufacture/bom_list.html', {
-        'title_1': 'manufacturing',
+        'title_1': 'Manufacturing',
         'title_2': 'Bill of Materials',
         'page_obj': page_obj,
         'profile' : profile
     })
 
 @login_required
+@group_required('Manufacture')
 @user_passes_test(staff_required, login_url='/login/')
 def new_bom(request) :
     user = request.user
@@ -423,6 +458,7 @@ def new_bom(request) :
     })
 
 @login_required
+@group_required('Manufacture')
 @user_passes_test(staff_required, login_url='/login/')
 def detail_bom(request, bom_id):
     user = request.user
@@ -509,6 +545,7 @@ def detail_bom(request, bom_id):
     })
 
 @login_required
+@group_required('Manufacture')
 @user_passes_test(staff_required, login_url='/login/')
 def detail_mo(request, mo_id) :
     user = request.user
@@ -516,6 +553,7 @@ def detail_mo(request, mo_id) :
 
     mos = ManufacturingOrders.objects.using('manufacturing').get(id=int(mo_id))
     mos.warehouse = int(mos.warehouse)
+    mos.responsible = User.objects.using('default').get(id=int(mos.responsible))
     companies = Entity.objects.using('master').all()
     product_all = Product.objects.using('inventory').all()
     boms = BillofMaterials.objects.using('manufacturing').all()
@@ -548,6 +586,18 @@ def detail_mo(request, mo_id) :
     for component in mos.product_component :
         products = Product.objects.using('inventory').get(id=int(component['product_id']))
         warehouse = Warehouse.objects.using('inventory').get(id=int(component['warehouse_id']))
+
+        if StockTotal.objects.using('inventory').filter(product_id=int(component['product_id']), warehouse_id=int(component['warehouse_id'])).exists() :
+            stock_k = StockTotal.objects.using('inventory').get(product_id=int(component['product_id']), warehouse_id=int(component['warehouse_id']))
+            
+            if int(component['product_quantity']) >= int(stock_k.stock) :
+                status_f = "Not Ready"
+            elif int(component['product_quantity']) <= int(stock_k.stock) :
+                status_f = "Ready"
+        
+        else :
+            status_f = "Not Ready"
+
         component_data.append({
             'product_id' : products.pk,
             'product_name' : products.name,
@@ -555,7 +605,8 @@ def detail_mo(request, mo_id) :
             'price' : int(component['product_price']),
             'quantity' : int(component['product_quantity']),
             'warehouse' : warehouse,
-            'status' : component['status']
+            'status' : status_f,
+            'status_f' : component['status']
         })
 
     if request.method == 'POST' :
@@ -611,21 +662,16 @@ def detail_mo(request, mo_id) :
                 manufacture_component.save()
 
             if manufacture_component.status == "done" :
-                if StockTotal.objects.using('inventory').filter(product_id=manufacture_component.product, warehouse_id=int(mo_stock_move['stock_move'].destination_warehouse.pk)).exists() :
-                    stock_n = StockTotal.objects.using('inventory').get(product_id=manufacture_component.product, warehouse_id=int(mo_stock_move['stock_move'].destination_warehouse.pk))
-                    stock_exist = stock_n.stock
-                    stock_update = manufacture_component.quantity
+                stock_n, created = StockTotal.objects.using('inventory').get_or_create(
+                    product_id=manufacture_component.product,
+                    warehouse_id=int(mo_stock_move['stock_move'].destination),
+                    stock=int(manufacture_component.quantity)
+                )
 
-                    stock_n.stock = stock_exist + stock_update
-                    stock_n.save()
+                if not created :
+                    stock_n.stock = stock_n.stock + int(manufacture_component.quantity)
                 
-                else :
-                    new_stock = StockTotal.objects.using('inventory').create(
-                        stock=stock_update,
-                        product_id=manufacture_component.product,
-                        warehouse_id=int(mo_stock_move['stock_move'].destination_warehouse.pk)
-                    )
-                    new_stock.save()
+                stock_n.save()
                 
             return redirect('manufacture:detail_mo', mo_id=mo_id)
                 
